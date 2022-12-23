@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "215906166639",
+    "project_id": "englishlearning-5d54b",
+    "storage_bucket": "englishlearning-5d54b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215906166639:android:eea2f2b58b41f5ad086a9a",
+        "android_client_info": {
+          "package_name": "com.ir.zabaner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "215906166639-eq1v77t5idjq30khbooqh91gdch4or84.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIiVo-UWhg7L9r_5r8boOGV_u6qPtRmvs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "215906166639-eq1v77t5idjq30khbooqh91gdch4or84.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
