@@ -22,7 +22,7 @@ class Conversation {
   final String id;
   final String description;
   final String createAt;
-  final String type;
+  String type;
   final String forS;
 
   factory Conversation.fromJson(Map<String, dynamic> json){

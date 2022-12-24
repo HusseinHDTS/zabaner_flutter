@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_poolakey/flutter_poolakey.dart';
 
 const baseUrl = "https://app.zabaner.ir";
 // const baseUrl = "https://138.201.100.200:3000";
@@ -74,6 +75,20 @@ String getTime(time){
   }
   return result;
 }
+
+connectToBazaar() async{
+  bool connected = false;
+  try{
+    connected = await FlutterPoolakey.connect(RSA_PUBLIC_KEY,onDisconnected: (){});
+  }on Exception catch(e){
+    e.toString();
+  }
+  if (!connected) {
+    return;
+  }
+
+}
+
 String getRandomString(int length) {
   const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   Random _rnd = Random();

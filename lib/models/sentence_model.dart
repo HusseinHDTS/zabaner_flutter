@@ -34,6 +34,7 @@ class GlobalKeyModel{
 class SentenceIndex{
   int listIndex , sentenceIndex;
   int time;
+  int endTime;
   String? text;
-  SentenceIndex({required this.listIndex , required this.sentenceIndex , required this.time, this.text});
+  SentenceIndex({required this.listIndex , required this.sentenceIndex , required this.time,required this.endTime, this.text});
 }

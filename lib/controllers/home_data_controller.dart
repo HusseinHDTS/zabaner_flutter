@@ -5,6 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/models/home_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/level.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
 
 class HomeDataController extends GetxController with StateMixin {

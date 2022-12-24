@@ -20,6 +20,8 @@ class VideoItemsModel {
     required this.faTitle,
     required this.imagePath,
     required this.videoPath,
+    required this.subtitleFa,
+    required this.subtitle,
     required this.type,
   });
 
@@ -27,6 +29,8 @@ class VideoItemsModel {
   final String id;
   final String title;
   final String faTitle;
+  final String subtitle;
+  final String subtitleFa;
   final String imagePath;
   final String videoPath;
   final String type;
@@ -40,6 +44,8 @@ class VideoItemsModel {
       id: json["_id"],
       title: json["title"],
       faTitle: json["faTitle"],
+      subtitleFa: json["subtitleStringFa"] ?? "",
+      subtitle: json["subtitleString"] ?? "",
       imagePath: imagePath,
       videoPath: videoPath,
       type: json["type"],

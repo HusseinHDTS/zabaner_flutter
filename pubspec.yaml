@@ -43,6 +43,7 @@ dependencies:
   flutter_intro: ^3.0.2
   open_file: ^3.2.1
   get_storage: ^2.0.3
+  srt_parser: ^1.0.1
   catcher: ^0.6.9
   flutter_chat_bubble: ^2.0.0
   pull_to_refresh: ^2.0.0

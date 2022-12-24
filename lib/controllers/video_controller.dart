@@ -1,10 +1,9 @@
-import 'package:better_player/better_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:srt_parser/srt_parser.dart' as strP;
 import 'package:zabaner/models/sentence_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
@@ -46,6 +45,8 @@ class VideoController extends GetxController with StateMixin {
           id: "id",
           faTitle: "faTitle",
           title: "title",
+          subtitle: "title",
+          subtitleFa: "title",
           type: "type",
           imagePath: "imagePath",
           paragraphs: [],
@@ -66,6 +67,7 @@ class VideoController extends GetxController with StateMixin {
     _getConnect.allowAutoSignedCert = true;
     scrollController = ScrollController();
     appDoc = await path.getApplicationDocumentsDirectory();
+
   }
 
   @override
@@ -75,7 +77,7 @@ class VideoController extends GetxController with StateMixin {
     chewieController.dispose();
   }
 
-  void customeInit() {
+  void customeInit() async{
     _dateTime = DateTime.now();
     playIndex = 0;
     isPlaying = false.obs;
@@ -90,6 +92,18 @@ class VideoController extends GetxController with StateMixin {
     playingText = "".obs;
     duration = const Duration(milliseconds: 0).obs;
     playerPosition = const Duration(milliseconds: 0).obs;
+    var data = await _getConnect.get("https://app.zabaner.ir/test.srt");
+    debugPrint("dsadsaddsadwaoiowie : " + data.bodyString.toString());
+    List<strP.Subtitle> subtitles = strP.parseSrt(data.bodyString.toString());
+    for(var res in subtitles){
+      debugPrint(
+          'dsadsajkdjksadjksajd : (${res.id}) Start: ${res.range.begin}, end: ${res.range.end} ');
+      for(String line in res.lines){
+        debugPrint(" dsadsajkdjksadjksajd " + line);
+      }
+      debugPrint(
+          'dsadsajkdjksadjksajd : ----------');
+    }
   }
 
   @override
@@ -364,12 +378,6 @@ class VideoController extends GetxController with StateMixin {
       aspectRatio: 16 / 9,
       showControls: true,
       showControlsOnInitialize: false,
-      // materialProgressColors: ChewieProgressColors(
-      //   playedColor: Colors.red,
-      //   handleColor: Colors.blue,
-      //   backgroundColor: Colors.grey,
-      //   bufferedColor: Colors.lightGreen,
-      // ),
       placeholder: Container(
         color: Colors.grey,
       ),
@@ -377,7 +385,13 @@ class VideoController extends GetxController with StateMixin {
       autoInitialize: true,
     );
     _videoController.addListener(play);
-
+    if(videoItems.value.subtitle.toString().trim().isNotEmpty){
+      var fa = await _getConnect.get(videoItems.value.subtitleFa);
+      var en = await _getConnect.get(videoItems.value.subtitle);
+      faParagraph.value = getFullFromSrt(true, strP.parseSrt(en.bodyString??""), strP.parseSrt(fa.bodyString??""));
+      enParagraph.value = getFullFromSrt(false, strP.parseSrt(en.bodyString??""), strP.parseSrt(fa.bodyString??""));
+      return;
+    }
     faParagraph.value = getFullParagraphs(true, videoItems.value.paragraphs);
     enParagraph.value = getFullParagraphs(false, videoItems.value.paragraphs);
   }

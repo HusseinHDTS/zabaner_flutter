@@ -1,11 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:zabaner/controllers/conversation_controller.dart';
 import 'package:zabaner/views/colors.dart';
+import 'package:zabaner/views/widgets/serach_text_input.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 import 'dart:math' as math;
 
@@ -19,7 +22,8 @@ class ConversationScreen extends StatefulWidget {
   State<ConversationScreen> createState() => _ConversationScreenState();
 }
 
-class _ConversationScreenState extends State<ConversationScreen> with TickerProviderStateMixin  {
+class _ConversationScreenState extends State<ConversationScreen>
+    with TickerProviderStateMixin {
   final ConversationController _controller = Get.put(ConversationController());
   late final AnimationController _animationController;
 
@@ -28,7 +32,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
     super.initState();
     _animationController = AnimationController(vsync: this);
     _animationController.addStatusListener((status) {
-      if(status == AnimationStatus.completed){
+      if (status == AnimationStatus.completed) {
         _animationController.reset();
       }
     });
@@ -67,7 +71,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                     Text(
                       "بازگشت",
                       style:
-                          TextStyle(fontFamily: "Yekan", color: Colors.white),
+                      TextStyle(fontFamily: "Yekan", color: Colors.white),
                     ),
                   ],
                 ),
@@ -83,47 +87,59 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                   flex: 1,
                   child: Container(
                     height: double.infinity,
-                    child: Obx(() => _controller.isDataLoaded.isTrue
+                    child: Obx(() =>
+                    _controller.isDataLoaded.isTrue
                         ? ListView.builder(
-                            itemCount: _controller.conversations.length + 1,
-                            itemBuilder: (context, index) {
-                              var colorReceive = orangeMessage;
-                              var colorSend = Color(0xffE7E7ED);
+                        itemCount: _controller.conversations.length + 1,
+                        controller: _controller.scrollController,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var colorReceive = orangeMessage;
+                          var colorSend = Color(0xffE7E7ED);
 
-                              if (index == 1) {
-                                return chatText(
-                                    "با سلام. پیام شما دریافت شد و ظرف 24 ساعت آینده پاسخگو خواهیم بود.",
-                                    _controller.conversations[0].createAt,
-                                    BubbleType.receiverBubble,
-                                    colorReceive,
-                                    Colors.white);
-                              }
-                              var ind;
-                              if (index == 0) {
-                                ind = 0;
-                              } else {
-                                ind = index - 1;
-                              }
+                          if (index == 1) {
+                            return AutoScrollTag(key: GlobalKey(), controller: _controller.scrollController, index: index,child: chatText(
+                                "با سلام. پیام شما دریافت شد و ظرف 24 ساعت آینده پاسخگو خواهیم بود.",
+                                _controller.conversations[0].createAt,
+                                BubbleType.receiverBubble,
+                                colorReceive,
+                                Colors.white,"answer"),);
+                          }
+                          var ind;
+                          if (index == 0) {
+                            ind = 0;
+                          } else {
+                            ind = index - 1;
+                          }
 
-                              var item = _controller.conversations[ind];
-
-                              return chatText(
-                                item.description,
-                                item.createAt,
-                                item.type == "answer"
-                                    ? BubbleType.receiverBubble
-                                    : BubbleType.sendBubble,
-                                item.type == "answer"
-                                    ? colorReceive
-                                    : colorSend,
-                                item.type == "answer"
-                                    ? Colors.white
-                                    : Colors.black,
-                              );
-                            })
+                          var item = _controller.conversations[ind];
+                          var widg = chatText(
+                            item.description,
+                            item.createAt,
+                            item.type == "answer"
+                                ? BubbleType.receiverBubble
+                                : BubbleType.sendBubble,
+                            item.type == "answer"
+                                ? colorReceive
+                                : colorSend,
+                            item.type == "answer"
+                                ? Colors.white
+                                : Colors.black,
+                            item.type,
+                          );
+                          if(ind == _controller.conversations.length -1){
+                            return AutoScrollTag(key: GlobalKey(), controller: _controller.scrollController, index: index,child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                widg,
+                                SizedBox(height: 20,),
+                              ],),);
+                          }
+                          return widg;
+                        })
                         : const Center(
-                            child: CircularProgressIndicator(),
-                          )),
+                      child: CircularProgressIndicator(),
+                    )),
                   ),
                 ),
                 // Opacity(opacity:0.5,child: Container(width: double.infinity,height: 1,decoration: BoxDecoration(color: Colors.black12),)),
@@ -140,7 +156,8 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                         Flexible(
                             flex: 0,
                             child: Container(
-                              decoration: BoxDecoration(shape: BoxShape.circle,color: orangeDark),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: orangeDark),
                               width: 50,
                               height: double.infinity,
                               child: Material(
@@ -148,16 +165,24 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                                 shape: const CircleBorder(),
                                 child: InkWell(
                                   customBorder: const CircleBorder(),
-                                  onTap: (){
+                                  onTap: () {
+                                    _controller.sendMessage(widget.title,widget.title);
                                     _animationController.forward();
                                   },
                                   child: Container(
                                     margin: EdgeInsets.all(4),
                                     child: Transform.rotate(
                                       angle: math.pi / 4,
-                                      child: Lottie.asset('assets/animations/send_message2.json',width: double.infinity,height: double.infinity,repeat: false,controller: _animationController,onLoaded: (composition){
-                                        _animationController.duration = composition.duration;
-                                      },
+                                      child: Lottie.asset(
+                                        'assets/animations/send_message2.json',
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        repeat: false,
+                                        controller: _animationController,
+                                        onLoaded: (composition) {
+                                          _animationController.duration =
+                                              composition.duration;
+                                        },
                                       ),
                                     ),
                                   ),
@@ -170,9 +195,12 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                         Flexible(
                             flex: 1,
                             child: Container(
-                                width: double.infinity,
-                                height: double.infinity,
-                                decoration: BoxDecoration(color: Colors.grey))),
+                              width: double.infinity,
+                              height: double.infinity,
+                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              decoration: BoxDecoration(color: Colors.black12,borderRadius: BorderRadius.circular(8)),
+                              child:MessageTextInput(textController: _controller.textController,focus: _controller.focus ,),
+                            )),
                         SizedBox(
                           width: 10,
                         ),
@@ -191,12 +219,15 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
     );
   }
 
-  chatText(text, createAt, type, backC, textC) {
-    var align, smallColor, fromStr = "";
+  chatText(text, createAt, type, backC, textC,iType) {
+    var align,
+        smallColor,
+        fromStr = "";
 
     if (type == BubbleType.sendBubble) {
       align = Alignment.topRight;
       smallColor = orange;
+      fromStr = "ارسال شده";
     } else {
       smallColor = Colors.white;
       fromStr = "پشتیبان";
@@ -241,7 +272,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                           flex: 1,
                           child: Container(
                               width: double.infinity,
-                              child: ColoredText(fromStr,
+                              child:iType == "loading" ? Align(alignment:Alignment.centerLeft,child: Lottie.asset('assets/animations/loading.json',height: 30)): ColoredText(fromStr,
                                   textSize: 10,
                                   textColor: smallColor,
                                   textAlign: TextAlign.left))),
