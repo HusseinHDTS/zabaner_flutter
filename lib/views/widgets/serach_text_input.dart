@@ -47,6 +47,39 @@ class SearchTextInput extends StatelessWidget {
   }
 }
 
+class TicketTextInput extends StatelessWidget{
+  TextEditingController textController;
+  FocusNode? focus;
+  String? hint;
+  int? lines;
+  TicketTextInput({Key? key,this.lines,this.hint,required this.textController, this.focus}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+        controller: textController,
+        style: const TextStyle(fontFamily: "Yekan", fontSize: 14),
+        textAlignVertical: TextAlignVertical.center,
+        textAlign: TextAlign.right,
+        focusNode: focus,
+        minLines: lines,
+        maxLines: lines,
+        decoration: InputDecoration(
+            hintText: hint,
+            contentPadding: EdgeInsets.zero,
+            hintStyle: const TextStyle(
+                fontFamily: "Yekan", fontSize: 12, color: Color(0xff919090)),
+            hintTextDirection: TextDirection.rtl,
+            fillColor: Color(0xff000000),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.all(Radius.circular(17))),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.all(Radius.circular(17)))));
+  }
+
+}
+
 class MessageTextInput extends StatelessWidget {
   TextEditingController textController;
   FocusNode focus;
@@ -57,7 +90,7 @@ class MessageTextInput extends StatelessWidget {
     return TextFormField(
         controller: textController,
         style: const TextStyle(fontFamily: "Yekan", fontSize: 14),
-        textAlignVertical: TextAlignVertical.top,
+        textAlignVertical: TextAlignVertical.center,
         textAlign: TextAlign.right,
         textInputAction: TextInputAction.send,
         focusNode: focus,

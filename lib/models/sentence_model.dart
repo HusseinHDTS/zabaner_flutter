@@ -6,6 +6,19 @@ class SentenceModel{
   SentenceModel({required this.sentencesList});
 }
 
+class SubtitleTimes{
+  int start , end;
+  String text;
+  SubtitleTimes({required this.text , required this.start,required this.end});
+}
+
+class SrtResult{
+  List<SentenceModel> sentenceModel;
+  List<SubtitleTimes> subtitleTimes;
+  SrtResult({required this.sentenceModel,required this.subtitleTimes});
+
+}
+
 class StringHelper{
   String filterString(String data){
     String result = data.replaceAll(RegExp(r"(?! )\s+| \s+"), " ");

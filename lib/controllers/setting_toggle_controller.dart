@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:zabaner/models/level.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
@@ -12,6 +13,7 @@ class SettingToggle extends GetxController {
   RxBool saveStorage = false.obs;
   RxBool darkTheme = false.obs;
   RxBool autoBackup = false.obs;
+  var version = "".obs;
   @override
   void onInit() async {
     super.onInit();
@@ -20,7 +22,11 @@ class SettingToggle extends GetxController {
     saveStorage.value = getStorage.read('save_storage') ?? false;
     darkTheme.value = getStorage.read('dark_theme') ?? false;
     autoBackup.value = getStorage.read('auto_backup') ?? true;
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    version.value = packageInfo.version;
   }
+
+
 
   Future<void> sendStatics() async {
     _getConnect.allowAutoSignedCert = true;

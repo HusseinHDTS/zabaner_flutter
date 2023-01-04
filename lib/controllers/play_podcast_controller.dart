@@ -7,6 +7,7 @@ import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:zabaner/models/html.dart';
 import 'package:zabaner/models/podcast_item_model.dart';
 import 'package:zabaner/models/podcast_model.dart';
 import 'package:zabaner/models/sentence_model.dart';
@@ -18,6 +19,8 @@ import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 import 'package:zabaner/widgets/my_app_bar.dart';
+import 'package:srt_parser/srt_parser.dart' as strP;
+
 
 class PlayPodcastController extends GetxController with StateMixin {
   final GetConnect _getConnect = GetConnect();
@@ -29,6 +32,7 @@ class PlayPodcastController extends GetxController with StateMixin {
   late io.Directory appDoc;
   AutoScrollController scrollController = AutoScrollController();
   var isPlaying = false.obs;
+  var isSubtitleLoaded = false.obs;
   var ind = 0;
   var faParagraph = <SentenceModel>[].obs;
   var enParagraph = <SentenceModel>[].obs ;
@@ -117,25 +121,39 @@ class PlayPodcastController extends GetxController with StateMixin {
     isPlaying.value = false;
   }
 
-  List<SentenceModel> getParAsLang(bool fa){
-    if(fa){
+  List<SentenceModel> getParAsLang(bool? fa) {
+    if (fa == null) {
+      if (faParagraph.length == enParagraph.length) {
+        return enParagraph;
+      }
+      if (faParagraph.length > enParagraph.length) {
+        return faParagraph;
+      } else {
+        return enParagraph;
+      }
+    }
+    if (fa) {
       return faParagraph;
-    }else{
+    } else {
       return enParagraph;
     }
   }
 
+
   Future<void> download(String urlPath, String id, String title) async {
+    isSubtitleLoaded.value = false;
     debugPrint("asdasdwouaeoiiusaodiosaid : " + urlPath);
     io.File _checkFile = io.File(getUrlFileName(appDoc.path,id,urlPath));
     if (!_checkFile.existsSync()) {
-      Get.defaultDialog(
-          title: "در حال دانلود فایل صوتی",
-          onWillPop: () async => downloadingPercent.value == 1 ? true : false,
-          backgroundColor: orange,
-          content: Obx(() => CircularProgressIndicator(
-            value: downloadingPercent.value,
-          )));
+      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود فایل صوتی");
+
+      // Get.defaultDialog(
+      //     title: "در حال دانلود فایل صوتی",
+      //     onWillPop: () async => downloadingPercent.value == 1 ? true : false,
+      //     backgroundColor: orange,
+      //     content: Obx(() => CircularProgressIndicator(
+      //       value: downloadingPercent.value,
+      //     )));
       var _downloadRequest = await dio
           .download(urlPath,  getUrlFileName(appDoc.path,id,urlPath),
           onReceiveProgress: (recive, total) {
@@ -153,6 +171,26 @@ class PlayPodcastController extends GetxController with StateMixin {
     } else {
 
     }
+    var shouldR = false;
+    if (podcastItem.subtitle.toString().trim().isNotEmpty) {
+      var en = await _getConnect.get(podcastItem.subtitle);
+      var list =
+      await getFullFromSrt(false, strP.parseSrt(en.bodyString ?? ""));
+      enParagraph.value = list.sentenceModel;
+      // subTimes.value = list.subtitleTimes;
+      shouldR = true;
+    }
+    if (podcastItem.subtitleFa.toString().trim().isNotEmpty) {
+      var fa = await _getConnect.get(podcastItem.subtitleFa);
+      var list = await getFullFromSrt(true, strP.parseSrt(fa.bodyString ?? ""));
+      faParagraph.value = list.sentenceModel;
+      shouldR = true;
+    }
+    if (shouldR) {
+      isSubtitleLoaded.value = true;
+      return;
+    }
+    isSubtitleLoaded.value = true;
     faParagraph.value = getFullParagraphs(true, podcastItem.paragraphs);
     enParagraph.value = getFullParagraphs(false, podcastItem.paragraphs);
   }
@@ -170,10 +208,7 @@ class PlayPodcastController extends GetxController with StateMixin {
       isNowCurrentText =
           currentSavedTime.value == cm.time && isInEndTime.value == false;
       String textForCheck = StringHelper().filterString(playingText.value);
-      texts.add(TextSpan(
-          text: whiteSpaceForSentence(cm.text.toString()),
-          style: getSubtitleTextStyle(isNowCurrentText)
-      ));
+      texts.add(parseHtmlToTextSpan(whiteSpaceForSentence(cm.text.toString()), getSubtitleTextStyle(isNowCurrentText)));
       var cckey = GlobalObjectKey(getRandomString(15));
 
       if (isNowCurrentText &&
@@ -244,36 +279,39 @@ class PlayPodcastController extends GetxController with StateMixin {
   }
 
   Future<void> checkForTime(event) async {
-    var item = podcastItem;
+    List<SentenceModel> a = getParAsLang(false);
     var posEv = event;
-    for (int i = 0; i < item.paragraphs.length; i++) {
-      if (posEv.position.inMilliseconds >
-          item.paragraphs[i].pst &&
-          item.paragraphs[i].pst > currentSavedTime.value ||
-          posEv.position.inMilliseconds <
-              item.paragraphs[i].pst &&
-              item.paragraphs[i].pst < currentSavedTime.value) {
-        isInEndTime.value = false;
-        try{
-          if ((i + 1) >= item.paragraphs.length - 1) {
-            nextTime = item.paragraphs[item.paragraphs.length - 1].pst;
-            preTime = item.paragraphs[i - 1].pst;
-          } else if (i == 0) {
-            nextTime = item.paragraphs[i + 1].pst;
-            preTime = item.paragraphs[0].pst;
-          } else {
-            nextTime = item.paragraphs[i + 1].pst;
-            preTime = item.paragraphs[i - 1].pst;
+    for (int i = 0; i < a.length; i++) {
+      for (var b in a[i].sentencesList) {
+        if (posEv.position.inMilliseconds >
+            b.time &&
+            b.time > currentSavedTime.value ||
+            posEv.position.inMilliseconds <
+                b.time &&
+                b.time < currentSavedTime.value) {
+          if (currentSavedTime.value == b.time) {
+            return;
           }
-        }catch(e){e.printError();}
-        currentSavedTime.value = item.paragraphs[i].pst;
-        playingText.value = item.paragraphs[i].en;
-        playingTextFa.value = item.paragraphs[i].fa;
-      }
-      if (posEv.position.inMilliseconds >
-          item.paragraphs[i].pstEnd &&
-          item.paragraphs[i].pstEnd > currentSavedTime.value) {
-        isInEndTime.value = true;
+          // if(isInEndTime.isTrue){
+          isInEndTime.value = false;
+          // }
+          if(b.time != currentSavedTime.value){
+            currentSavedTime.value = b.time;
+          }
+          if(playingText.value != b.text.toString()){
+            playingText.value = b.text.toString();
+          }
+          if(playingTextFa.value != b.text.toString()){
+            playingTextFa.value = b.text.toString();
+          }
+        }
+        if (posEv.position.inMilliseconds >
+            b.endTime &&
+            b.endTime > currentSavedTime.value) {
+          // if(isInEndTime.isFalse){
+          isInEndTime.value = true;
+          // }
+        }
       }
     }
 
@@ -287,14 +325,15 @@ class PlayPodcastController extends GetxController with StateMixin {
         box.localToGlobal(Offset.zero); //this is global position
         double y = position.dy;
         debugPrint("sadsadsadsadsappooooooo : " + y.toString());
+        // scrollController.jumpTo(y+40);
 
-        scrollController.animateTo(
-            y - 400 + (scrollController.offset) , duration: Duration(milliseconds: 2000),
-            curve: Curves.linear);
+        scrollController.animateTo(y - 400 + (scrollController.offset),
+            duration: Duration(milliseconds: 2000), curve: Curves.linear);
         // scrollController.jumpTo(y - 400 + (scrollController.offset));
       }
     }
   }
+
 
 
   void togglePlayer(String filePath) async{

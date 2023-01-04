@@ -5,7 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/views/screens/splash_screen.dart';
+import 'package:zabaner/widgets/colored_snack.dart';
 
 FirebaseMessaging? _messaging;
 RemoteMessage? initialMessage;
@@ -13,7 +15,6 @@ String fcmToken = "NaN";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // appDoc = await path.getApplicationDocumentsDirectory();
   String webhook =
       "https://discord.com/api/webhooks/1018449530817101897/IWcngaJIqjUrIsJJ8tHap0xMeLtTnVzyL6esamr7MXdRfhzwUW_-BhvT7029e7HvYhYP";
   CatcherOptions debugOptions = CatcherOptions(
@@ -41,30 +42,34 @@ void main() async {
     ],
     screenshotsPath: "/storage/emulated/0/Android/data/com.ir.zabaner/cache/",
   );
+  try{
+    HttpOverrides.global = MyHttpOverrides();
+    await Firebase.initializeApp();
+    await FirebaseMessaging.instance.setAutoInitEnabled(true);
+    initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    _messaging = FirebaseMessaging.instance;
+    String _token = (await _messaging?.getToken()).toString();
+    fcmToken = _token;
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
 
-  HttpOverrides.global = MyHttpOverrides();
+    });
+    if(fcmToken.trim() == "" || fcmToken.trim().toLowerCase() == "null"){
+      fcmToken = "NaN";
+    }
+    registerNotification();
+
+  }catch(e){
+    ColoredSnack(title: e.toString());
+    e.printError();
+  }
+
   Catcher(
       rootWidget: const MyApp(),
       releaseConfig: releaseOptions,
       profileConfig: releaseOptions,
       debugConfig: debugOptions);
-  await Firebase.initializeApp();
-  await FirebaseMessaging.instance.setAutoInitEnabled(true);
-  initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-  _messaging = FirebaseMessaging.instance;
-  try{
-    String _token = (await _messaging?.getToken()).toString();
-    fcmToken = _token;
-    debugPrint("sadwdjaskjdksahdkhasjdhas : " + fcmToken);
-  }catch(e){e.printError();}
 
-  if(fcmToken.trim() == "" || fcmToken.trim().toLowerCase() == "null"){
-    fcmToken = "NaN";
-  }
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
 
-  });
-  registerNotification();
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

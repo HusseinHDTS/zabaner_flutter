@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_poolakey/flutter_poolakey.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:zabaner/models/sub-settings-model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/views/tabs/list_model.dart';
+import 'package:zabaner/widgets/colored_snack.dart';
 
 class SubscribeController extends GetxController {
   final _selectedPos = 0.obs;
@@ -12,6 +14,7 @@ class SubscribeController extends GetxController {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   final GetStorage _getStorage = GetStorage();
   TabbarTypes type;
+  List<SkuDetails>? bazaarLists;
   SubscribeController(this.type);
 
 
@@ -69,6 +72,53 @@ class SubscribeController extends GetxController {
     }
     return result;
   }
+  int getCurrentSelectedMonthInt(int pos){
+    int result = 0;
+    if(pos == 0){
+      result = 1;
+    }else if(pos == 1){
+      result = 3;
+    }else if(pos == 2){
+      result = 12;
+    }
+    return result;
+  }
+
+  Future<PurchaseInfo?> bazaarPay(typeForBuy)async{
+    PurchaseInfo? result;
+    String pId= "";
+    int cMonth = getCurrentSelectedMonthInt(getCurrentPos());
+    if(cMonth == 1){
+      pId = "OM_";
+    }else if(cMonth == 3){
+      pId = "TM_";
+    }else if(cMonth == 12){
+      pId = "OY_";
+    }
+    if(typeForBuy == TabbarTypes.CHILD){
+      pId += "CHILD";
+    }else if(typeForBuy == TabbarTypes.ADULT){
+      pId += "ADULT";
+    }else if(typeForBuy == TabbarTypes.NATIONAL){
+      pId += "NATIONAL";
+    }
+    try{
+      result = await FlutterPoolakey.subscribe(pId,payload: "HDTS");
+    }catch(e){
+      // ColoredSnack(title: "خطا از سمت بازار!",type: SnackType.ERROR,description: e.toString());
+      e.printError();}
+    return result;
+  }
+  Future<PurchaseInfo?> bazaarPayTest()async{
+    PurchaseInfo? result;
+    try{
+      result = await FlutterPoolakey.subscribe("TestSub",payload: "HDTS");
+    }catch(e){
+      // ColoredSnack(title: "خطا از سمت بازار!",type: SnackType.ERROR,description: e.toString());
+      e.printError();}
+    return result;
+  }
+
   String getCurrentSelectedPrice(int pos,{bool? isHezarToman}){
     isHezarToman ??= false;
     String result = "";

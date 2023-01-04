@@ -126,7 +126,7 @@ class _PodcastPlayState extends State<PodcastPlay> {
                 margin: EdgeInsets.symmetric(horizontal: 12,vertical: 4),
                 child: SingleChildScrollView(
                   controller: controller.scrollController,
-                  child: Obx(()=> Column(children: List.generate(controller.getParAsLang(controller.fa.value).length +1, (index){
+                  child: Obx(()=> controller.isSubtitleLoaded.isFalse ? Center(child: Container(margin:EdgeInsets.only(top: 20),child: CircularProgressIndicator()),) : Column(children: List.generate(controller.getParAsLang(null).length +1, (index){
                     Widget returnWidget = index == 0
                         ? SizedBox(
                         width: Get.width,
@@ -141,7 +141,7 @@ class _PodcastPlayState extends State<PodcastPlay> {
                           ),
                           textAlign: TextAlign.center,
                         ))
-                    : Container(
+                        : Container(
                       child: Obx(() =>
                       controller.fa.value == true ||
                           controller.en.value == true
@@ -156,7 +156,7 @@ class _PodcastPlayState extends State<PodcastPlay> {
                                 return Container(
                                     child: RichText(
                                       text: TextSpan(
-                                        style: getSubDefault(),
+                                        style: getSubDefault(false),
                                         children:item.data,
                                       ),
                                     ));
@@ -175,7 +175,7 @@ class _PodcastPlayState extends State<PodcastPlay> {
                                 return Container(
                                     child: RichText(
                                       text: TextSpan(
-                                        style: getSubDefault(),
+                                        style: getSubDefault(true),
                                         children:item.data,
                                       ),
                                     ));

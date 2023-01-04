@@ -6,7 +6,7 @@ import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:open_file/open_file.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:zabaner/models/sentence_model.dart';
 import 'package:zabaner/models/urls.dart';
@@ -45,6 +45,8 @@ class TabbarItemController extends GetxController with StateMixin {
   var playingTextFa = "".obs;
   final GetConnect _getConnect = GetConnect();
   final GetStorage _getStorage = GetStorage();
+  RefreshController refreshController = RefreshController();
+  var errorData = false.obs;
   var isPlaying = false.obs;
   final Dio dio = Dio();
   var playIndex = -1;
@@ -65,7 +67,7 @@ class TabbarItemController extends GetxController with StateMixin {
     chewieController.dispose();
   }
 
-  void customeInit() {
+  void customeInit(item) {
     _dateTime = DateTime.now();
     playIndex = 0;
     isPlaying = false.obs;
@@ -81,6 +83,13 @@ class TabbarItemController extends GetxController with StateMixin {
     playingText = "".obs;
     duration = const Duration(milliseconds: 0).obs;
     playerPosition = const Duration(milliseconds: 0).obs;
+    if (item.video.substring(item.video.lastIndexOf(".") + 1) == "mp4") {
+      download(item.video, item.id, item.title);
+    } else {
+      Get.back();
+      ColoredSnack(
+          title: "ویدیویی برای این بخش وجود ندارد", type: SnackType.ERROR);
+    }
   }
 
   @override
@@ -218,16 +227,11 @@ class TabbarItemController extends GetxController with StateMixin {
 
 
   Future<void> download(String urlPath, String id, String title) async {
+    errorData.value = false;
     appDoc = await path.getApplicationDocumentsDirectory();
     io.File _checkFile = io.File(getUrlFileName(appDoc.path,id,urlPath));
     if (!_checkFile.existsSync()) {
-      Get.defaultDialog(
-          title: "در حال دانلود ویدیو",
-          onWillPop: () async => downloadingPercent.value == 1 ? true : false,
-          backgroundColor: orange,
-          content: Obx(() => CircularProgressIndicator(
-            value: downloadingPercent.value,
-          )));
+      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود ویدیو");
       var _downloadRequest = await dio
           .download(urlPath,  getUrlFileName(appDoc.path,id,urlPath),
           onReceiveProgress: (recive, total) {
@@ -292,7 +296,7 @@ class TabbarItemController extends GetxController with StateMixin {
       autoInitialize: true,
     );
     _videoController.addListener(play);
-
+    refreshController.refreshCompleted();
   }
 
   bool fileExists(String path) {

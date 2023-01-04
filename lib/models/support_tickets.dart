@@ -15,6 +15,7 @@ class SupportTickets {
     required  this.id,
     required  this.status,
     required  this.mobile,
+    required  this.lastUpdate,
     required  this.mTitle,
     required  this.title,
   });
@@ -23,6 +24,7 @@ class SupportTickets {
   final String status;
   final String mobile;
   final String mTitle;
+  final String lastUpdate;
   final String title;
 
   factory SupportTickets.fromJson(Map<String, dynamic> json){
@@ -30,6 +32,7 @@ class SupportTickets {
       id: json["_id"],
       status: json["status"] ?? "",
       mobile: json["mobile"] ?? "",
+      lastUpdate: json["lastUpdate"] ?? "",
       mTitle: json["mTitle"] ?? "",
       title: json["title"] ?? "",
     );
@@ -39,6 +42,7 @@ class SupportTickets {
     "_id": id,
     "status": status,
     "mobile": mobile,
+    "lastUpdate": lastUpdate,
     "mTitle": mTitle,
     "title": title,
   };

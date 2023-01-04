@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/models/book_chapter_model.dart';
 import 'package:zabaner/models/urls.dart';
 
@@ -7,7 +8,8 @@ class ChapterController extends GetxController with StateMixin {
   final String id, type;
   late final BookChapterModel bookModel;
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
-
+  RefreshController refreshController = RefreshController();
+  var errorData = false.obs;
   @override
   void onInit() async{
     // TODO: implement onInit
@@ -37,12 +39,14 @@ class ChapterController extends GetxController with StateMixin {
   }
 
   Future<void> getBookData() async {
+    errorData.value = false;
     final _request = await _getConnect.get(getBookDetailUrl + id);
     if (_request.statusCode == 200) {
+      refreshController.refreshCompleted();
       bookModel = bookChapterModelFromJson(_request.bodyString ?? "");
       change(null, status: RxStatus.success());
     } else {
-      getBookData();
+      errorData.value = true;
     }
   }
 }

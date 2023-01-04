@@ -236,13 +236,14 @@ class NewsDetailController extends GetxController with StateMixin {
   void download(String urlPath, String id, String title) async {
     io.File _checkFile = io.File( getUrlFileName(appDoc.path,id,urlPath));
     if (!_checkFile.existsSync()) {
-      Get.defaultDialog(
-          title: "در حال دانلود فایل صوتی",
-          onWillPop: () async => downloadingPercent.value == 1 ? true : false,
-          backgroundColor: orange,
-          content: Obx(() => CircularProgressIndicator(
-                value: downloadingPercent.value,
-              )));
+      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود فایل صوتی");
+      // Get.defaultDialog(
+      //     title: "در حال دانلود فایل صوتی",
+      //     onWillPop: () async => downloadingPercent.value == 1 ? true : false,
+      //     backgroundColor: orange,
+      //     content: Obx(() => CircularProgressIndicator(
+      //           value: downloadingPercent.value,
+      //         )));
       var _downloadRequest = await dio
           .download(urlPath,  getUrlFileName(appDoc.path,id,urlPath),
               onReceiveProgress: (recive, total) {

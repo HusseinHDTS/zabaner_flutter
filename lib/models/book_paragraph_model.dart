@@ -19,6 +19,8 @@ class BookParagraphModel {
     required this.title,
     required this.type,
     required this.imagePath,
+    required this.subtitle,
+    required this.subtitleFa,
     required this.paragraphs,
     required this.itemTitle,
     required this.itemFaTitle,
@@ -28,6 +30,8 @@ class BookParagraphModel {
   final String id;
   final String faTitle;
   final String title;
+  final String subtitle;
+  final String subtitleFa;
   final String type;
   final String imagePath;
   final List<Paragraph> paragraphs;
@@ -42,6 +46,8 @@ class BookParagraphModel {
       id: json["_id"],
       faTitle: json["faTitle"],
       title: json["title"],
+      subtitle: json["subtitleString"] ?? "",
+      subtitleFa: json["subtitleStringFa"] ?? "",
       type: json["type"],
       imagePath: imagePath,
       paragraphs: List<Paragraph>.from(

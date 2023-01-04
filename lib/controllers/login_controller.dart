@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:zabaner/main.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/main_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 
@@ -44,7 +45,7 @@ class LoginController extends GetConnect {
   Future<void> login(String username, String password, bool rememberMe) async {
     allowAutoSignedCert = true;
     String token = "NaN";
-    Get.defaultDialog(title: "لطفا صبر کنید",content: CircularProgressIndicator());
+    loadingDialog("لطفا صبر کنید");
     token = fcmToken;
     var _response =
         await post(signinUrl, {"username": username, "password": password,"googleAccessToken":token});

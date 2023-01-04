@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/models/book_chapter_model.dart';
 import 'package:zabaner/models/book_list_model.dart';
 import 'package:zabaner/models/urls.dart';
@@ -7,7 +8,8 @@ import 'package:zabaner/models/urls.dart';
 class BookListController extends GetxController with StateMixin {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   late final BookChapterModel bookModel;
-
+  RefreshController refreshController = RefreshController();
+  var errorData = false.obs;
   String? filter;
   BookListController({this.filter});
 
@@ -33,8 +35,10 @@ class BookListController extends GetxController with StateMixin {
   }
   late final List<BookListModel> model;
   Future<void> getData() async {
+    errorData.value = false;
     final _request = await _getConnect.get(getBookDetailUrl);
     if (_request.statusCode == 200) {
+      refreshController.refreshCompleted();
       model = bookListModelFromJson(_request.bodyString ?? "").reversed.toList();
       model.removeWhere(((element) {
         filter ??= "";
@@ -42,7 +46,8 @@ class BookListController extends GetxController with StateMixin {
       }));
       change(null, status: RxStatus.success());
     } else {
-      getData();
+      errorData.value = true;
+      // getData();
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/controllers/signup_controller.dart';
@@ -30,8 +31,8 @@ class SignupScreen extends StatelessWidget {
             children: [
               // Back Button
               Padding(
-                padding:
-                    EdgeInsets.only(right: Get.width / 20, top: Get.height / 35),
+                padding: EdgeInsets.only(
+                    right: Get.width / 20, top: Get.height / 35),
                 child: GestureDetector(
                   onTap: () => Get.back(),
                   child: Row(
@@ -103,81 +104,154 @@ class SignupScreen extends StatelessWidget {
                             height: Get.height / 3.5,
                             // color: Colors.red,
                             child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: List.generate(
                                     6,
                                     (index) => index == 5
                                         ? customCheckBox(
-                                            Get.width / 22,
+                                            Get.width / 20,
                                             Get.height / 40,
                                             "   استفاده از زبانر به معنی موافقت با قوانین می باشد",
-                                            (value) {},
-                                            false)
+                                            (value) {
+                                              _controller.setAgreed(value);
+                                            },
+                                            false,
+                                            content:  Text.rich(
+                                                TextSpan(style:TextStyle(fontSize: 10,color: Color(0xff9F9F9F), fontFamily: "Yekan"),children: <InlineSpan>[
+                                              TextSpan(
+                                                  text:"استفاده از زبانر به معنی موافقت با"),
+                                              TextSpan(
+                                                style: TextStyle(color: Colors.blueAccent,decoration: TextDecoration.underline),
+                                                  recognizer: TapGestureRecognizer()..onTap = (){
+                                                    Get.defaultDialog(title: "قوانین",content: Container(
+                                                      height: 350,
+                                                      child: SingleChildScrollView(
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                                          mainAxisSize: MainAxisSize.min,children: [
+                                                          middleText("کاربر گرامی ضمن سپاس از انتخاب اپلیکیشن زبانر لازم است پیش از ثبت نام و خرید، توافقنامه و قوانین ذیل را مشاهده کنید.",),
+                                                          const SizedBox(height: 10,),
+                                                          Container(width: double.infinity,height: 1,decoration: BoxDecoration(color: Colors.black12),),
+                                                          const SizedBox(height: 10,),
+                                                          descriptionText("تمامی منابع استفاده شده در نرم افزار برای \"زبانر\" است و هرگونه استفاده از محتوای این نرم افزار پیگرد قانونی دارد.",),
+                                                          const SizedBox(height: 10,),
+                                                          descriptionText("هرگونه کپی برداری از لوگوی <زبانر> ممنوع است",),
+                                                          const SizedBox(height: 10,),
+                                                          descriptionText("زبانر درصورت مشاهده هرگونه اقدام غیر متعارف برای دسترسی به اشتراک، خرید و ورود، این حق را دارد که این اقدامات غیرمجاز را متوقف کرده و در ادامه اشتراک کاربر را لغو کند",),
+                                                          const SizedBox(height: 10,),
+                                                          titleText("سیاست های حریم شخصی"),
+                                                          middleText("اطلاعات دریافتی"),
+                                                          const SizedBox(height: 10,),
+                                                          descriptionText("زبانر اطلاعات کاربران خود را در سرور های داخلی در ایران نگهداری می‌کند و از این رو، هیچگونه نگرانی برای خروج اطلاعات از مرز های کشور برای کاربران وجود نخواهد داشت. کاربان ربانر مستقیما اطلاعات زیر را در اختیار زبانر می‌گذارند: "),
+                                                          descriptionText("آدرس پست الکترونیکی یا شماره تلفن"),
+                                                          descriptionText("نام کاربری و گذرواژه"),
+                                                          descriptionText("تصویر ارسال شده توسط کاربر (شامل عکس پروفایل ، منظره و غیره)"),
+                                                          const SizedBox(height: 10,),
+                                                          descriptionText("همچنین زبانر با استفاده از کوکی‌ها و فناوری‌های مشابه آن ، اطلاعات مربوط به فرایند استفاده شما از زبانر و همچنین، روند خدمت‌رسانی خود به شما را جمع‌آوری می‌کند"),
+                                                          const SizedBox(height: 10,),
+                                                          middleText("اشتراک گذاری اطلاعات شما"),
+                                                          descriptionText("زبانر ، حق افشای اطلاعات شخص شما را تنها به منظور پاسخگویی به درخواست‌ها و درصورت نیاز، ارائه گزارش به مراجع قانونی برای خود محفوظ می‌دارد. اطلاعات تماس شما - مانند شماره تلفن یا آدرس ایمل - در هیچ بخشی از زبانر برای سایر کاربران زبانر به نمایش گذاشته نمی‌شوند."),
+                                                          const SizedBox(height: 10,),
+                                                          titleText("حریم خصوصی کاربران در زبانر:"),
+                                                          descriptionText("زبانر جهت ارائه بهتر سرویس خود و اطلاع رسانی در خصوص طرح‌های ویژه و پیشنهاد محتواهای جدید و ...، ممکن است از طریق ایمیل یا شماره تلفن همراه ثبت شده، اقدام به ارسال اطلاعاتی برای کاربران نماید. شما همواره میتوانید با کلیک کردن بر روی دکمه لغو در انتهای ایمیل های‌اطلاع رسانی ، آنها را غیرفعال کنید."),
+                                                        ],),
+                                                      ),
+                                                    ));
+                                                  },
+                                                  text:
+                                                      " قوانین "),
+                                              TextSpan(
+                                                  text:
+                                                      "می باشد"),
+                                            ])))
                                         : SizedBox(
                                             width: Get.width,
                                             height: Get.height / 23,
                                             child: Row(
                                               children: [
                                                 Obx(() => Expanded(
-                                                  flex: 1,
-                                                  child: CustomTextInput(
-                                                    hintText: textInputDetail[0]
-                                                    [index],
-                                                    iconPath: textInputDetail[1]
-                                                    [index],
-                                                    error: _controller.error.value,
-                                                    maxLength: index == 3 ? 10 : null,
-                                                    keyboardType: index == 3
-                                                        ? TextInputType.phone
-                                                        : TextInputType
-                                                        .emailAddress,
-                                                    onChanged: (text) {
-                                                      if(index == 3){
-                                                        signupParamerts[index] = "0"+text;
-                                                      }else{
-                                                        signupParamerts[index] = text;
-                                                      }
-                                                    },
-                                                    password:
-                                                    index == 1 || index == 2,
-                                                  ),
-                                                )),
+                                                      flex: 1,
+                                                      child: CustomTextInput(
+                                                        hintText:
+                                                            textInputDetail[0]
+                                                                [index],
+                                                        iconPath:
+                                                            textInputDetail[1]
+                                                                [index],
+                                                        error: _controller
+                                                            .error.value,
+                                                        maxLength: index == 3
+                                                            ? 10
+                                                            : null,
+                                                        keyboardType: index == 3
+                                                            ? TextInputType
+                                                                .phone
+                                                            : TextInputType
+                                                                .emailAddress,
+                                                        onChanged: (text) {
+                                                          if (index == 3) {
+                                                            signupParamerts[
+                                                                    index] =
+                                                                "0" + text;
+                                                          } else {
+                                                            signupParamerts[
+                                                                index] = text;
+                                                          }
+                                                        },
+                                                        password: index == 1 ||
+                                                            index == 2,
+                                                      ),
+                                                    )),
                                                 SizedBox(
                                                   width: 5,
                                                 ),
-                                                index == 3 ? Expanded(
-                                                    flex: 0,
-                                                    child: SizedBox(
-                                                      width: 30,
-                                                      child: Container(
-                                                        width: double.infinity,
-                                                        height: double.infinity,
-                                                        child: Center(
-                                                            child: ColoredText(
-                                                          "+ 98",
-                                                          textColor:
-                                                              Colors.black45,
-                                                          textSize: 10,
-                                                          textDirection:
-                                                              TextDirection.ltr,
-                                                        )),
-                                                        decoration: BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(8),
-                                                            border: Border.all(
-                                                                color: orange,
-                                                                width: 1)),
-                                                      ),
-                                                    )) : Container(),
+                                                index == 3
+                                                    ? Expanded(
+                                                        flex: 0,
+                                                        child: SizedBox(
+                                                          width: 30,
+                                                          child: Container(
+                                                            width:
+                                                                double.infinity,
+                                                            height:
+                                                                double.infinity,
+                                                            child: Center(
+                                                                child:
+                                                                    ColoredText(
+                                                              "+ 98",
+                                                              textColor: Colors
+                                                                  .black45,
+                                                              textSize: 10,
+                                                              textDirection:
+                                                                  TextDirection
+                                                                      .ltr,
+                                                            )),
+                                                            decoration: BoxDecoration(
+                                                                color: Colors
+                                                                    .white,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            8),
+                                                                border: Border.all(
+                                                                    color:
+                                                                        orange,
+                                                                    width: 1)),
+                                                          ),
+                                                        ))
+                                                    : Container(),
                                               ],
                                             ),
                                           )))),
 
                         //login button
+                        const SizedBox(height: 10,),
                         InkWell(
                           onTap: () {
+                            if(!_controller.isAgreed()){
+                              return;
+                            }
                             if (signupParamerts[1] == signupParamerts[2] &&
                                 signupParamerts[0].toString().isNotEmpty &&
                                 signupParamerts[3].toString().isNotEmpty) {
@@ -188,19 +262,24 @@ class SignupScreen extends StatelessWidget {
                                   signupParamerts[4]);
                             } else {
                               if (signupParamerts[1] != signupParamerts[2]) {
-                                ColoredSnack(title: "رمز عبور با تکرار رمز عبور یکسان نیست",type: SnackType.ERROR);
+                                ColoredSnack(
+                                    title:
+                                        "رمز عبور با تکرار رمز عبور یکسان نیست",
+                                    type: SnackType.ERROR);
                               } else {
-                                ColoredSnack(title: "لطفا تمام فیلد ها را پر کنید",type: SnackType.WARNING);
+                                ColoredSnack(
+                                    title: "لطفا تمام فیلد ها را پر کنید",
+                                    type: SnackType.WARNING);
                               }
                             }
                           },
-                          child: Container(
+                          child: Obx(()=> Container(
                             width: Get.width,
                             height: Get.height / 26,
                             margin:
-                                EdgeInsets.symmetric(vertical: Get.height / 60),
+                            EdgeInsets.symmetric(vertical: Get.height / 60),
                             decoration: BoxDecoration(
-                                color: orange,
+                                color: _controller.isAgreed() ? orange : Colors.grey,
                                 borderRadius: BorderRadius.circular(11)),
                             child: const Center(
                               child: Text(
@@ -211,7 +290,7 @@ class SignupScreen extends StatelessWidget {
                                     color: Color(0xffffffff)),
                               ),
                             ),
-                          ),
+                          )),
                         ),
 
                         // login with gmail button
@@ -262,4 +341,17 @@ class SignupScreen extends StatelessWidget {
       ),
     );
   }
+
+  titleText(text){
+    return ColoredText(text,textSize: 18,textAlign: TextAlign.right,textDirection: TextDirection.rtl);
+  }
+
+  middleText(text){
+    return ColoredText(text,textColor: Colors.black87,textSize: 14,textAlign: TextAlign.right,textDirection: TextDirection.rtl);
+  }
+
+  descriptionText(text){
+    return ColoredText(text,textSize: 12,textColor: Colors.black54,textAlign: TextAlign.right,textDirection: TextDirection.rtl,);
+  }
+
 }

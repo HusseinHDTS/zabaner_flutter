@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import '../colors.dart';
 
 Widget customCheckBox(double width, double height, String text,
-    void Function(bool) onData, bool check) {
-  var checked = true.obs;
+    void Function(bool) onData, bool check,{Widget? content}) {
+  var checked = check.obs;
   checked.listen(onData);
 
   return InkWell(
@@ -15,7 +15,7 @@ Widget customCheckBox(double width, double height, String text,
     },
     child: Row(
       children: [
-        Obx(() => Container(
+        Flexible(flex:0,child: Obx(() => Container(
             width: width,
             height: height,
             decoration: BoxDecoration(
@@ -24,15 +24,19 @@ Widget customCheckBox(double width, double height, String text,
                 color: checked.value ? orange : Colors.white),
             child: checked.value
                 ? const Icon(
-                    Icons.done_rounded,
-                    color: Color(0xffD9820A),
-                    size: 16,
-                  )
-                : const SizedBox())),
-        Text(
-          text,
-          style: const TextStyle(
-              fontSize: 10, color: Color(0xff9F9F9F), fontFamily: "Yekan"),
+              Icons.done_rounded,
+              color: Color(0xffD9820A),
+              size: 16,
+            )
+                : const SizedBox())),),
+        const SizedBox(width: 4,),
+        Flexible(
+          flex: 1,
+          child: Container(width: double.infinity,child: content ?? Text(
+            text,
+            style: const TextStyle(
+                fontSize: 10, color: Color(0xff9F9F9F), fontFamily: "Yekan"),
+          ),),
         )
       ],
     ),

@@ -22,6 +22,8 @@ class PodcastDetailController extends GetxController with StateMixin {
           faTitle: "faTitle",
           title: "title",
           type: "type",
+          subtitle: "subtitleString",
+          subtitleFa: "subtitleStringFa",
           imagePath: "imagePath",
           paragraphs: [],
           podcastPath: "podcastPath")

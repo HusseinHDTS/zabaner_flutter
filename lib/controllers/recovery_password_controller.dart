@@ -14,6 +14,7 @@ class RecoveryPasswordController extends GetConnect {
     var _request = mobail.isPhoneNumber
         ? await post(forgotPasswordUrl, {'mobile': mobail})
         : await post(forgotPasswordUrl, {'email': mobail});
+    debugPrint("dsadlklaskldks : " + _request.bodyString.toString());
     if (_request.statusCode == 201) {
       Get.back();
       Get.to(() => ValidateResetPasswordCode(
@@ -21,8 +22,8 @@ class RecoveryPasswordController extends GetConnect {
             phoneNumber: mobail,
           ));
     } else {
+      Get.back();
       if(_request.body == null ){
-        Get.back();
         ColoredSnack(title: "خطا هنگام ارسال کد",type: SnackType.ERROR);
         return;
       }

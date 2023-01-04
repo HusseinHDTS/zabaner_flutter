@@ -4,11 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/main.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/validate_reset_password_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 
 class SignupController extends GetConnect {
   var error = false.obs;
+  var _isAgreed = false.obs;
+
+
+  void setAgreed(bool agreed){
+    _isAgreed.value = agreed;
+  }
+
+  bool isAgreed(){
+    return _isAgreed.value;
+  }
 
   @override
   void onInit() async {
@@ -20,9 +31,7 @@ class SignupController extends GetConnect {
   Future<void> signup(
       String username, String password, String mobile, String? email) async {
     allowAutoSignedCert = true;
-    // final fcmToken = await FirebaseMessaging.instance.getToken();
-    // debugPrint(fcmToken);
-    Get.defaultDialog(title: "لطفا صبر کنید",content: CircularProgressIndicator());
+    loadingDialog("لطفا صبر کنید");
     String? token = fcmToken;
     var _response = email!.isNotEmpty
         ? await post(signupUrl, {

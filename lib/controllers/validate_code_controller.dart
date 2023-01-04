@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:timer_count_down/timer_controller.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/main_screen.dart';
+import 'package:zabaner/widgets/colored_snack.dart';
 
 class ValidateController extends GetConnect {
   final GetStorage _getStorage = GetStorage();
@@ -26,7 +28,7 @@ class ValidateController extends GetConnect {
 
 
   Future<void> validateSignup(String phoneNumber, String code) async {
-    Get.defaultDialog(title: "لطفا صبر کنید",content: CircularProgressIndicator());
+    loadingDialog("لطفا صبر کنید");
     var _request =
         await post(validateCodeUrl, {"mobile": phoneNumber, "code": code});
     Get.back();
@@ -39,6 +41,9 @@ class ValidateController extends GetConnect {
       try{
       _getStorage.write('token', _request.body['accessToken'].toString());
       }catch(e){e.printError();}
+    }else{
+      ColoredSnack(title: "کد وارد شده صحیح نمی‌باشد",type: SnackType.ERROR);
     }
+
   }
 }

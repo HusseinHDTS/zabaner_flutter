@@ -98,7 +98,7 @@ class ProfileController extends GetxController with StateMixin {
           print(responseString);
         } catch(e){}
       } else {
-        ColoredSnack(title: "سایز عکس شما باید زیر 10 مگابایت باشد!",type: SnackType.ERROR);
+        ColoredSnack(title: "سایز عکس شما باید زیر 4 مگابایت باشد!",type: SnackType.ERROR);
       }
     }catch(e){e.printError();}
   }

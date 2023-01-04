@@ -5,10 +5,12 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/controllers/tabbar_item_controller.dart';
 import 'package:zabaner/models/tabbar_item.dart';
 import 'package:zabaner/models/level.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -32,14 +34,8 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
   @override
   void initState() {
     super.initState();
-    controller.customeInit();
-    if (item.video.substring(item.video.lastIndexOf(".") + 1) == "mp4") {
-      controller.download(item.video, item.id, item.title);
-    } else {
-      Get.back();
-      ColoredSnack(
-          title: "ویدیویی برای این بخش وجود ندارد", type: SnackType.ERROR);
-    }
+    controller.customeInit(item);
+
   }
 
   @override
@@ -79,7 +75,7 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
             body: Directionality(
               textDirection: TextDirection.ltr,
               child: Column(children: [
-                Expanded(flex:0,child: Container(margin:EdgeInsets.all(8),child: AspectRatio(aspectRatio: 16/9,child: Obx(()=> controller.videoInitialized.isTrue ? Chewie(controller: controller.chewieController) : Container() ),),)),
+                Expanded(flex:0,child: Container(margin:EdgeInsets.all(8),child: AspectRatio(aspectRatio: 16/9,child: Obx(()=> controller.videoInitialized.isTrue ? ClipRRect(borderRadius:BorderRadius.circular(16),child: Chewie(controller: controller.chewieController)) : Container() ),),)),
                 Expanded(flex: 1,child: Container(height: double.infinity,),),
                 Expanded(flex:0,
                   child: Obx(() =>
@@ -208,18 +204,18 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
                                     Obx(() =>
                                         InkWell(
                                             onTap: () {
-                                                if (!controller.isPlaying
-                                                    .value) {
-                                                  controller
-                                                      .chewieController
-                                                      .play();
-                                                } else {
-                                                  controller
-                                                      .chewieController
-                                                      .pause();
-                                                  controller.isPlaying
-                                                      .value = false;
-                                                }
+                                              if (!controller.isPlaying
+                                                  .value) {
+                                                controller
+                                                    .chewieController
+                                                    .play();
+                                              } else {
+                                                controller
+                                                    .chewieController
+                                                    .pause();
+                                                controller.isPlaying
+                                                    .value = false;
+                                              }
                                             },
                                             child: Icon(
                                                 controller.isPlaying.value

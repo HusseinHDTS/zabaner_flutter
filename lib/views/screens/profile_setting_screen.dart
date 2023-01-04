@@ -337,11 +337,11 @@ class ProfileSetting extends StatelessWidget {
           // Version Text
           Padding(
             padding: EdgeInsets.only(bottom: Get.height / 50),
-            child: const Text(
-              "Version 5.2.1",
-              style: TextStyle(
+            child: Obx(()=>Text(
+              "Version ${_controller.version.value}",
+              style: const TextStyle(
                   fontFamily: "Arial", fontSize: 11, color: Color(0xffC2C2C2)),
-            ),
+            )),
           ),
         ],
       ),

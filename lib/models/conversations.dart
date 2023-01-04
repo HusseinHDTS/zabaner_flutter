@@ -14,6 +14,7 @@ class Conversation {
   Conversation({
     required  this.id,
     required  this.description,
+    required  this.image,
     required  this.createAt,
     required  this.type,
     required  this.forS,
@@ -21,15 +22,22 @@ class Conversation {
 
   final String id;
   final String description;
-  final String createAt;
+  String image;
+  String createAt;
   String type;
   final String forS;
 
   factory Conversation.fromJson(Map<String, dynamic> json){
+    String _image = json["imagePath"] ?? "";
+    String imagePath = "";
+    if(_image.toString().trim().isNotEmpty){
+      imagePath = getUrl(_image);
+    }
     return Conversation(
       id: json["_id"],
       description: json["description"] ?? "",
-      createAt: json["createAt"] ?? "",
+      createAt: json["jalaliCreatedAt"] ?? "",
+      image: imagePath,
       type: json["type"] ?? "",
       forS: json["forS"] ?? "",
     );
@@ -38,7 +46,8 @@ class Conversation {
   Map<String, dynamic> toJson() => {
     "_id": id,
     "description": description,
-    "createAt": createAt,
+    "jalaliCreatedAt": createAt,
+    "image": image,
     "type": type,
     "forS": forS,
   };

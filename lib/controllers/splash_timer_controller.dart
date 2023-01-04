@@ -12,6 +12,7 @@ import 'package:zabaner/models/app_versions.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
+import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
 class SplashScreenTimer extends GetxController {
@@ -23,17 +24,29 @@ class SplashScreenTimer extends GetxController {
 
   var starting = false.obs;
   var currentAppVersion = "".obs;
+  var currentStatus = "".obs;
+  var currentLoadPercent = 0.0.obs;
   @override
   void onInit() async {
-    // TODO: implement onInit
     super.onInit();
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String appName = packageInfo.appName;
-    String packageName = packageInfo.packageName;
-    String version = packageInfo.version;
-    currentAppVersion.value = version;
-    String buildNumber = packageInfo.buildNumber;
+
     bool hasUpdate = false;
+    String version = "";
+    currentStatus.value="درحال گرفتن اطلاعات گوشی ...";
+    currentLoadPercent.value = 0.2;
+    try {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String appName = packageInfo.appName;
+      String packageName = packageInfo.packageName;
+      version = packageInfo.version;
+      currentAppVersion.value = version;
+      String buildNumber = packageInfo.buildNumber;
+    }catch(e){
+      // ColoredSnack(title: e.toString());
+      e.printError();
+    }
+    currentLoadPercent.value = 0.4;
+    currentStatus.value="درحال بررسی نسخه‌ی جدید ...";
     var request = await _getConnect.get(getUpdateVersions);
     var cvv;
     if (request.statusCode == 200) {
@@ -49,19 +62,35 @@ class SplashScreenTimer extends GetxController {
         }
       }
     }
+    currentLoadPercent.value = 0.6;
     if (!hasUpdate) {
+      try {
+        if(BUILD_MODE.toLowerCase() == "bazaar"){
+          currentStatus.value="درحال برسی اتصال به بازار ...";
+          await connectToBazaar();
+        }
+      }catch(e){
+        // ColoredSnack(title: e.toString());
+        e.printError();
+      }
       startApp();
     }else{
       showUpdateDialog(cvv);
     }
+
   }
 
   void startApp() {
+    currentLoadPercent.value = 0.8;
+    currentStatus.value="درحال اجرا ...";
     starting = true.obs;
     try {
-      Future.delayed(const Duration(milliseconds: 2900), () {
-        Get.offAll(() => LoginScreen());
-        dispose();
+      Future.delayed(const Duration(milliseconds: 2300), () {
+        currentLoadPercent.value = 1.0;
+        Future.delayed(const Duration(milliseconds: 600), () {
+          Get.offAll(() => LoginScreen());
+          dispose();
+        });
       });
     } catch (e) {
       debugPrint(e.toString());

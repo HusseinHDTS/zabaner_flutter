@@ -95,6 +95,8 @@ class LoginScreen extends StatelessWidget {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             SizedBox(
+                                              width: Get.width,
+                                              height: Get.height / 23,
                                               child: Obx(() => CustomTextInput(
                                                     hintText: textInputDetail[0]
                                                         [0],
@@ -106,8 +108,6 @@ class LoginScreen extends StatelessWidget {
                                                       username = text;
                                                     },
                                                   )),
-                                              width: Get.width,
-                                              height: Get.height / 23,
                                             ),
                                             SizedBox(
                                               width: Get.width,

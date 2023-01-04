@@ -14,6 +14,8 @@ class PodcastItemModel {
     required this.id,
     required this.faTitle,
     required this.title,
+    required this.subtitle,
+    required this.subtitleFa,
     required this.type,
     required this.imagePath,
     required this.paragraphs,
@@ -23,6 +25,8 @@ class PodcastItemModel {
   final String id;
   final String faTitle;
   final String title;
+  final String subtitle;
+  final String subtitleFa;
   final String type;
   final String imagePath;
   final List<Paragraph> paragraphs;
@@ -35,6 +39,8 @@ class PodcastItemModel {
       id: json["_id"],
       faTitle: json["faTitle"],
       title: json["title"],
+      subtitle: json["subtitleString"]?? "",
+      subtitleFa: json["subtitleStringFa"]??"",
       type: json["type"],
       imagePath: imagePath,
       paragraphs: List<Paragraph>.from(

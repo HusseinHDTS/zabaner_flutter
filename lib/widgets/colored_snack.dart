@@ -54,8 +54,8 @@ class ColoredSnack {
     Get.rawSnackbar(
       backgroundColor: snackColor,
       duration: duration,
-      titleText: ColoredText(title!,textColor: titleColor,textSize: 14,),
-      messageText: ColoredText(description!, textColor: descriptionColor,textSize: 9,),
+      titleText: ColoredText(title!,textColor: titleColor,textSize: 14,textDirection: TextDirection.rtl,),
+      messageText: ColoredText(description!, textColor: descriptionColor,textSize: 9,textDirection: TextDirection.rtl),
       borderRadius: borderRadius!,
       margin: margin!,
       padding: padding!,

@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -41,9 +41,11 @@ dependencies:
   flutter_sound_lite: ^8.4.2
   image_picker: ^0.8.4+4
   flutter_intro: ^3.0.2
-  open_file: ^3.2.1
+#  open_file: ^3.2.1
   get_storage: ^2.0.3
+  simple_progress_indicators: ^0.2.0
   srt_parser: ^1.0.1
+  subtitle_wrapper_package: ^2.1.0
   catcher: ^0.6.9
   flutter_chat_bubble: ^2.0.0
   pull_to_refresh: ^2.0.0
@@ -59,6 +61,7 @@ dependencies:
   flutter_file_downloader: ^1.1.0+1
   wakelock: ^0.6.2
   package_info_plus: ^1.0.6
+  pinch_zoom: ^1.0.0
   lottie: ^1.4.1
   percent_indicator: ^4.0.0
   firebase_messaging: ^14.1.4
@@ -108,6 +111,21 @@ flutter:
     - family: Yekan
       fonts:
         - asset: assets/fonts/Yekan.ttf
+    - family: Nazanin
+      fonts:
+        - asset: assets/fonts/nazanin.ttf
+    - family: Calibri
+      fonts:
+        - asset: assets/fonts/calibri.ttf
+    - family: Neue_MD
+      fonts:
+        - asset: assets/fonts/helvetica_neue_medium.ttf
+    - family: Iransans_Fa_Bold
+      fonts:
+        - asset: assets/fonts/iransans_fa_number_bold.ttf
+    - family: Iransans_Fa_MD
+      fonts:
+        - asset: assets/fonts/iransans_fa_number_medium.ttf
     #       - asset: fonts/Schyler-Italic.ttf
     #         style: italic
     - family: Aria;

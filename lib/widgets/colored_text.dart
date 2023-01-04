@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ColoredText extends StatelessWidget {
-  String? text;
+  String? text,fontFamily;
   double? textSize;
   int? maxLines;
   Color? textColor;
@@ -18,6 +18,7 @@ class ColoredText extends StatelessWidget {
       this.textColor,
       this.textSize,
       this.textAlign,
+      this.fontFamily,
       this.fontWeight,
       this.defaultFont,
       this.selectable,
@@ -41,6 +42,7 @@ class ColoredText extends StatelessWidget {
     }else{
       textStyle = TextStyle(
         color: textColor,
+        fontFamily: fontFamily,
         fontSize: textSize,
         fontWeight: fontWeight,
         backgroundColor: backgroundColor,

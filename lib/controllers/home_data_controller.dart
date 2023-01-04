@@ -60,19 +60,25 @@ class HomeDataController extends GetxController with StateMixin {
             'accept': 'application/json',
             'Authorization': 'Bearer ${_getStorage.read('token')}'
           });
+          var request1 =
+              await _getConnect.post(updateLastSeenAt, {}, headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer ${_getStorage.read('token')}'
+          });
 
           print(request.body);
         }
       } catch (e) {}
     }
   }
-  
+
   var dataError = false.obs;
 
   void getData(bool isGuest) async {
     isDataLoaded.value = false;
     dataError.value = false;
     _getConnect.allowAutoSignedCert = true;
+    // connectToBazaar();
     if (!isGuest) {
       print(_getStorage.read('token'));
       var request = await _getConnect.get(homeDataUrl, headers: {
@@ -83,9 +89,11 @@ class HomeDataController extends GetxController with StateMixin {
 
       if (request.statusCode == 200) {
         debugPrint(request.bodyString.toString());
-        try{
+        try {
           homeModel = homeModelFromJson(request.bodyString ?? "");
-        }catch(e){e.printError();}
+        } catch (e) {
+          e.printError();
+        }
 
         if (request.body['user']['avatarPath'] == null) {
           _getStorage.write('profile_image',
@@ -111,6 +119,7 @@ class HomeDataController extends GetxController with StateMixin {
         Get.offAll(LoginScreen());
       } else {
         dataError.value = true;
+
         ///ERROR
       }
     } else {
