@@ -93,7 +93,6 @@ class SplashScreenTimer extends GetxController {
         });
       });
     } catch (e) {
-      debugPrint(e.toString());
     }
   }
 

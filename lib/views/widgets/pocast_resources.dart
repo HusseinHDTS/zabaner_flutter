@@ -5,6 +5,7 @@ import 'package:zabaner/models/resources_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/views/screens/podcast_list_screen.dart';
 import 'package:zabaner/views/screens/podcast_play_screen.dart';
+import 'package:zabaner/views/screens/podcast_sub_category_screen.dart';
 
 class PocastResources extends StatelessWidget {
   const PocastResources(
@@ -64,7 +65,8 @@ class PocastResources extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: (){
-                        Get.to(() => PodcastListScreen(filter:categories[index]['title'] ,));
+                        // Get.to(() => PodcastListScreen(filter:categories[index]['title'] ,));
+                        Get.to(() => PodSubCategoryScreen(filter:categories[index]['title'] ,));
                       },
                       child:Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

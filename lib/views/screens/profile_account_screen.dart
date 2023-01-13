@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:zabaner/controllers/profile_controller.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/user_subs_model.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/widgets/custom_text_input_profile.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
@@ -43,75 +44,73 @@ class ProfileAccount extends StatelessWidget {
               height: 4,
             ),
 
-            _controller.obx((status) {
-              return Card(
-                color: const Color(0xffF9F9F9),
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(4),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: Get.width / 6.5,
-                        backgroundImage:
-                            const AssetImage("assets/images/subscribe.png"),
+            Obx(()=>_controller.isDataLoaded.isTrue ? Card(
+              color: const Color(0xffF9F9F9),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(4),
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: Get.width / 6.5,
+                      backgroundImage:
+                      const AssetImage("assets/images/subscribe.png"),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ColoredText("اشتراک های موجود : "),
+                          ColoredText(_controller.profileInformation.subscribes
+                              .toString() ==
+                              ""
+                              ? "بدون اشتراک"
+                              : _controller.profileInformation.subscribes
+                              .toString()),
+                        ],
                       ),
-                      SizedBox(
-                        height: 10,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ColoredText("تاریخ شروع اشتراک : "),
+                          ColoredText(_controller
+                              .profileInformation.startSubJalali
+                              .toString()),
+                        ],
                       ),
-                      Container(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ColoredText("اشتراک های موجود : "),
-                            ColoredText(_controller.profileInformation.subscribes
-                                        .toString() ==
-                                    ""
-                                ? "بدون اشتراک"
-                                : _controller.profileInformation.subscribes
-                                    .toString()),
-                          ],
-                        ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ColoredText("تاریخ پایان اشتراک : "),
+                          ColoredText(_controller
+                              .profileInformation.endSubJalali
+                              .toString()),
+                        ],
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ColoredText("تاریخ شروع اشتراک : "),
-                            ColoredText(_controller
-                                .profileInformation.startSubJalali
-                                .toString()),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ColoredText("تاریخ پایان اشتراک : "),
-                            ColoredText(_controller
-                                .profileInformation.endSubJalali
-                                .toString()),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            }),
+              ),
+            ) : Loading()),
             Obx(()=>ListView.builder(
                 itemCount: _controller.userSubModel.length,
                 shrinkWrap: true,
@@ -158,13 +157,13 @@ class ProfileAccount extends StatelessWidget {
               ),
             ),
 
-            _controller.obx((status) {
+            Obx((){
               List information = [
                 _controller.profileInformation.firstName,
                 _controller.profileInformation.lastName,
                 _controller.profileInformation.bDay.toString()
               ];
-              return Card(
+              return _controller.isDataLoaded.isTrue ? Card(
                 color: const Color(0xffF9F9F9),
                 elevation: 2,
                 shape: RoundedRectangleBorder(
@@ -184,7 +183,7 @@ class ProfileAccount extends StatelessWidget {
                           child: CircleAvatar(
                             radius: Get.width / 6.5,
                             backgroundImage: NetworkImage(_getStorage
-                                    .read('profile_image') ??
+                                .read('profile_image') ??
                                 "https://htmlcolorcodes.com/assets/images/colors/bright-blue-color-solid-background-1920x1080.png"),
                           ),
                         ),
@@ -258,7 +257,7 @@ class ProfileAccount extends StatelessWidget {
                               child: const Text(
                                 "ذخیره تغییرات",
                                 style:
-                                    TextStyle(fontFamily: "Yekan", fontSize: 12),
+                                TextStyle(fontFamily: "Yekan", fontSize: 12),
                               ),
                               onPressed: () {
                                 _controller.updateProfile(
@@ -272,7 +271,7 @@ class ProfileAccount extends StatelessWidget {
                                   shape: MaterialStateProperty.all(
                                       RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(10))),
+                                          BorderRadius.circular(10))),
                                   backgroundColor: MaterialStateProperty.all(
                                       const Color(0xffFFC200))),
                             )),
@@ -280,7 +279,7 @@ class ProfileAccount extends StatelessWidget {
                     ),
                   ),
                 ),
-              );
+              ) : Loading();
             }),
           ],
         ),

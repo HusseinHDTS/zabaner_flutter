@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zabaner/controllers/login_controller.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/main_screen.dart';
 import 'package:zabaner/views/screens/recovery_password.dart';
@@ -344,7 +345,7 @@ class LoginScreen extends StatelessWidget {
                             )),
                       ],
                     ))
-                : const Center(child: CircularProgressIndicator()),
+                :  Center(child: Loading()),
           ),
         ));
   }

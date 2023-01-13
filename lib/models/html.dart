@@ -96,7 +96,6 @@ InlineSpan? _parseElement(Element element, TextStyle style, bool styleChanged) {
       }
       break;
     default:
-      print("Unhandled tag: $tag");
       break;
   }
 

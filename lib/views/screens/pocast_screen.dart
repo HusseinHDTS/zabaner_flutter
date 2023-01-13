@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:zabaner/controllers/podcast_detail_controller.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/podcast_play_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
 
@@ -105,79 +106,79 @@ class PodcastScreen extends StatelessWidget {
                     SizedBox(
                       height: Get.height / 30,
                     ),
-                    controller.obx((state) => Expanded(
-                          child: Column(
-                            children: [
-                              // Image and Title
-                              SizedBox(
-                                width: Get.width,
-                                height: Get.height / 3.7,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                    Obx(()=>controller.isDataLoaded.isTrue ? Expanded(
+                      child: Column(
+                        children: [
+                          // Image and Title
+                          SizedBox(
+                            width: Get.width,
+                            height: Get.height / 3.7,
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            // Image
-                                            SizedBox(
-                                              width: Get.width / 12,
-                                              height: Get.height / 21,
-                                              child: Image.asset(
-                                                "assets/images/podcast.png",
-                                                fit: BoxFit.fill,
-                                              ),
-                                            ),
-
-                                            // English Title
-                                            SizedBox(
-                                              width: Get.width / 2.5,
-                                              height: Get.height / 24,
-                                              child: Text(
-                                                "   ${controller.podcast.title}",
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                    fontFamily: "Yekan",
-                                                    fontSize: 16),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                        // Image
                                         SizedBox(
-                                          width: Get.width / 2.1,
+                                          width: Get.width / 12,
+                                          height: Get.height / 21,
+                                          child: Image.asset(
+                                            "assets/images/podcast.png",
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+
+                                        // English Title
+                                        SizedBox(
+                                          width: Get.width / 2.5,
+                                          height: Get.height / 24,
                                           child: Text(
-                                            "\n" + controller.podcast.faTitle,
+                                            "   ${controller.podcast.title}",
                                             overflow: TextOverflow.ellipsis,
-                                            textDirection: TextDirection.rtl,
                                             style: const TextStyle(
                                                 fontFamily: "Yekan",
-                                                fontWeight: FontWeight.w400),
+                                                fontSize: 16),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    Container(
-                                      width: Get.width / 2.3,
-                                      height: Get.height / 4,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: DecorationImage(
-                                              image: CachedNetworkImageProvider(
-                                                  controller.podcast.imagePath),
-                                              fit: BoxFit.fill)),
-                                    )
+                                    SizedBox(
+                                      width: Get.width / 2.1,
+                                      child: Text(
+                                        "\n" + controller.podcast.faTitle,
+                                        overflow: TextOverflow.ellipsis,
+                                        textDirection: TextDirection.rtl,
+                                        style: const TextStyle(
+                                            fontFamily: "Yekan",
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
+                                Container(
+                                  width: Get.width / 2.3,
+                                  height: Get.height / 4,
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                      BorderRadius.circular(20),
+                                      image: DecorationImage(
+                                          image: CachedNetworkImageProvider(
+                                              controller.podcast.imagePath),
+                                          fit: BoxFit.fill)),
+                                )
+                              ],
+                            ),
+                          ),
 
-                              // Episodes
-                              Expanded(
-                                  child: ListView.builder(
+                          // Episodes
+                          Expanded(
+                              child: ListView.builder(
                                 itemCount: controller.podcast.items.length,
                                 itemBuilder: (context, index) => Container(
                                   margin: EdgeInsets.only(top: Get.height / 50),
@@ -192,7 +193,7 @@ class PodcastScreen extends StatelessWidget {
                                         horizontal: Get.width / 18),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                       children: [
                                         // play audio
                                         InkWell(
@@ -200,7 +201,7 @@ class PodcastScreen extends StatelessWidget {
                                                 "assets/images/play.png"),
                                             onTap: () {
                                               Get.to(
-                                                  // context, '/playPodcast',
+                                                // context, '/playPodcast',
                                                   PodcastPlay(
                                                       isGuest: isGuest,
                                                       id: id +
@@ -226,9 +227,9 @@ class PodcastScreen extends StatelessWidget {
                                   ),
                                 ),
                               )),
-                            ],
-                          ),
-                        ))
+                        ],
+                      ),
+                    ) : Loading())
                   ]),
                 ))));
   }

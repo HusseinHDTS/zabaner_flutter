@@ -23,6 +23,7 @@ const getAllChildTabCategories = "$baseUrl/api/v1/child-mc-categories";
 const getAllAdultTabCategories = "$baseUrl/api/v1/adult-mc-categories";
 const getAllNationalTabCategories = "$baseUrl/api/v1/national-mc-categories";
 const newsCategoryContentUrl = "$baseUrl/api/v1/news";
+const getPodcastSubCategories = "$baseUrl/api/v1/podcast-sub-categories";
 const resourcesUrl = "$baseUrl/api/v1/resources/home";
 const profileInformationUrl = "$baseUrl/api/v1/user";
 const paymentCheck = "$baseUrl/api/v1/user/payment";

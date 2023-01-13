@@ -106,7 +106,8 @@ class SubscribeController extends GetxController {
       result = await FlutterPoolakey.subscribe(pId,payload: "HDTS");
     }catch(e){
       // ColoredSnack(title: "خطا از سمت بازار!",type: SnackType.ERROR,description: e.toString());
-      e.printError();}
+      e.printError();
+    }
     return result;
   }
   Future<PurchaseInfo?> bazaarPayTest()async{

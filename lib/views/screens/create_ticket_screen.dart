@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/controllers/create_ticket_controller.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/widgets/serach_text_input.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -123,7 +124,7 @@ class _CreateTicketScreen extends State<CreateTicketScreen> {
                           return Image(
                             image: item.data!,
                           );
-                        }) : Container(child: Center(child: CircularProgressIndicator(),),)),
+                        }) : Container(child: Center(child: Loading(),),)),
                   ),
                 ),
               ),

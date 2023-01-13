@@ -46,7 +46,7 @@ class ChapterListScreen extends StatelessWidget {
                   ),
                 ),
               )),
-          body: _controller.obx((status) => Stack(
+          body: Obx(()=>_controller.isDataLoaded.isTrue ? Stack(
             children: [
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: Get.width / 40),
@@ -215,7 +215,7 @@ class ChapterListScreen extends StatelessWidget {
                     ])),
                   )),
             ],
-          ))),
+          ) : Loading())),
     );
   }
 }

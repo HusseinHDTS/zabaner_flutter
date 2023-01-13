@@ -5,11 +5,12 @@ import 'package:zabaner/models/book_chapter_model.dart';
 import 'package:zabaner/models/book_list_model.dart';
 import 'package:zabaner/models/urls.dart';
 
-class BookListController extends GetxController with StateMixin {
+class BookListController extends GetxController {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   late final BookChapterModel bookModel;
   RefreshController refreshController = RefreshController();
   var errorData = false.obs;
+  var isDataLoaded = false.obs;
   String? filter;
   BookListController({this.filter});
 
@@ -35,6 +36,7 @@ class BookListController extends GetxController with StateMixin {
   }
   late final List<BookListModel> model;
   Future<void> getData() async {
+    isDataLoaded.value = false;
     errorData.value = false;
     final _request = await _getConnect.get(getBookDetailUrl);
     if (_request.statusCode == 200) {
@@ -44,7 +46,7 @@ class BookListController extends GetxController with StateMixin {
         filter ??= "";
         return element.category.trim().toString() != filter!.trim().toString();
       }));
-      change(null, status: RxStatus.success());
+      isDataLoaded.value = true;
     } else {
       errorData.value = true;
       // getData();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/controllers/issue_controller.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
@@ -127,11 +128,11 @@ class _IssuesScreen extends State<IssuesScreen> {
                             );
                           },
                         )
-                      : const SizedBox(
+                      : SizedBox(
                           width: double.infinity,
                           height: double.infinity,
                           child: Center(
-                            child: CircularProgressIndicator(),
+                            child: Loading(),
                           ),
                         ))),
             ],

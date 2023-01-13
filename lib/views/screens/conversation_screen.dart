@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:zabaner/controllers/conversation_controller.dart';
 import 'package:zabaner/controllers/support_controller.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/full_screen_image.dart';
 import 'package:zabaner/views/widgets/serach_text_input.dart';
@@ -178,8 +179,8 @@ class _ConversationScreenState extends State<ConversationScreen>
                               }
                               return widg;
                             })
-                        : const Center(
-                            child: CircularProgressIndicator(),
+                        : Center(
+                            child: Loading(),
                           )),
                   ),
                 ),

@@ -48,7 +48,7 @@ class BooksListScreen extends StatelessWidget {
                   ),
                 ),
               )),
-          body: _controller.obx((status) => Padding(
+          body: Obx(()=>_controller.isDataLoaded.isTrue ? Padding(
               padding: EdgeInsets.symmetric(horizontal: Get.width / 40),
               child: SmartRefresher(
                 controller: _controller.refreshController,
@@ -182,7 +182,7 @@ class BooksListScreen extends StatelessWidget {
                             );
                           }))
                 ]),
-              )))),
+              )) : Loading())),
     );
   }
 }

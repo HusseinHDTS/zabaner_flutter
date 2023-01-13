@@ -13,7 +13,7 @@ import 'dart:io' as io;
 import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 
-class NewsDetailController extends GetxController with StateMixin {
+class NewsDetailController extends GetxController {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   late NewsItemModel newsDetail;
   final GetStorage _getStorage = GetStorage();
@@ -24,6 +24,7 @@ class NewsDetailController extends GetxController with StateMixin {
   late io.Directory appDoc;
   var seconds = 0;
   var isPlaying = false.obs;
+  var isDataLoaded = false.obs;
   var ind = 0;
   var en = true.obs, fa = true.obs;
   var playingText = "".obs;
@@ -76,7 +77,7 @@ class NewsDetailController extends GetxController with StateMixin {
   void onClose() async {
     // TODO: implement onClose
     super.onClose();
-
+    player.isPlaying ? {} : player.pausePlayer();
     Map times = _getStorage.read('timers') ?? {};
     var lastTimer = times[
             '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ??
@@ -102,17 +103,16 @@ class NewsDetailController extends GetxController with StateMixin {
           (DateTime.now().difference(_dateTime).inSeconds).toInt();
     }
     await _getStorage.write('timers', times);
-    print(_getStorage.read('timers'));
     player.stopPlayer();
     isPlaying.value = false;
   }
 
   Future<void> getData(String id) async {
+    isDataLoaded.value = false;
     var _request = await _getConnect.get(newsDetailUrl + id, headers: {
       'accept': 'application/json',
       'Authorization': 'Bearer ${_getStorage.read('token')}'
     });
-    print(_request.body);
     if (_request.statusCode == 200) {
       newsDetail = newsItemModelFromJson(_request.bodyString ?? "");
       for (var item in newsDetail.paragraphs) {
@@ -128,15 +128,15 @@ class NewsDetailController extends GetxController with StateMixin {
         }
       }
       bookmark.value = newsDetail.bookmark;
-      change(null, status: RxStatus.success());
-      print(_request.body);
+      isDataLoaded.value = true;
     } else if (_request.statusCode == 401) {
       _getStorage.remove('timers');
       _getStorage.remove('token');
       _getStorage.remove('timers');
       Get.offAll(LoginScreen());
     } else {
-      getData(id);
+      //errorData.value = true;
+      // getData(id);
     }
   }
 
@@ -148,7 +148,6 @@ class NewsDetailController extends GetxController with StateMixin {
           'Authorization': 'Bearer ${_getStorage.read('token')}'
         },
         contentType: "application/json");
-    print(_request.body);
     if (_request.statusCode == 201) {
       _request.body['action'] == "created"
           ? bookmark.value = true
@@ -249,7 +248,6 @@ class NewsDetailController extends GetxController with StateMixin {
               onReceiveProgress: (recive, total) {
         downloadingState.value = "downloading";
         downloadingPercent.value = recive / total;
-        print(downloadingPercent);
       });
 
       Get.closeAllSnackbars();

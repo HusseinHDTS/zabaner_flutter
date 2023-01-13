@@ -3,13 +3,14 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/models/book_chapter_model.dart';
 import 'package:zabaner/models/urls.dart';
 
-class ChapterController extends GetxController with StateMixin {
+class ChapterController extends GetxController {
   ChapterController({required this.id, required this.type});
   final String id, type;
   late final BookChapterModel bookModel;
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   RefreshController refreshController = RefreshController();
   var errorData = false.obs;
+  var isDataLoaded = false.obs;
   @override
   void onInit() async{
     // TODO: implement onInit
@@ -40,11 +41,12 @@ class ChapterController extends GetxController with StateMixin {
 
   Future<void> getBookData() async {
     errorData.value = false;
+    isDataLoaded.value = false;
     final _request = await _getConnect.get(getBookDetailUrl + id);
     if (_request.statusCode == 200) {
       refreshController.refreshCompleted();
       bookModel = bookChapterModelFromJson(_request.bodyString ?? "");
-      change(null, status: RxStatus.success());
+      isDataLoaded.value = true;
     } else {
       errorData.value = true;
     }

@@ -137,7 +137,7 @@ class NewsScreen extends StatelessWidget {
                               NationalTab(controller: _searchController),
                             ])
                       : Center(
-                          child: CircularProgressIndicator(),
+                          child: Loading(),
                         ),
                 ),
               ),

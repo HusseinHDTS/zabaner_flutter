@@ -33,7 +33,6 @@ class ValidateController extends GetConnect {
         await post(validateCodeUrl, {"mobile": phoneNumber, "code": code});
     Get.back();
     if (_request.statusCode == 201) {
-      print(_request.body['accessToken'].toString());
       Get.offAll(() => MainScreen(
             isGuest: false,
             firstTime: true,

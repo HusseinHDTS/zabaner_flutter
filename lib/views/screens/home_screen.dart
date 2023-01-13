@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
             child:  Obx(()=> _controller.isDataLoaded.isFalse ? Column(
               children: [
                 Container(height: Get.height / 7,),
-                CircularProgressIndicator(),
+                Loading(),
               ],
             ) : _controller.dataError.isTrue ? Column(
               children: [

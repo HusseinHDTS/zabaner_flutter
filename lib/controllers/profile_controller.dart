@@ -9,13 +9,14 @@ import 'package:zabaner/models/user_subs_model.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 
-class ProfileController extends GetxController with StateMixin {
+class ProfileController extends GetxController {
   ProfileController(this.isGuest);
   final GetConnect _getConnect = GetConnect();
   late ProfileInformation profileInformation;
   var userSubModel = [].obs;
   final GetStorage _getStorage = GetStorage();
   final bool isGuest;
+  var isDataLoaded = false.obs;
 
 
   @override
@@ -28,21 +29,18 @@ class ProfileController extends GetxController with StateMixin {
 
   Future<void> getProfileInformation(bool isGuest) async {
     _getConnect.allowAutoSignedCert = true;
-
+    isDataLoaded.value = false;
     if (!isGuest) {
-      change(null, status: RxStatus.loading());
       final _request = await _getConnect.get(profileInformationUrl, headers: {
         'accept': 'application/json',
         'Authorization': 'Bearer ${_getStorage.read('token')}'
       });
       if (_request.statusCode == 200) {
-        debugPrint("dasdasdasdsadsad : " + _request.bodyString.toString());
         profileInformation = profileInformationFromJson(_request.bodyString ?? "");
-        debugPrint("asdasdasdsadsadasdkjsadkjaskdjkasjdkas : " +  profileInformation.userId);
         var _request2  = await _getConnect.get(
           getSubscribeHistory+"?user_id="+profileInformation.userId,);
         userSubModel.addAll(userSubModelFromJson(_request2.bodyString ?? ""));
-        change(null, status: RxStatus.success());
+        isDataLoaded.value = true;
         _getStorage.write('profile_image', profileInformation.avatarPath);
       } else if (_request.statusCode == 401) {
         _getStorage.remove('timers');
@@ -69,7 +67,7 @@ class ProfileController extends GetxController with StateMixin {
           hasAdultSub: null,
           hasNationalSub: null,
           registerMethod: "Guest");
-      change(null, status: RxStatus.success());
+      isDataLoaded.value = true;
     }
   }
 
@@ -95,7 +93,6 @@ class ProfileController extends GetxController with StateMixin {
           if (response.statusCode == 200) {
             getProfileInformation(isGuest);
           }
-          print(responseString);
         } catch(e){}
       } else {
         ColoredSnack(title: "سایز عکس شما باید زیر 4 مگابایت باشد!",type: SnackType.ERROR);
@@ -114,7 +111,6 @@ class ProfileController extends GetxController with StateMixin {
       'accept': 'application/json',
       'Authorization': 'Bearer ${_getStorage.read('token')}'
     });
-    debugPrint("asdsadasdasdasdmnfbhdsfb : " + _request.bodyString.toString());
     if (_request.statusCode == 200) {
       getProfileInformation(isGuest);
     } else {

@@ -100,31 +100,31 @@ class ResourcesScreen extends StatelessWidget {
                           SizedBox(
                             height: Get.height,
                             width: Get.width,
-                            child: _controller.obx((state) => SmartRefresher(
+                            child:  SmartRefresher(
                               controller: _controller.refreshController,
                               onRefresh: (){
                                 _controller.getResources();
                               },
                               header: const MaterialClassicHeader(),
-                              child: _controller.dataError.isTrue ? ErrorLoading() : ListView(
-                                    children: [
-                                      BookResources(
-                                        isGuest: isGuest,
-                                        categories:  _controller.categories ,
-                                      ),
-                                      _controller.resourcesList.length > 1 ? PocastResources(
-                                          isGuest: isGuest,
-                                          categories: _controller
-                                              .podcastCategories) : Container(),
-                                      _controller.resourcesList.length > 2
-                                          ? VideoResources(
-                                              isGuest: isGuest,
-                                              resource: _controller.resourcesList[2].resources,
-                                              videoCategories: _controller.videoCategories)
-                                          : SizedBox()
-                                    ],
+                              child: _controller.dataError.isTrue ? ErrorLoading() : Obx(()=>_controller.isDataLoaded.isTrue ? ListView(
+                                children: [
+                                  BookResources(
+                                    isGuest: isGuest,
+                                    categories:  _controller.categories ,
                                   ),
-                            )),
+                                  _controller.resourcesList.length > 1 ? PocastResources(
+                                      isGuest: isGuest,
+                                      categories: _controller
+                                          .podcastCategories) : Container(),
+                                  _controller.resourcesList.length > 2
+                                      ? VideoResources(
+                                      isGuest: isGuest,
+                                      resource: _controller.resourcesList[2].resources,
+                                      videoCategories: _controller.videoCategories)
+                                      : SizedBox()
+                                ],
+                              ) : Loading() ),
+                            ),
                           ),
 
                           /// search items
@@ -170,8 +170,8 @@ class ResourcesScreen extends StatelessWidget {
                                         height: Get.height / 1.5,
                                         width: Get.width,
                                         color: Colors.white,
-                                        child: const Center(
-                                            child: CircularProgressIndicator()),
+                                        child: Center(
+                                            child: Loading()),
                                       );
                                   }
                                   return Container(

@@ -44,7 +44,6 @@ class ConversationController extends GetxController with StateMixin {
           var responseString = String.fromCharCodes(responseData);
           Get.back();
           getData(title);
-          print(responseString);
         } catch(e){}
       } else {
         ColoredSnack(title: "سایز عکس شما باید زیر 4 مگابایت باشد!",type: SnackType.ERROR);
@@ -69,7 +68,6 @@ class ConversationController extends GetxController with StateMixin {
     scrollController.scrollToIndex(conversations.length,preferPosition: AutoScrollPosition.end);
     final _request = await _getConnect.post(sendSupportDescription, bodyRequest);
     b.type = "question";
-    debugPrint("podawodpsodxkdawdq : " + _request.bodyString.toString());
     b.createAt = _request.bodyString.toString();
     conversations[conversations.length-1] = b;
     change(null, status: RxStatus.success());
@@ -82,7 +80,6 @@ class ConversationController extends GetxController with StateMixin {
       "title": title.toString(),
     };
     final _request = await _getConnect.post(getConversationList, bodyRequest);
-    debugPrint("sadsadoauweoisuad : " + _request.bodyString.toString());
     conversations.value = conversationListModelFromJson(_request.bodyString ?? "");
     isDataLoaded.value = true;
     scrollController.scrollToIndex(conversations.length,preferPosition: AutoScrollPosition.end);

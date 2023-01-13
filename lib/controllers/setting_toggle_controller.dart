@@ -59,7 +59,6 @@ class SettingToggle extends GetxController {
             "level": totallSecond.levelNumber(),
             "currentLevelProgress": totallSecond.levelPercent() * 100
           };
-          print(bodyRequest);
 
           var request =
               await _getConnect.post(updateStaticsUrl, bodyRequest, headers: {
@@ -85,7 +84,6 @@ class SettingToggle extends GetxController {
     _getConnect.allowAutoSignedCert = true;
 
     if (!isGuest) {
-      print(getStorage.read('token'));
       var request = await _getConnect.get(homeDataUrl, headers: {
         'accept': 'application/json',
         'Authorization': 'Bearer ${getStorage.read('token')}'

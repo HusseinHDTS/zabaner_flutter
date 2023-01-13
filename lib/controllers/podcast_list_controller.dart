@@ -3,9 +3,10 @@ import 'package:zabaner/models/book_list_model.dart';
 import 'package:zabaner/models/podcast_list_model.dart';
 import 'package:zabaner/models/urls.dart';
 
-class PodcastListController extends GetxController with StateMixin {
+class PodcastListController extends GetxController {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   String? filter;
+  var isDataLoaded = false.obs;
   PodcastListController({this.filter});
 
   @override
@@ -17,6 +18,7 @@ class PodcastListController extends GetxController with StateMixin {
   late final List<PodcastListModel> model;
 
   Future<void> getData() async {
+    isDataLoaded.value = false;
     final _request = await _getConnect.get(getPodcastDetailUrl);
     if (_request.statusCode == 200) {
       model = podcastListModelFromJson(_request.bodyString ?? "").reversed.toList();
@@ -24,7 +26,7 @@ class PodcastListController extends GetxController with StateMixin {
         filter ??= "";
         return element.category.trim().toString() != filter!.trim().toString();
       }));
-      change(null, status: RxStatus.success());
+      isDataLoaded.value = true;
     } else {
       getData();
     }

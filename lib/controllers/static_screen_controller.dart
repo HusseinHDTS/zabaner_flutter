@@ -32,7 +32,6 @@ class StaticController extends GetxController with StateMixin {
         'Authorization': 'Bearer ${_getStorage.read('token')}'
       },
     );
-    print(_request.body);
     if (_request.statusCode == 200) {
       sumDuration = 0;
       summaryTime = staticsModelFromJson(_request.bodyString ?? "");

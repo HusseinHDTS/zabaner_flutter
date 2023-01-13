@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:srt_parser/srt_parser.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:zabaner/models/html.dart';
 import 'package:zabaner/models/sentence_model.dart';
 import 'package:zabaner/views/colors.dart';
+import 'package:path_provider/path_provider.dart' as path;
 import 'package:zabaner/widgets/colored_text.dart';
 import 'package:html/parser.dart' as parser;
 
@@ -15,6 +17,13 @@ import 'package:html/parser.dart' as parser;
 final BUILD_MODE = "BAZAAR";
 // final BUILD_MODE = "OTHER";
 
+int lvl1 = 1680;
+int lvl2 = 3600;
+int lvl3 = 7200;
+int lvl4 = 4800;
+int lvl5 = lvl4;
+int lvl6 = lvl4;
+double hiddenHeight = Get.height / 7.5 / 1.5 , normalHeight = Get.height / 7.5;
 
 downloadDialog({required RxDouble downloadingPercent , required title}){
   Get.defaultDialog(
@@ -91,14 +100,19 @@ Widget ErrorLoading() {
       ));
 }
 
+Widget Loading() {
+  return Center(
+      child: Container(
+        child: Lottie.asset('assets/animations/loading_main.json', height: 350),
+      ));
+}
+
 Future<String> getUrlContent(String url) async {
-  debugPrint("asdsadsadsadsad : $url");
   String result = "";
   HttpClient client = HttpClient();
   var request = await client.postUrl(Uri.parse(url));
   request.close().then((response) {
     utf8.decoder.bind(response.cast<List<int>>()).listen((content) {
-      debugPrint("asdsadsadsadsad : $content");
       result = content;
     });
   });
@@ -130,12 +144,13 @@ String whiteSpaceForSentence(String sentence) {
       .replaceAll('؟', "؟ ")
       .replaceAll(".", ". ")
       .replaceAll("  \"", " \"")
-      .replaceAll(" \"", "\"")
+      // .replaceAll(" \"", "\"")
       .replaceAll(". \"", ".\"")
       .replaceAll("? \"", "?\"")
       .replaceAll("؟ \"", "؟\"")
       .replaceAll("! \"", "!\"")
-      .replaceAll(RegExp(r"(?! )\s+| \s+"), " ");
+      .replaceAll(RegExp(r"(?! )\s+| \s+"), " ")
+  ;
 }
 
 Future<bool> isScreenForced() async {
@@ -156,9 +171,34 @@ keepScreenNormal() {
   Wakelock.disable();
 }
 
+writeString(String text,String itemId) async {
+  final Directory directory = await path.getApplicationDocumentsDirectory();
+  final File file = File('${directory.path}/$itemId.txt');
+  await file.writeAsString(text);
+}
+
+Future<bool> readExists(String itemId)async{
+  bool exists = false;
+  final Directory directory = await path.getApplicationDocumentsDirectory();
+  final File file = File('${directory.path}/$itemId.txt');
+  exists = file.existsSync();
+  return exists;
+}
+
+Future<String> readString(String itemId) async {
+  String text = "";
+  try {
+    final Directory directory = await path.getApplicationDocumentsDirectory();
+    final File file = File('${directory.path}/$itemId.txt');
+    text = await file.readAsString();
+  } catch (e) {
+  }
+  return text;
+}
+
 Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async{
   List<SentenceModel> listItems = [];
-  List<SubtitleTimes> subtimes = [];
+  List<List<InlineSpan>> textsSpans = [];
   List<Subtitle> currentP = paragraphs;
   String result = "";
   String timeResult = "";
@@ -184,6 +224,7 @@ Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async{
   for (int i = 0; i < b.length; i ++) {
     String parag = b[i];
     List<SentenceIndex> sentencesList = [];
+    List<InlineSpan> inlineSpan = [];
     List<String> a = parag.split("__NEWSENTENCE__");
     List<String> ta = tb[i].toString().split("__NEWSENTENCE__");
     List<String> eta = etb[i].toString().split("__NEWSENTENCE__");
@@ -197,21 +238,22 @@ Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async{
           "/l", " ");
       int currentTime = 0;
       int currentETime = 0;
+      int diffrence = 350;
       if (StringHelper()
           .filterString(forCheck.toString().trim())
           .isNumericOnly) {
         currentTime = int.parse(
-            StringHelper().filterString(forCheck.toString().trim()));
+            StringHelper().filterString(forCheck.toString().trim())) - diffrence;
       }
       if (StringHelper()
           .filterString(eForCheck.toString().trim())
           .isNumericOnly) {
         currentETime = int.parse(
-            StringHelper().filterString(eForCheck.toString().trim()));
+            StringHelper().filterString(eForCheck.toString().trim())) - diffrence;
       }
       String txt = sentens
           .replaceAll(RegExp(r"(?! )\s+| \s+"), " ");
-      subtimes.add(SubtitleTimes(text:txt,start: currentTime, end: currentETime));
+      inlineSpan.add(parseHtmlToTextSpan(whiteSpaceForSentence(txt.toString()), getSubtitleTextStyle(false)));
       sentencesList.add(SentenceIndex(
           listIndex: i,
           sentenceIndex: o,
@@ -220,8 +262,9 @@ Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async{
           text: txt));
     }
     listItems.add(SentenceModel(sentencesList: sentencesList));
+    textsSpans.add(inlineSpan);
   }
-  return SrtResult(sentenceModel: listItems,subtitleTimes: subtimes);
+  return SrtResult(sentenceModel: listItems,subtitleTimes: textsSpans);
 }
 
 List<SentenceModel> getFullParagraphs(bool fa, var paragraphs) {
@@ -283,7 +326,6 @@ List<SentenceModel> getFullParagraphs(bool fa, var paragraphs) {
           endTime: currentEndTime,
           text: currentSentence.replaceAll(RegExp(r"(?! )\s+| \s+"), " ")));
     }
-    // debugPrint("Lists : " + listItemsFa.toString());
     listItemsFa.add(SentenceModel(sentencesList: sentencesList));
   }
 

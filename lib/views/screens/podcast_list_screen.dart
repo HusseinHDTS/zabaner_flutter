@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:zabaner/controllers/podcast_list_controller.dart';
 import 'package:zabaner/models/resources_model.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/podcast_play_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
 
@@ -44,7 +45,7 @@ class PodcastListScreen extends StatelessWidget {
                   ),
                 ),
               )),
-          body: _controller.obx((status) => Padding(
+          body: Obx(()=>_controller.isDataLoaded.isTrue ? Padding(
               padding: EdgeInsets.symmetric(horizontal: Get.width / 40),
               child: Column(children: [
                 // Top of screen
@@ -85,40 +86,40 @@ class PodcastListScreen extends StatelessWidget {
                     child: ListView.builder(
                         itemCount: _controller.model.length,
                         itemBuilder: (_, index) => InkWell(
-                              onTap: () => Get.to(() => PodcastPlay(
-                                  isGuest: false,
-                                  id: _controller.model[index].id)),
-                              child: Container(
-                                width: Get.width,
-                                height: Get.height / 6,
-                                margin:
-                                    EdgeInsets.only(bottom: Get.height / 40),
+                          onTap: () => Get.to(() => PodcastPlay(
+                              isGuest: false,
+                              id: _controller.model[index].id)),
+                          child: Container(
+                            width: Get.width,
+                            height: Get.height / 6,
+                            margin:
+                            EdgeInsets.only(bottom: Get.height / 40),
+                            decoration: BoxDecoration(
+                                color: const Color(0xffebebeb),
+                                borderRadius: BorderRadius.circular(15)),
+                            child: Row(children: [
+                              // image
+                              Container(
+                                width: Get.width / 3,
+                                height: Get.height,
                                 decoration: BoxDecoration(
-                                    color: const Color(0xffebebeb),
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Row(children: [
-                                  // image
-                                  Container(
-                                    width: Get.width / 3,
-                                    height: Get.height,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        image: DecorationImage(
-                                            image: CachedNetworkImageProvider(_controller
-                                                    .model[index].imagePath),)),
-                                  ),
+                                    borderRadius: BorderRadius.circular(15),
+                                    image: DecorationImage(
+                                      image: CachedNetworkImageProvider(_controller
+                                          .model[index].imagePath),)),
+                              ),
 
-                                  // empty space
-                                  SizedBox(
-                                    width: Get.width / 12,
-                                  ),
+                              // empty space
+                              SizedBox(
+                                width: Get.width / 12,
+                              ),
 
-                                  Expanded(
-                                      child: Column(
+                              Expanded(
+                                  child: Column(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _controller.model[index].title,
@@ -137,10 +138,10 @@ class PodcastListScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ))
-                                ]),
-                              ),
-                            )))
-              ])))),
+                            ]),
+                          ),
+                        )))
+              ])) : Loading())),
     );
   }
 }

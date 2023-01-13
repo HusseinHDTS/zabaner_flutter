@@ -81,7 +81,6 @@ class NewsDataController extends GetxController with StateMixin {
                 'Authorization': 'Bearer ${_getStorage.read('token')}'
               },
             );
-      debugPrint("REQ DATA : "+req.body.toString());
       if (req.statusCode == 200) {
         content.addAll(categoryContentFromJson(req.bodyString ?? ""));
         change(null, status: RxStatus.success());
@@ -104,7 +103,6 @@ class NewsDataController extends GetxController with StateMixin {
           'Authorization': 'Bearer ${_getStorage.read('token')}'
         },
         contentType: "application/json");
-    print(_request.body);
     if (_request.statusCode != 201) {
       ColoredSnack(title: "Error",description:_request.statusText.toString(),type: SnackType.ERROR);
     }

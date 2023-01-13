@@ -20,7 +20,6 @@ import 'package:zabaner/models/urls.dart';
 
       content.addAll(jsonDecode(req.bodyString??"{[]}"));
 
-      print(content[0]);
     }
 
   });

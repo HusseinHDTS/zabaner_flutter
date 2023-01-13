@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -6,9 +7,12 @@ import 'package:zabaner/controllers/play_podcast_controller.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
+import 'package:zabaner/views/widgets/bottom_player.dart';
+import 'package:zabaner/views/widgets/subtitle_tile.dart';
 import 'package:zabaner/views/widgets/text_highlight.dart';
 import 'package:zabaner/models/level.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'dart:io' as io;
 
 import '../../widgets/my_app_bar.dart';
 
@@ -32,8 +36,8 @@ class _PodcastPlayState extends State<PodcastPlay> {
     controller.customeInit();
 
     controller.getPodcastItemData(widget.id, widget.isGuest).then((value) {
-      controller.download(controller.podcastItem.podcastPath, widget.id,
-          controller.podcastItem.title);
+      controller.initSubtitle(widget.id);
+      controller.isPodcastExists.value = controller.isFileExists(getUrlFileName(controller.appDoc.path,widget.id,controller.podcastItem.podcastPath));
     });
   }
 
@@ -54,8 +58,7 @@ class _PodcastPlayState extends State<PodcastPlay> {
         controller.onClose();
         return true;
       },
-      child: controller.obx(
-        (status) => Directionality(
+      child: Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
           appBar: AppBar(
@@ -118,15 +121,14 @@ class _PodcastPlayState extends State<PodcastPlay> {
                   ],
                 )
               ]),
-          body: Column(children: [
+          body: Obx(()=>controller.isDataLoaded.isTrue ? Stack(children: [
             // Paragraph
-            Expanded(
-              flex: 1,
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 12,vertical: 4),
-                child: SingleChildScrollView(
-                  controller: controller.scrollController,
-                  child: Obx(()=> controller.isSubtitleLoaded.isFalse ? Center(child: Container(margin:EdgeInsets.only(top: 20),child: CircularProgressIndicator()),) : Column(children: List.generate(controller.getParAsLang(null).length +1, (index){
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 12,vertical: 4),
+              child: GetBuilder<PlayPodcastController>(init: controller,builder: (_ctrler){
+                return SingleChildScrollView(
+                  controller: _ctrler.scrollController,
+                  child: Obx(()=> _ctrler.isSubtitleLoaded.isFalse ? Center(child: Container(margin:EdgeInsets.only(top: 20),child: Loading()),) : Column(children: List.generate(controller.getParAsLang(null).length +1, (index){
                     Widget returnWidget = index == 0
                         ? SizedBox(
                         width: Get.width,
@@ -141,224 +143,64 @@ class _PodcastPlayState extends State<PodcastPlay> {
                           ),
                           textAlign: TextAlign.center,
                         ))
-                        : Container(
-                      child: Obx(() =>
-                      controller.fa.value == true ||
-                          controller.en.value == true
-                          ? Column(
-                        children: [
-                          controller.en.value == true
-                              ? Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: FutureBuilder<List<InlineSpan>>(
-                              future: controller.getCurrentText(index -1, false),
-                              builder: (_context , item){
-                                return Container(
-                                    child: RichText(
-                                      text: TextSpan(
-                                        style: getSubDefault(false),
-                                        children:item.data,
-                                      ),
-                                    ));
-                              },),
-                          )
-                              : Container(),
-                          SizedBox(
-                            height: 6,
-                          ),
-                          controller.fa.value == true
-                              ? Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: FutureBuilder<List<InlineSpan>>(
-                              future: controller.getCurrentText(index -1, true),
-                              builder: (_context , item){
-                                return Container(
-                                    child: RichText(
-                                      text: TextSpan(
-                                        style: getSubDefault(true),
-                                        children:item.data,
-                                      ),
-                                    ));
-                              },),
-                          )
-                              : Container(),
-                          SizedBox(
-                            height: 24,
-                          ),
-                        ],
-                      )
-                          : Container()),
-                    );
+                        : Obx(()=>SubtitleTile(faVisible: _ctrler.fa.value, enVisible: _ctrler.en.value, faTile: _ctrler.getCurrentText(index-1, true),enTile: _ctrler.getCurrentText(index-1, false)));
+                    if(index == controller.getParAsLang(null).length){
+                      return Column(children: [
+                        returnWidget,
+                        Obx(()=>SizedBox(height: _ctrler.isHide.value ? hiddenHeight : normalHeight,)),
+                      ],);
+                    }
                     return returnWidget;
                   }) ) ),
-                ),
-              ),
+                );
+              },),
             ),
+            Align(alignment: Alignment.bottomCenter,child: Obx(()=>AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              height: controller.isHide.value
+                  ? hiddenHeight
+                  : normalHeight,
+              child: BottomPlayer(
+                  isVideo: false,
+                  isFileExists: controller.isPodcastExists,
+                  isInitialized:true.obs,
+                  onInitialize: (){
 
-            Expanded(
-              flex:0,
-              child: Obx(() => AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-                  height: controller.isHide.value
-                      ? Get.height / 9 / 1.5
-                      : Get.height / 9,
-                  child: Column(children: [
-                    // hide or show icon
-                    SizedBox(
-                      height: Get.height / 30,
-                      child: InkWell(
-                        onTap: () => controller.isHide.toggle(),
-                        child: Image.asset(
-                          controller.isHide.value
-                              ? "assets/images/upward2.png"
-                              : "assets/images/downward2.png",
-                          height: double.infinity,
-                        ),
-                      ),
-                    ),
-
-                    // seekbar
-                    Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Expanded(
-                          flex: controller.isHide.value ? 1 : 1,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Obx(() => Text(
-                                  (controller.duration.value.inSeconds -
-                                          controller
-                                              .playerPosition.value.inSeconds)
-                                      .formatTimer())),
-                              SizedBox(
-                                  width: Get.width / 1.3,
-                                  child: Obx(() => Slider(
-                                        value: controller.playerPosition.value
-                                            .inMilliseconds
-                                            .toDouble(),
-                                        min: 0,
-                                        max: controller
-                                            .duration.value.inMilliseconds
-                                            .toDouble(),
-                                        onChanged: (value) {
-                                          controller.playerPosition.value =
-                                              Duration(
-                                                  milliseconds:
-                                                      value.toInt());
-                                        },
-                                        onChangeEnd: (value) {
-                                          controller.player.seekToPlayer(
-                                              Duration(
-                                                  milliseconds:
-                                                      value.toInt()));
-                                        },
-                                      ))),
-                              Text(controller.duration.value.inSeconds
-                                  .formatTimer())
-                            ],
-                          )),
-                    ),
-
-                    // controll option buttons
-                    controller.isHide.value
-                        ? const SizedBox()
-                        : Expanded(
-                            flex: 1,
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
-                              children: [
-                                // play speed
-                                InkWell(
-                                    onTap: () {
-                                      if (controller.isPlaying.value) {
-                                        if (controller.playSpeed.value ==
-                                            0.5) {
-                                          controller.playSpeed.value = 1;
-                                          controller.player.setSpeed(1);
-                                        } else if (controller
-                                                .playSpeed.value ==
-                                            1) {
-                                          controller.playSpeed.value = 2;
-                                          controller.player.setSpeed(2);
-                                        } else if (controller
-                                                .playSpeed.value ==
-                                            2) {
-                                          controller.playSpeed.value = 0.5;
-                                          controller.player.setSpeed(0.5);
-                                        }
-                                      }
-                                    },
-                                    child: Obx(() => Text(
-                                          controller.playSpeed.value
-                                                  .toString() +
-                                              "x",
-                                          style:
-                                              const TextStyle(fontSize: 18),
-                                        ))),
-
-                                // forward
-                                InkWell(
-                                    onTap: () {
-                                      if (controller.ind !=
-                                          controller.podcastItem.paragraphs
-                                                  .length -
-                                              1) {
-                                        controller.player.seekToPlayer(
-                                            Duration(
-                                                milliseconds: controller
-                                                    .podcastItem
-                                                    .paragraphs[
-                                                        controller.ind + 1]
-                                                    .pst));
-                                      }
-                                    },
-                                    child: const Icon(Icons.arrow_back)),
-
-                                // play or pause
-                                Obx(() => InkWell(
-                                    onTap: () {
-                                      controller.togglePlayer(getUrlFileName(controller.appDoc.path,widget.id,controller.podcastItem.podcastPath));
-                                    },
-                                    child: Icon(controller.isPlaying.value
-                                        ? Icons.pause
-                                        : Icons.play_arrow))),
-
-                                // backward
-                                InkWell(
-                                    onTap: () {
-                                      if (controller.ind != 0) {
-                                        controller.player.seekToPlayer(
-                                            Duration(
-                                                milliseconds: controller
-                                                    .podcastItem
-                                                    .paragraphs[
-                                                        controller.ind - 1]
-                                                    .pst));
-                                      }
-                                    },
-                                    child: const Icon(Icons.arrow_forward)),
-
-                                // repeat
-                                InkWell(
-                                    onTap: () {
-                                      controller.repeat.toggle();
-                                    },
-                                    child: Obx(() => Icon(
-                                        controller.repeat.value
-                                            ? Icons.repeat_one
-                                            : Icons.repeat))),
-                              ],
-                            ),
-                          )
-                  ]))),
-            ),
-            SizedBox(
-              height: Get.height / 45,
-            )
-          ])),
+                  },
+                  isPlaying: controller.isPlaying,
+                  resumePlayer: ()=> controller.player.resumePlayer(),
+                  pausePlayer: ()=> controller.player.pausePlayer(),
+                  downloadRequest: ()=>controller.download(controller.podcastItem.podcastPath, widget.id,controller.podcastItem.title),
+                  togglePlayer: () async{
+                    var filePath = getUrlFileName(controller.appDoc.path,widget.id,controller.podcastItem.podcastPath);
+                    controller.togglePlayer(filePath);
+                    return true;
+                  },
+                  toggleHide: ()=>controller.isHide.toggle(),
+                  togglePlayerSpeed: (){
+                    if (controller.isPlaying.value) {
+                      if (controller.playSpeed.value ==
+                          0.5) {
+                        controller.playSpeed.value = 1;
+                        controller.player.setSpeed(1);
+                      } else if (controller.playSpeed.value ==1) {
+                        controller.playSpeed.value = 2;
+                        controller.player.setSpeed(2);
+                      } else if (controller.playSpeed.value ==2) {
+                        controller.playSpeed.value = 0.5;
+                        controller.player.setSpeed(0.5);
+                      }
+                    }
+                  },
+                  playSpeed: controller.playSpeed,
+                  player: controller.player,
+                  isHide: controller.isHide,
+                  repeat: controller.repeat,
+                  duration: controller.duration.value,
+                  position: controller.playerPosition),
+            )),),
+          ]) : Loading())),
         ),
-      ),
     );
   }
 }

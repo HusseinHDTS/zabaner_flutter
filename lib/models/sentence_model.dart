@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SentenceModel{
   List<SentenceIndex> sentencesList;
@@ -14,7 +15,7 @@ class SubtitleTimes{
 
 class SrtResult{
   List<SentenceModel> sentenceModel;
-  List<SubtitleTimes> subtitleTimes;
+  List<List<InlineSpan>> subtitleTimes;
   SrtResult({required this.sentenceModel,required this.subtitleTimes});
 
 }

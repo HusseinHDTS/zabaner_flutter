@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/controllers/recovery_password_controller.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/validate_reset_password_screen.dart';
 import 'package:zabaner/views/widgets/custom_text_input.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -132,9 +133,7 @@ class RecoveryPasswordScreen extends StatelessWidget {
                                 EdgeInsets.symmetric(vertical: Get.height / 45),
                             child: ElevatedButton(
                               onPressed: () {
-                                Get.defaultDialog(
-                                    title: "درحال ارسال کد ... ",
-                                    content: CircularProgressIndicator());
+                                loadingDialog("درحال ارسال کد");
                                 RecoveryPasswordController().SendCode(phoneMail);
                               },
                               child: const Text(

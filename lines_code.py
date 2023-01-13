@@ -17,9 +17,6 @@ for root, directories, files in os.walk("./lib", topdown=False):
             max = lineFile
             maxFile = name
         file.close()
-print("Number of lines of code:", count)
-print("File with most lines of code:", maxFile)
-print("Number of lines of code in file with most lines of code:", max)
 add_str = f"""
 ## Count lines of codes: {count}
 ## File with most lines of code: {maxFile}

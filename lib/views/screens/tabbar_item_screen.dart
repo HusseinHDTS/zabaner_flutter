@@ -12,6 +12,7 @@ import 'package:zabaner/models/level.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
+import 'package:zabaner/views/widgets/bottom_player.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
@@ -35,7 +36,6 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
   void initState() {
     super.initState();
     controller.customeInit(item);
-
   }
 
   @override
@@ -75,180 +75,77 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
             body: Directionality(
               textDirection: TextDirection.ltr,
               child: Column(children: [
-                Expanded(flex:0,child: Container(margin:EdgeInsets.all(8),child: AspectRatio(aspectRatio: 16/9,child: Obx(()=> controller.videoInitialized.isTrue ? ClipRRect(borderRadius:BorderRadius.circular(16),child: Chewie(controller: controller.chewieController)) : Container() ),),)),
+                Expanded(flex:0,child: Container(margin:EdgeInsets.all(8),child: AspectRatio(aspectRatio: 16/9,child: Obx(() => controller.videoInitialized.value
+                    ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Chewie(
+                        controller:
+                        controller.chewieController))
+                    : ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(decoration: BoxDecoration(color: Colors.grey),),
+                )),),)),
                 Expanded(flex: 1,child: Container(height: double.infinity,),),
                 Expanded(flex:0,
-                  child: Obx(() =>
-                      AnimatedContainer(
-                          duration: const Duration(milliseconds: 500),
-                          height: controller.isHide.value
-                              ? Get.height / 10 / 1.5
-                              : Get.height / 10,
-                          child: Column(children: [
-                            // hide or show icon
-                            SizedBox(
-                              height: Get.height / 37,
-                              child: InkWell(
-                                onTap: () => controller.isHide.toggle(),
-                                child: Image.asset(
-                                  controller.isHide.value
-                                      ? "assets/images/upward2.png"
-                                      : "assets/images/downward2.png",
-                                  height: double.infinity,
-                                ),
-                              ),
-                            ),
-
-                            // seekbar
-                            Expanded(
-                                flex: controller.isHide.value ? 1 : 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .spaceAround,
-                                  children: [
-                                    Obx(() =>
-                                        Text((controller.duration.value
-                                            .inSeconds -
-                                            controller.playerPosition
-                                                .value.inSeconds)
-                                            .formatTimer())),
-                                    SizedBox(
-                                        width: Get.width / 1.3,
-                                        child: Obx(() =>
-                                            Slider(
-                                              value: controller
-                                                  .playerPosition.value
-                                                  .inMilliseconds
-                                                  .toDouble(),
-                                              min: 0,
-                                              max: controller
-                                                  .duration.value
-                                                  .inMilliseconds
-                                                  .toDouble(),
-                                              onChanged: (value) {
-                                                controller.playerPosition
-                                                    .value =
-                                                    Duration(
-                                                        milliseconds: value
-                                                            .toInt());
-                                              },
-                                              onChangeEnd: (value) {
-                                                controller.chewieController
-                                                    .seekTo(
-                                                    Duration(
-                                                        milliseconds: value
-                                                            .toInt()));
-                                              },
-                                            ))),
-                                    Text(
-                                        controller.duration.value
-                                            .inSeconds.formatTimer())
-                                  ],
-                                )),
-
-                            // controll option buttons
-                            Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: controller.isHide.value
-                                  ? const SizedBox()
-                                  : Expanded(
-                                flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .spaceAround,
-                                  children: [
-                                    // play speed
-                                    InkWell(
-                                        onTap: () {
-                                          if (controller.isPlaying
-                                              .value) {
-                                            if (controller.playSpeed
-                                                .value == 0.5) {
-                                              controller.playSpeed.value =
-                                              1;
-                                              controller.chewieController.videoPlayerController.setPlaybackSpeed(1);
-                                            } else
-                                            if (controller.playSpeed
-                                                .value ==
-                                                1) {
-                                              controller.playSpeed.value =
-                                              2;
-                                              controller.chewieController.videoPlayerController.setPlaybackSpeed(2);
-                                            } else
-                                            if (controller.playSpeed
-                                                .value ==
-                                                2) {
-                                              controller.playSpeed.value =
-                                              0.5;
-                                              controller.chewieController.videoPlayerController.setPlaybackSpeed(0.5);
-                                            }
-                                          }
-                                        },
-                                        child: Obx(() =>
-                                            Text(
-                                              controller.playSpeed.value
-                                                  .toString() +
-                                                  "x",
-                                              style: const TextStyle(
-                                                  fontSize: 18),
-                                            ))),
-
-                                    // forward
-                                    InkWell(
-                                        onTap: () {
-                                        },
-                                        child: const Icon(
-                                            Icons.arrow_back)),
-
-                                    // play or pause
-                                    Obx(() =>
-                                        InkWell(
-                                            onTap: () {
-                                              if (!controller.isPlaying
-                                                  .value) {
-                                                controller
-                                                    .chewieController
-                                                    .play();
-                                              } else {
-                                                controller
-                                                    .chewieController
-                                                    .pause();
-                                                controller.isPlaying
-                                                    .value = false;
-                                              }
-                                            },
-                                            child: Icon(
-                                                controller.isPlaying.value
-                                                    ? Icons.pause
-                                                    : Icons.play_arrow))),
-
-                                    // backward
-                                    InkWell(
-                                        onTap: () {
-                                        },
-                                        child: const Icon(
-                                            Icons.arrow_forward)),
-
-                                    // repeat
-                                    InkWell(
-                                        onTap: () {
-                                          // controller.repeat.toggle();
-                                        },
-                                        child: Obx(() =>
-                                            Icon(
-                                                controller.repeat.value
-                                                    ? Icons.repeat_one
-                                                    : Icons.repeat))),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ]))),
+                  child: Align(alignment: Alignment.bottomCenter,child: Obx(()=>AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    height: controller.isHide.value
+                        ? hiddenHeight
+                        : normalHeight,
+                    child: BottomPlayer(
+                        isVideo: true,
+                        isFileExists: controller.isVideoExists,
+                        isInitialized:controller.videoInitialized,
+                        isPlaying: controller.isPlaying,
+                        onInitialize: (){
+                          controller.initVideo(item.id,item.video);
+                        },
+                        resumePlayer: () =>
+                        controller.videoInitialized.value
+                            ? controller.chewieController.togglePause()
+                            : {},
+                        pausePlayer: () => controller
+                            .videoInitialized.value
+                            ? controller.chewieController.togglePause()
+                            : {},
+                        downloadRequest: (){
+                          if (item.video.substring(item.video.lastIndexOf(".") + 1) == "mp4") {
+                            controller.download(item.video, item.id, item.title);
+                          } else {
+                            Get.back();
+                            ColoredSnack(
+                                title: "ویدیویی برای این بخش وجود ندارد", type: SnackType.ERROR);
+                          }
+                        },
+                        togglePlayer: () async{
+                          controller.chewieController.togglePause();
+                          return true;
+                        },
+                        toggleHide: ()=>controller.isHide.toggle(),
+                        togglePlayerSpeed: (){
+                          if (controller.isPlaying.value) {
+                            if (controller.playSpeed.value ==
+                                0.5) {
+                              controller.playSpeed.value = 1;
+                              controller.chewieController.videoPlayerController.setPlaybackSpeed(1);
+                            } else if (controller.playSpeed.value ==1) {
+                              controller.playSpeed.value = 2;
+                              controller.chewieController.videoPlayerController.setPlaybackSpeed(2);
+                            } else if (controller.playSpeed.value ==2) {
+                              controller.playSpeed.value = 0.5;
+                              controller.chewieController.videoPlayerController.setPlaybackSpeed(0.5);
+                            }
+                          }
+                        },
+                        playSpeed: controller.playSpeed,
+                        player: controller.videoInitialized.value ? controller.chewieController : null,
+                        isHide: controller.isHide,
+                        repeat: controller.repeat,
+                        duration: controller.duration.value,
+                        position: controller.playerPosition),
+                  )),),
                 ),
 
-                SizedBox(
-                  height: Get.height / 60,
-                )
               ],),
             ),
           )),

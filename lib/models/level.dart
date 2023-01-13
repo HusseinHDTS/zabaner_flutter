@@ -1,23 +1,25 @@
+import 'package:zabaner/models/utils.dart';
+
 extension Level on int {
   String level() {
     int input = this;
-    if (input < 901) return "Level 1";
-    if (input < 1500) return "Level 2";
-    if (input < 3000) return "Level 3";
-    if (input < 5400) return "Level 4";
-    if (input < 8400) return "Level 5";
-    if (input > 8400) return "Level 6";
+    if (input < (lvl1 * 60 )+ 1) return "سطح 1";
+    if (input < (lvl2 * 60 )+ 1) return "سطح 2";
+    if (input < (lvl3 * 60 )+ 1) return "سطح 3";
+    if (input < (lvl4 * 60 )+ 1) return "سطح 4";
+    if (input < (lvl5 * 60 )+ 1) return "سطح 5";
+    if (input > (lvl6 * 60 )+ 1) return "سطح 6";
     return "";
   }
 
   int levelNumber() {
     int input = this;
-    if (input < 901) return 1;
-    if (input < 1500) return 2;
-    if (input < 3000) return 3;
-    if (input < 5400) return 4;
-    if (input < 8400) return 5;
-    if (input > 8400) return 6;
+    if (input < (lvl1 * 60 )+ 1) return 1;
+    if (input < (lvl2 * 60 )+ 1)  return 2;
+    if (input < (lvl3 * 60 )+ 1)  return 3;
+    if (input < (lvl4 * 60 )+ 1)  return 4;
+    if (input < (lvl5 * 60 )+ 1)  return 5;
+    if (input > (lvl6 * 60 )+ 1)  return 6;
     return 0;
   }
 }
@@ -29,6 +31,15 @@ extension Timer on int {
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+  }
+
+  formatedTime() {
+    int timeInSecond = this;
+    int sec = timeInSecond % 60;
+    int min = (timeInSecond / 60).floor();
+    String minute = min.toString().length <= 1 ? "0$min" : "$min";
+    String second = sec.toString().length <= 1 ? "0$sec" : "$sec";
+    return "$minute:$second";
   }
 
   String formatTimer() {
@@ -54,12 +65,12 @@ extension StringToDuration on String {
 extension Percent on int {
   double levelPercent() {
     int input = this;
-    if (input < 901) return (input / 900);
-    if (input < 1500) return (input / 1500);
-    if (input < 3000) return (input / 3000);
-    if (input < 5400) return (input / 5400);
-    if (input < 8400) return (input / 8400);
-    if (input < 16201) return (input / 16200);
+    if (input < (lvl1 * 60 )+ 1) return (input / (lvl1 * 60 ));
+    if (input < (lvl2 * 60 )+ 1) return (input / (lvl2 * 60 ));
+    if (input < (lvl3 * 60 )+ 1) return (input / (lvl3 * 60 ));
+    if (input < (lvl4 * 60 )+ 1) return (input / (lvl4 * 60 ));
+    if (input < (lvl5 * 60 )+ 1) return (input / (lvl5 * 60 ));
+    if (input > (lvl6 * 60 )+ 1) return (input / (lvl6 * 60 ));
     return 1;
   }
 }
@@ -67,12 +78,12 @@ extension Percent on int {
 extension Current on int {
   String showCurrent() {
     int input = this;
-    if (input < 901) return "15 / ${((input) / 60).round()}";
-    if (input < 1500) return "25 / ${((input) / 60).round()}";
-    if (input < 3000) return "50 / ${((input) / 60).round()}";
-    if (input < 5400) return "85 / ${((input) / 60).round()}";
-    if (input < 8400) return "140 / ${((input) / 60).round()}";
-    if (input > 8400) return "270 / ${((input) / 60).round()}";
+    if (input < (lvl1 * 60 )+ 1) return "$lvl1 / ${((input) / 60).round()}";
+    if (input < (lvl2 * 60 )+ 1) return "$lvl2 / ${((input) / 60).round()}";
+    if (input < (lvl3 * 60 )+ 1) return "$lvl3 / ${((input) / 60).round()}";
+    if (input < (lvl4 * 60 )+ 1) return "$lvl4 / ${((input) / 60).round()}";
+    if (input < (lvl5 * 60 )+ 1) return "$lvl5 / ${((input) / 60).round()}";
+    if (input > (lvl6 * 60 )+ 1) return "$lvl6 / ${((input) / 60).round()}";
     return "";
   }
 }

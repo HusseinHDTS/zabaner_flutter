@@ -9,7 +9,7 @@ import 'package:zabaner/models/urls.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:zabaner/views/screens/login_screen.dart';
 
-class PodcastDetailController extends GetxController with StateMixin {
+class PodcastDetailController extends GetxController {
   final GetConnect _getConnect = GetConnect();
   late PodcastModel podcast;
   // late DateTime _dateTime;
@@ -17,6 +17,7 @@ class PodcastDetailController extends GetxController with StateMixin {
   final Dio dio = Dio();
   final GetStorage _getStorage = GetStorage();
   late List<RxBool> existFile;
+  var isDataLoaded = false.obs;
   Rx<PodcastItemModel> podcastItem = PodcastItemModel(
           id: "id",
           faTitle: "faTitle",
@@ -39,15 +40,14 @@ class PodcastDetailController extends GetxController with StateMixin {
     _getConnect.allowAutoSignedCert = true;
     appDoc = await path.getApplicationDocumentsDirectory();
     GetStorage.init();
-    print("Init");
     percentPlayed = 0.0.obs;
     downloadingPercent = 0.0.obs;
     downloadingState = "".obs;
     var ss = await path.getTemporaryDirectory();
-    print(ss.path);
   }
 
   void getPodcastData(String id, bool isGuest) async {
+    isDataLoaded.value = false;
     var _request = isGuest
         ? await _getConnect.get(getPodcastDetailUrl + id)
         : await _getConnect.get(
@@ -58,7 +58,6 @@ class PodcastDetailController extends GetxController with StateMixin {
             },
           );
 
-    print(_request.body);
     if (_request.statusCode == 200) {
       podcast = podcastModelFromJson(_request.bodyString ?? "");
       existFile = List.generate(podcast.items.length, (index) => RxBool(false));
@@ -67,7 +66,7 @@ class PodcastDetailController extends GetxController with StateMixin {
           existFile[i].value = true;
         }
       }
-      change(null, status: RxStatus.success());
+      isDataLoaded.value = true;
       if (_getStorage.read("auto_download") ?? false) {
         for (var item in podcast.items) {
           download(item.podcastPath, id, item.title);
@@ -79,7 +78,8 @@ class PodcastDetailController extends GetxController with StateMixin {
       _getStorage.remove('timers');
       Get.offAll(LoginScreen());
     } else {
-      getPodcastData(id, isGuest);
+      // errorData.value=true;
+      // getPodcastData(id, isGuest);
     }
   }
 
@@ -91,13 +91,10 @@ class PodcastDetailController extends GetxController with StateMixin {
               onReceiveProgress: (recive, total) {
         downloadingState.value = "downloading";
         downloadingPercent.value = recive / total;
-        print(downloadingPercent);
       });
       Get.closeAllSnackbars();
 
       if (_downloadRequest.statusCode == 200) {
-        print("Completed");
-        print(io.File(getUrlFileName(appDoc.path,id,urlPath)).existsSync());
         for (var i = 0; i < podcast.items.length; i++) {
           if (io.File(getUrlFileName(appDoc.path,id,urlPath)).existsSync()) {
             existFile[i].value = true;

@@ -1,23 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:zabaner/controllers/video_list_controller.dart';
-import 'package:zabaner/models/resources_model.dart';
-import 'package:zabaner/models/urls.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:zabaner/controllers/pod_sub_controller.dart';
 import 'package:zabaner/models/utils.dart';
+import 'package:zabaner/views/screens/podcast_list_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
-import 'package:zabaner/views/screens/video_detailt_screen.dart';
 
-class VideoListScreen extends StatelessWidget {
-  VideoListScreen({Key? key, this.filter}) : super(key: key);
+class PodSubCategoryScreen extends StatelessWidget {
+  PodSubCategoryScreen({
+    this.filter,
+  });
+
   String? filter;
 
   @override
   Widget build(BuildContext context) {
-    final VideoListController _controller = Get.put(VideoListController(filter: filter));
+    final PodcSubController _controller =
+        Get.put(PodcSubController(filter: filter));
     return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
           backgroundColor: const Color(0xffffffff),
           appBar: AppBar(
               leadingWidth: Get.width,
@@ -43,51 +46,58 @@ class VideoListScreen extends StatelessWidget {
                   ),
                 ),
               )),
-          body: Obx(()=>_controller.isDataLoaded.isTrue ? Padding(
-              padding: EdgeInsets.symmetric(horizontal: Get.width / 40),
-              child: Column(children: [
-                // Top of screen
-                SizedBox(
-                  height: Get.height / 10,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // profile image
-                      InkWell(
-                        onTap: () => Get.to(()=>ProfileScreen(isGuest: false)),
-                        child: CircleAvatar(
-                          radius: Get.width / 18,
-                          // backgroundImage: NetworkImage(_controller
-                          //         .getProfileImage ??
-                          //     "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Solid_white.svg/2048px-Solid_white.svg.png"),
-                        ),
+          body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: SmartRefresher(
+                controller: _controller.refreshController,
+                onRefresh: () => _controller.getData(),
+                header: const MaterialClassicHeader(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8,),
+                  child: Column(children: [
+                    SizedBox(
+                      height: Get.height / 10,
+                      child: Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: [
+                          // profile image
+                          InkWell(
+                            onTap: () => Get.to(
+                                    () => ProfileScreen(isGuest: false)),
+                            child: CircleAvatar(
+                              radius: Get.width / 18,
+                              // backgroundImage: NetworkImage(_controller
+                              //         .getProfileImage ??
+                              //     "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Solid_white.svg/2048px-Solid_white.svg.png"),
+                            ),
+                          ),
+
+                          // Hello Text
+                          const Text(
+                            "پادکست ها",
+                            style: TextStyle(
+                                fontFamily: "Yekan", fontSize: 18),
+                          ),
+
+                          // Logo in top left
+                          SizedBox.square(
+                            // padding: EdgeInsets.only(left: Get.width / 25),
+                            dimension: Get.width / 8,
+                            // height: Get.height / 14,
+                            child: Container(),
+                          )
+                        ],
                       ),
+                    ),
 
-                      // Hello Text
-                      const Text(
-                        "مصاحبه های ویدیویی",
-                        style: TextStyle(fontFamily: "Yekan", fontSize: 18),
-                      ),
-
-                      // Logo in top left
-                      SizedBox.square(
-                        // padding: EdgeInsets.only(left: Get.width / 25),
-                        dimension: Get.width / 8,
-                        // height: Get.height / 14,
-                        child: Container(),
-                      )
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                    child: ListView.builder(
-                        itemCount: _controller.model.length,
+                    Expanded(child: Obx(()=>_controller.isDataLoaded.isTrue ? Padding(padding: EdgeInsets.symmetric(horizontal: 6,vertical: 6),child:  ListView.builder(
+                        itemCount:
+                        _controller.subCategories.length,
                         itemBuilder: (_, index) {
                           return InkWell(
-                            onTap: () => Get.to(() => VideoDetailScreen(
-                                isGuest: false,
-                                id: _controller.model[index].id)),
+                            onTap: () => Get.to(() => PodcastListScreen(filter: _controller.subCategories[index].title,)),
                             child: Container(
                               width: Get.width,
                               height: Get.height / 5.5,
@@ -106,14 +116,13 @@ class VideoListScreen extends StatelessWidget {
                                       image: DecorationImage(
                                         image: CachedNetworkImageProvider(
                                             _controller
-                                                .model[index].imagePath),)),
+                                                .subCategories[index].imagePath),)),
                                 ),
 
                                 // empty space
                                 SizedBox(
                                   width: Get.width / 12,
                                 ),
-
                                 Expanded(
                                     child: Column(
                                       mainAxisAlignment:
@@ -122,27 +131,20 @@ class VideoListScreen extends StatelessWidget {
                                       CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          _controller.model[index].title,
+                                          _controller.subCategories[index].title,
                                           style: TextStyle(
                                               fontFamily: "Yekan",
                                               fontWeight: FontWeight.bold),
-                                        ),
-                                        Row(
-                                          children: [
-                                            ImageIcon(
-                                                AssetImage(
-                                                    "assets/images/time.png"),
-                                                size: 22),
-                                            Text("\t\t" + _controller.model[index].podcastTime.toString() + " دقیقه ")
-                                          ],
                                         ),
                                       ],
                                     ))
                               ]),
                             ),
                           );
-                        }))
-              ])) : Loading()),
-        ));
+                        }),) : Loading())),
+                  ]),
+                )),
+          )),
+    );
   }
 }

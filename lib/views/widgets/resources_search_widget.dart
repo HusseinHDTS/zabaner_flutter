@@ -20,7 +20,6 @@ class ResourcesSearchWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        debugPrint("asdwaesaoooo : " + type);
         if (type == "news") {
           // Navigator.pushNamed(context, '/newsDetail', arguments: id);
         }

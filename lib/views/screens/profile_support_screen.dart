@@ -178,8 +178,8 @@ class ProfileSupport extends StatelessWidget {
                                 ),
                         ),
                       )
-                    : const Center(
-                        child: CircularProgressIndicator(),
+                    : Center(
+                        child: Loading(),
                       )))),
         Expanded(
           flex: 0,

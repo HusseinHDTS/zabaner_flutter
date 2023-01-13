@@ -14,7 +14,6 @@ class RecoveryPasswordController extends GetConnect {
     var _request = mobail.isPhoneNumber
         ? await post(forgotPasswordUrl, {'mobile': mobail})
         : await post(forgotPasswordUrl, {'email': mobail});
-    debugPrint("dsadlklaskldks : " + _request.bodyString.toString());
     if (_request.statusCode == 201) {
       Get.back();
       Get.to(() => ValidateResetPasswordCode(

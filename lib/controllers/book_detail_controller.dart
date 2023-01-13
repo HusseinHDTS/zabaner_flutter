@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:get/get.dart';
-import 'package:flutter/material.dart' show CircularProgressIndicator;
 import 'package:get_storage/get_storage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -12,31 +11,38 @@ import 'package:zabaner/models/html.dart';
 import 'package:zabaner/models/sentence_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
-import 'package:zabaner/views/colors.dart';
+import 'package:zabaner/views/screens/book_screen.dart';
 import 'dart:io' as io;
 import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:srt_parser/srt_parser.dart' as strP;
 
-
-class BookController extends GetxController with StateMixin {
+class BookController extends GetxController {
   final GetConnect _getConnect = GetConnect();
   final GetStorage _getStorage = GetStorage();
   late BookParagraphModel bookItemModel;
   final FlutterSoundPlayer player = FlutterSoundPlayer();
   RefreshController refreshController = RefreshController();
   AutoScrollController scrollController = AutoScrollController();
+  BookScreenState? bookScreenState;
   var faParagraph = <SentenceModel>[].obs;
   var enParagraph = <SentenceModel>[].obs;
+  late Stream<List<InlineSpan>> inlineSpansStream;
+  late Stream<List<InlineSpan>> inlineSpansFaStream;
+  var inlineSpans = <List<InlineSpan>>[];
+  var inlineSpansFa = <List<InlineSpan>>[];
   var errorData = false.obs;
+  var isDataLoaded = false.obs;
   late DateTime _dateTime;
   final Dio dio = Dio();
   late io.Directory appDoc;
   var seconds = 0;
   var en = true.obs, fa = true.obs;
   var isPlaying = false.obs;
+  var isInitialized = false.obs;
   var isInEndTime = false.obs;
   var isSubtitleLoaded = false.obs;
+  var isBookExists = false.obs;
   var ind = 0;
   var playingText = "".obs;
   var playingTextFa = "".obs;
@@ -52,11 +58,27 @@ class BookController extends GetxController with StateMixin {
   var repeat = false.obs;
   var downloadingState = "".obs;
 
+  bool _playerStateForSekkbar = false;
+
+  requestForSeekBar(bool hasToPlay) {
+    if (hasToPlay == false) {
+      if (isPlaying.isTrue) {
+        _playerStateForSekkbar = true;
+      } else {
+        _playerStateForSekkbar = false;
+      }
+      player.pausePlayer();
+    } else {
+      if (_playerStateForSekkbar) {
+        player.resumePlayer();
+      }
+    }
+  }
+
   @override
   void onInit() async {
     // TODO: implement onInit
     super.onInit();
-    print("Init");
     appDoc = await path.getApplicationDocumentsDirectory();
     percentPlayed = 0.0.obs;
     downloadingPercent = 0.0.obs;
@@ -71,7 +93,13 @@ class BookController extends GetxController with StateMixin {
     player.closeAudioSession();
   }
 
-  void customeInit(bookId,itemId,isGuest) {
+  bool isFileExists(String filePath){
+    io.File audioFile = io.File(filePath);
+    return audioFile.existsSync();
+  }
+
+  void customeInit(BookScreenState state, bookId, itemId, isGuest) {
+    bookScreenState = state;
     GetStorage.init();
     _dateTime = DateTime.now();
     isHide = false.obs;
@@ -107,11 +135,10 @@ class BookController extends GetxController with StateMixin {
     }
   }
 
-
   @override
   void onClose() async {
     super.onClose();
-
+    player.isPlaying ? {} : player.pausePlayer();
     Map times = _getStorage.read('timers') ?? {};
     var lastTimer = times[
             '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ??
@@ -138,23 +165,19 @@ class BookController extends GetxController with StateMixin {
       });
     } else {
       var n = DateTime.now();
-      print(_dateTime);
-      print(n);
       var add = n.difference(_dateTime);
-      print(add.inSeconds);
       times['totall'] = times['totall'] + (add.inSeconds).toInt();
     }
     await _getStorage.write('timers', times);
     // _getStorage.remove('timers');
-    print(_getStorage.read('timers'));
     player.stopPlayer();
     isPlaying.value = false;
   }
 
-  var currentSavedTime = 0.obs;
+  var currentSavedTime = (-1).obs;
   GlobalKey? ckey;
 
-  Future<List<InlineSpan>> getCurrentText(int index, bool _fa) async {
+  Future<List<InlineSpan>> getCurrentText(int index, bool _fa) async{
     List<InlineSpan> texts = [];
     SentenceModel model = getParAsLang(_fa)[index];
 
@@ -165,7 +188,7 @@ class BookController extends GetxController with StateMixin {
       isNowCurrentText =
           currentSavedTime.value == cm.time && isInEndTime.value == false;
       String textForCheck = StringHelper().filterString(playingText.value);
-      texts.add(parseHtmlToTextSpan(whiteSpaceForSentence(cm.text.toString()), getSubtitleTextStyle(isNowCurrentText)));
+
 
       var cckey = GlobalObjectKey(getRandomString(15));
 
@@ -184,43 +207,46 @@ class BookController extends GetxController with StateMixin {
           key: cckey,
         ),
       ));
+      texts.add(parseHtmlToTextSpan(whiteSpaceForSentence(cm.text.toString()),
+          getSubtitleTextStyle(isNowCurrentText)));
     }
     return texts;
   }
 
   Future<void> checkForTime(event) async {
     List<SentenceModel> a = getParAsLang(false);
+    List<SentenceModel> e = getParAsLang(false);
     var posEv = event;
     for (int i = 0; i < a.length; i++) {
-      for (var b in a[i].sentencesList) {
-        if (posEv.position.inMilliseconds >
-            b.time &&
-            b.time > currentSavedTime.value ||
-            posEv.position.inMilliseconds <
-                b.time &&
+      for (int o = 0; o < a[i].sentencesList.length; o++) {
+        var b = a[i].sentencesList[o];
+        if (posEv.position.inMilliseconds > b.time &&
+                b.time > currentSavedTime.value ||
+            posEv.position.inMilliseconds < b.time &&
                 b.time < currentSavedTime.value) {
-          if (currentSavedTime.value == b.time) {
-            return;
-          }
-          // if(isInEndTime.isTrue){
+            inlineSpans[i][o] = parseHtmlToTextSpan(
+                whiteSpaceForSentence(
+                    e[i].sentencesList[o].text.toString()),
+                getSubtitleTextStyle(true));
+            inlineSpansFa[i][o] = parseHtmlToTextSpan(
+                whiteSpaceForSentence(
+                    e[i].sentencesList[o].text.toString()),
+                getSubtitleTextStyle(true));
           isInEndTime.value = false;
-          // }
-          if(b.time != currentSavedTime.value){
-            currentSavedTime.value = b.time;
-          }
-          if(playingText.value != b.text.toString()){
-            playingText.value = b.text.toString();
-          }
-          if(playingTextFa.value != b.text.toString()){
-            playingTextFa.value = b.text.toString();
-          }
+          currentSavedTime.value = b.time;
+          playingText.value = b.text.toString();
+          playingTextFa.value = b.text.toString();
         }
-        if (posEv.position.inMilliseconds >
-            b.endTime &&
+        if (posEv.position.inMilliseconds > b.endTime &&
             b.endTime > currentSavedTime.value) {
-          // if(isInEndTime.isFalse){
+           inlineSpans[i][o] = parseHtmlToTextSpan(
+               whiteSpaceForSentence(b.text.toString()),
+               getSubtitleTextStyle(false));
+           inlineSpansFa[i][o] = parseHtmlToTextSpan(
+               whiteSpaceForSentence(e[i].sentencesList[o].text.toString()),
+               getSubtitleTextStyle(false));
+           bookScreenState!.setLists(inlineSpans, inlineSpansFa);
           isInEndTime.value = true;
-          // }
         }
       }
     }
@@ -232,17 +258,51 @@ class BookController extends GetxController with StateMixin {
       if (ckey!.currentContext != null) {
         RenderBox box = ckey!.currentContext!.findRenderObject() as RenderBox;
         Offset position =
-        box.localToGlobal(Offset.zero); //this is global position
+            box.localToGlobal(Offset.zero); //this is global position
         double y = position.dy;
-        debugPrint("sadsadsadsadsappooooooo : " + y.toString());
-        // scrollController.jumpTo(y+40);
 
-        scrollController.animateTo(y - 400 + (scrollController.offset),
+        scrollController.animateTo(y - 200 + (scrollController.offset),
             duration: Duration(milliseconds: 2000), curve: Curves.linear);
         // scrollController.jumpTo(y - 400 + (scrollController.offset));
       }
     }
   }
+
+  initSubtitle(id)async{
+    var shouldR = false;
+    if (bookItemModel.subtitle.toString().trim().isNotEmpty) {
+      bool exists = await readExists("${id}en");
+      if(!exists){
+        var en = await _getConnect.get(bookItemModel.subtitle);
+        writeString(en.bodyString ??  "", "${id}en");
+      }
+      String data = await readString("${id}en");
+      var list = await getFullFromSrt(false, strP.parseSrt(data));
+      enParagraph.value = list.sentenceModel;
+      inlineSpans = list.subtitleTimes;
+      shouldR = true;
+    }
+    if (bookItemModel.subtitleFa.toString().trim().isNotEmpty) {
+      bool exists = await readExists("${id}en");
+      if(!exists){
+        var fa = await _getConnect.get(bookItemModel.subtitleFa);
+        writeString(fa.bodyString ??  "", "${id}en");
+      }
+      String data = await readString("${id}en");
+      var list = await getFullFromSrt(true, strP.parseSrt(data));
+      faParagraph.value = list.sentenceModel;
+      inlineSpansFa = list.subtitleTimes;
+      shouldR = true;
+    }
+    if (shouldR) {
+      isSubtitleLoaded.value = true;
+      return;
+    }
+    isSubtitleLoaded.value = true;
+    faParagraph.value = getFullParagraphs(true, bookItemModel.paragraphs);
+    enParagraph.value = getFullParagraphs(false, bookItemModel.paragraphs);
+  }
+
 
   Future<void> checkForTime1(event) async {
     var item = bookItemModel;
@@ -328,12 +388,12 @@ class BookController extends GetxController with StateMixin {
               });
         }
 
-        player.setSubscriptionDuration(const Duration(milliseconds: 900));
+        player.setSubscriptionDuration(const Duration(milliseconds: 100));
         player.onProgress!.listen((event) async {
           isPlaying.value = player.isPlaying;
           duration.value = event.duration;
           playerPosition.value = event.position;
-          await checkForTime(event);
+          checkForTime(event);
         });
       } else {
         ColoredSnack(
@@ -345,10 +405,11 @@ class BookController extends GetxController with StateMixin {
   }
 
   void download(String urlPath, String id, String title) async {
-    isSubtitleLoaded.value = false;
     io.File _checkFile = io.File(getUrlFileName(appDoc.path, id, urlPath));
     if (!_checkFile.existsSync()) {
-      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود فایل صوتی");
+      downloadDialog(
+          downloadingPercent: downloadingPercent,
+          title: "در حال دانلود فایل صوتی");
 
       var _downloadRequest = await dio
           .download(urlPath, getUrlFileName(appDoc.path, id, urlPath),
@@ -356,7 +417,6 @@ class BookController extends GetxController with StateMixin {
         downloadingState.value = "downloading";
         downloadingPercent.value = recive / total;
 
-        print(downloadingPercent);
       });
       Get.closeAllSnackbars();
       Get.back();
@@ -367,31 +427,11 @@ class BookController extends GetxController with StateMixin {
         downloadingPercent.value = 0;
       }
     } else {}
-    var shouldR = false;
-    if (bookItemModel.subtitle.toString().trim().isNotEmpty) {
-      var en = await _getConnect.get(bookItemModel.subtitle);
-      var list =
-      await getFullFromSrt(false, strP.parseSrt(en.bodyString ?? ""));
-      enParagraph.value = list.sentenceModel;
-      // subTimes.value = list.subtitleTimes;
-      shouldR = true;
-    }
-    if (bookItemModel.subtitleFa.toString().trim().isNotEmpty) {
-      var fa = await _getConnect.get(bookItemModel.subtitleFa);
-      var list = await getFullFromSrt(true, strP.parseSrt(fa.bodyString ?? ""));
-      faParagraph.value = list.sentenceModel;
-      shouldR = true;
-    }
-    if (shouldR) {
-      isSubtitleLoaded.value = true;
-      return;
-    }
-    isSubtitleLoaded.value = true;
-    faParagraph.value = getFullParagraphs(true, bookItemModel.paragraphs);
-    enParagraph.value = getFullParagraphs(false, bookItemModel.paragraphs);
+    isBookExists.value = true;
   }
 
   void getPodcastItemData(String bookId, String itemId, bool isGuest) async {
+    isDataLoaded.value = false;
     errorData.value = false;
     _getConnect.allowAutoSignedCert = true;
     var _request = isGuest
@@ -404,7 +444,7 @@ class BookController extends GetxController with StateMixin {
     if (_request.statusCode == 200) {
       refreshController.refreshCompleted();
       bookItemModel = bookParagraphModelFromJson(_request.bodyString ?? "");
-      download(bookItemModel.podcastPath, itemId, bookItemModel.title);
+      initSubtitle(itemId);
       for (var item in bookItemModel.paragraphs) {
         if (item.fa.isNotEmpty) {
           break;
@@ -415,7 +455,7 @@ class BookController extends GetxController with StateMixin {
           break;
         } else {}
       }
-      change(null, status: RxStatus.success());
+      isDataLoaded.value = true;
     } else if (_request.statusCode == 401) {
       _getStorage.remove('timers');
       _getStorage.remove('token');
@@ -425,5 +465,6 @@ class BookController extends GetxController with StateMixin {
       errorData.value = true;
       // getPodcastItemData(bookId,itemId,isGuest);
     }
+    isBookExists.value = isFileExists(getUrlFileName(appDoc.path,itemId,bookItemModel.podcastPath));
   }
 }

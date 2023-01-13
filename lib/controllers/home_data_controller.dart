@@ -53,8 +53,6 @@ class HomeDataController extends GetxController with StateMixin {
             "level": totallSecond.levelNumber(),
             "currentLevelProgress": totallSecond.levelPercent() * 100
           };
-          print(bodyRequest);
-
           var request =
               await _getConnect.post(updateStaticsUrl, bodyRequest, headers: {
             'accept': 'application/json',
@@ -66,7 +64,6 @@ class HomeDataController extends GetxController with StateMixin {
             'Authorization': 'Bearer ${_getStorage.read('token')}'
           });
 
-          print(request.body);
         }
       } catch (e) {}
     }
@@ -80,7 +77,6 @@ class HomeDataController extends GetxController with StateMixin {
     _getConnect.allowAutoSignedCert = true;
     // connectToBazaar();
     if (!isGuest) {
-      print(_getStorage.read('token'));
       var request = await _getConnect.get(homeDataUrl, headers: {
         'accept': 'application/json',
         'Authorization': 'Bearer ${_getStorage.read('token')}'
@@ -88,7 +84,6 @@ class HomeDataController extends GetxController with StateMixin {
       refreshController.refreshCompleted();
 
       if (request.statusCode == 200) {
-        debugPrint(request.bodyString.toString());
         try {
           homeModel = homeModelFromJson(request.bodyString ?? "");
         } catch (e) {

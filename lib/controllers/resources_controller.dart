@@ -13,6 +13,7 @@ class ResourcesController extends GetxController with StateMixin {
   final GetConnect _getConnect = GetConnect();
   FocusNode focus = FocusNode();
   var dataError = false.obs;
+  var isDataLoaded = false.obs;
   var categories = [];
   var podcastCategories = [];
   var videoCategories = [];
@@ -37,6 +38,7 @@ class ResourcesController extends GetxController with StateMixin {
 
   Future<void> getResources() async {
     dataError.value = false;
+    isDataLoaded.value = false;
     _getConnect.allowAutoSignedCert = true;
     var request = await _getConnect.get(resourcesUrl);
     var request1 = await _getConnect.get(subCategoryUrl);
@@ -44,16 +46,15 @@ class ResourcesController extends GetxController with StateMixin {
     var request3 = await _getConnect.get(podcastCategoryUrl);
     refreshController.refreshCompleted();
     if (request.statusCode == 200 && request1.statusCode == 200) {
-      resourcesList.addAll(resourcesFromJson(request.bodyString ?? ""));
-      categories.addAll(jsonDecode(request1.bodyString ?? ""));
-      videoCategories.addAll(jsonDecode(request2.bodyString ?? ""));
-      podcastCategories.addAll(jsonDecode(request3.bodyString ?? ""));
-
-      change(null, status: RxStatus.success());
+      resourcesList = (resourcesFromJson(request.bodyString ?? ""));
+      categories = (jsonDecode(request1.bodyString ?? ""));
+      videoCategories = (jsonDecode(request2.bodyString ?? ""));
+      podcastCategories = (jsonDecode(request3.bodyString ?? ""));
     } else {
       dataError.value = true;
-      ///ERROR
     }
+    isDataLoaded.value = true;
+
   }
 
   get getProfileImage {

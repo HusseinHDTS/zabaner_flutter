@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:zabaner/controllers/web_view_controller.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/views/screens/splash_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
@@ -143,14 +144,7 @@ class _WebViewScreen extends State<WebViewScreen> {
                                   finalSubTime = "12";
                                 }
                                 _controller.setResultReceived(true);
-                                Get.defaultDialog(
-                                    title: "درحال ثبت پرداخت...",
-                                    content: WillPopScope(
-                                        onWillPop: () async {
-                                          return false;
-                                        },
-                                        child:
-                                            const CircularProgressIndicator()));
+                                loadingDialog("درحال ثبت پرداخت ...");
                                 if (url.queryParameters['status']
                                         .toString()
                                         .toLowerCase() !=

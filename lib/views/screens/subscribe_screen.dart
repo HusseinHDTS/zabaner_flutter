@@ -83,8 +83,8 @@ class _SubscribeScreen extends State<SubscribeScreen> {
               )),
           body: SafeArea(
             child: Obx(() => !_controller.isDataLoaded()
-                ? const Center(
-                    child: CircularProgressIndicator(),
+                ? Center(
+                    child: Loading(),
                   )
                 : Column(
                     children: [
@@ -170,10 +170,11 @@ class _SubscribeScreen extends State<SubscribeScreen> {
                                 }
                                 var bodyRequest1 = {
                                   subscribe: "on",
+                                  "lastSeenAt": "",
                                   "timeOfSub": _controller.getCurrentSelectedMonthInt(_controller.getCurrentPos()).toString(),
                                 };
                                 if(status == "OK"){
-                                await _getConnect.post(
+                                var _res = await _getConnect.post(
                                     updateSubscribeProfile, bodyRequest1,
                                     headers: {
                                       'accept': 'application/json',

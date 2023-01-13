@@ -63,6 +63,5 @@ class MainScreenController extends GetxController {
     // TODO: implement dispose
     super.dispose();
     pageController.dispose();
-    print("Dispose");
   }
 }
