@@ -27,9 +27,12 @@ class ChildTab extends StatelessWidget{
               controller.getData();
             },
             header: const MaterialClassicHeader(),
-            child: ListView.builder(shrinkWrap:true,itemCount:controller.allChildTabCategories.length,itemBuilder: (_context,index){
-              return ListModel(index: index,hasSubCategory: true,controller: controller,currentType: TabbarTypes.CHILD,);
-            }),
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: ListView.builder(shrinkWrap:false,itemCount:controller.allChildTabCategories.length,itemBuilder: (_context,index){
+                return ListModel(index: index,hasSubCategory: true,controller: controller,currentType: TabbarTypes.CHILD,);
+              }),
+            ),
           ),
         ),
 

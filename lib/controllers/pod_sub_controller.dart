@@ -28,7 +28,6 @@ class PodcSubController extends GetxController {
       "category": filter.toString(),
     };
     final _request = await _getConnect.post(getPodcastSubCategories,bodyRequest);
-    debugPrint("dsadsadasdsadasdsadqwe : " + _request.bodyString.toString());
       subCategories.value = podSubCatListModelFromJson(_request.bodyString ?? "");
       refreshController.refreshCompleted();
       isDataLoaded.value = true;

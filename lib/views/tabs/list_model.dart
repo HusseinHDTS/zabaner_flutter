@@ -8,6 +8,7 @@ import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/SubTabbarItemScreen.dart';
 import 'package:zabaner/views/screens/subscribe_screen.dart';
 import 'package:zabaner/views/screens/tabbar_item_screen.dart';
+import 'package:zabaner/views/screens/tabbar_sub_category_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
@@ -29,31 +30,31 @@ class ListModel extends StatelessWidget {
     mainModel = [];
     hasSubCategory ??= false;
     if (hasSubCategory!) {
-      currentTitle = controller.allChildTabCategories[index].toString();
+      currentTitle = controller.allChildTabCategories[index]["title"].toString();
       controller.subCategoryModel.forEach((element) {
-        if (element.category == currentTitle) {
+        if (element.category.toString() == controller.allChildTabCategories[index]["_id"].toString()) {
           mainModel.add(element);
         }
       });
     } else {
       if (currentType == TabbarTypes.ADULT) {
-        currentTitle = controller.allAdultTabCategories[index].toString();
+        currentTitle = controller.allAdultTabCategories[index]["title"].toString();
         controller.adultTabbarItemModel.forEach((element) {
-          if (element.category == currentTitle) {
+          if (element.category.toString() == controller.allAdultTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
         });
       } else if (currentType == TabbarTypes.CHILD) {
-        currentTitle = controller.allChildTabCategories[index].toString();
+        currentTitle = controller.allChildTabCategories[index]["title"].toString();
         controller.childTabbarItemModel.forEach((element) {
-          if (element.category == currentTitle) {
+          if (element.category.toString() == controller.allChildTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
         });
       } else if (currentType == TabbarTypes.NATIONAL) {
-        currentTitle = controller.allNationalTabCategories[index].toString();
+        currentTitle = controller.allNationalTabCategories[index]["title"].toString();
         controller.nationalTabbarItemModel.forEach((element) {
-          if (element.category == currentTitle) {
+          if (element.category.toString() == controller.allNationalTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
         });
@@ -134,8 +135,9 @@ class ListModel extends StatelessWidget {
                       }
                       if (hasSubCategory!) {
                         var items = controller.childTabbarItemModel;
-                        Get.to(() => SubTabbarItemScreen(
-                            filter: mainModel[index].title, items: items));
+                        // Get.to(() => SubTabbarItemScreen(
+                        //     filter: mainModel[index].id, items: items));
+                        Get.to(() => TabbarSubCategoryScreen(filter: mainModel[index],items: items,));
                       } else {
                         if (mainModel[index].video.substring(
                                 mainModel[index].video.lastIndexOf("/") + 1) ==

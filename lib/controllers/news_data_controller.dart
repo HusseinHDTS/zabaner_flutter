@@ -141,9 +141,9 @@ class NewsSearchController extends GetConnect {
     }
   }
 
-  var allChildTabCategories ;
-  var allAdultTabCategories;
-  var allNationalTabCategories;
+  var allChildTabCategories  = [];
+  var allAdultTabCategories = [];
+  var allNationalTabCategories = [];
 
   late List<SubCategoryItem> subCategoryModel;
   late List<TabbarItem> childTabbarItemModel;

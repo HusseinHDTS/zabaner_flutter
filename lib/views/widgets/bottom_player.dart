@@ -12,14 +12,16 @@ class BottomPlayer extends StatelessWidget {
   bool isVideo ;
   Rx<Duration> position;
   Duration duration;
-  var pausePlayer , resumePlayer;
+  var pausePlayer , resumePlayer , backward , forward;
   var player, playSpeed, togglePlayer,downloadRequest, togglePlayerSpeed, toggleHide, onInitialize;
 
-  BottomPlayer({required this.isPlaying,
+  BottomPlayer({Key? key, required this.isPlaying,
     required this.isVideo,
     required this.isInitialized,
     required this.playSpeed,
     required this.downloadRequest,
+    this.backward,
+    this.forward,
     required this.resumePlayer,
     required this.pausePlayer,
     required this.togglePlayer,
@@ -32,14 +34,14 @@ class BottomPlayer extends StatelessWidget {
     required this.repeat,
     required this.duration,
     required this.position,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: snackbarWarningTransparent,
+      decoration: const BoxDecoration(color: orangeDarkTransparent,
           borderRadius: BorderRadius.vertical(top: Radius.elliptical(38, 48))),
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.only(right: 14,left: 14,top: 10,bottom: 2),
       child: Column(children: [
         // SizedBox(
         //   height: Get.height / 30,
@@ -72,7 +74,8 @@ class BottomPlayer extends StatelessWidget {
 
               // forward
               InkWell(
-                  onTap: () {
+                onTap: forward,
+                  // onTap: () {
                     // if (controller.ind !=
                     //     controller.podcastItem.paragraphs
                     //         .length -
@@ -85,7 +88,7 @@ class BottomPlayer extends StatelessWidget {
                     //           controller.ind + 1]
                     //               .pst));
                     // }
-                  },
+                  // },
                   child: const Icon(Icons.fast_forward_rounded, color: Colors.white,size: 30)),
 
               // play or pause
@@ -116,7 +119,8 @@ class BottomPlayer extends StatelessWidget {
 
               // backward
               InkWell(
-                  onTap: () {
+                  onTap: backward,
+                  // onTap: () {
                     // if (controller.ind != 0) {
                     //   controller.player.seekToPlayer(
                     //       Duration(
@@ -126,7 +130,7 @@ class BottomPlayer extends StatelessWidget {
                     //           controller.ind - 1]
                     //               .pst));
                     // }
-                  },
+                  // },
                   child: const Icon(Icons.fast_rewind_rounded, color: Colors.white,size: 30,)),
 
               // repeat

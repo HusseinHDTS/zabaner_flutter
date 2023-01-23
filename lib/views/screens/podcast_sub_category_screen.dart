@@ -97,7 +97,7 @@ class PodSubCategoryScreen extends StatelessWidget {
                         _controller.subCategories.length,
                         itemBuilder: (_, index) {
                           return InkWell(
-                            onTap: () => Get.to(() => PodcastListScreen(filter: _controller.subCategories[index].title,)),
+                            onTap: () => Get.to(() => PodcastListScreen(filter: _controller.subCategories[index].id,)),
                             child: Container(
                               width: Get.width,
                               height: Get.height / 5.5,

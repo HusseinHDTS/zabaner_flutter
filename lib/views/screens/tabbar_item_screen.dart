@@ -94,6 +94,46 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
                         : normalHeight,
                     child: BottomPlayer(
                         isVideo: true,
+                        forward: () {
+                          // var data = getPlayerIndex(
+                          //     controller
+                          //         .getParAsLang(
+                          //         null),
+                          //     controller
+                          //         .playIndexList,
+                          //     controller
+                          //         .playIndexInList,
+                          //     true);
+                          // controller.currentSavedTime.value = data[2];
+                          // controller.playerPosition.value = Duration(milliseconds: data[2]);
+                          // controller.playIndexList = data[0];
+                          // controller.playIndexInList = data[1];
+                          var newPos = controller.playerPosition.value.inMilliseconds+5100;
+                          if(newPos > controller.duration.value.inMilliseconds) newPos = controller.duration.value.inMilliseconds -100;
+                          controller.playerPosition.value = Duration(milliseconds: newPos);
+                          controller.chewieController.seekTo(Duration(
+                              milliseconds: newPos));
+                        },
+                        backward: () {
+                          // var data = getPlayerIndex(
+                          //     controller
+                          //         .getParAsLang(
+                          //         null),
+                          //     controller
+                          //         .playIndexList,
+                          //     controller
+                          //         .playIndexInList,
+                          //     false);
+                          // controller.currentSavedTime.value = data[2];
+                          // controller.playerPosition.value = Duration(milliseconds: data[2]);
+                          // controller.playIndexList = data[0];
+                          // controller.playIndexInList = data[1];
+                          var newPos = controller.playerPosition.value.inMilliseconds-5100;
+                          if(newPos < 0) newPos = 0;
+                          controller.playerPosition.value = Duration(milliseconds: newPos);
+                          controller.chewieController.seekTo(Duration(
+                              milliseconds: newPos));
+                        },
                         isFileExists: controller.isVideoExists,
                         isInitialized:controller.videoInitialized,
                         isPlaying: controller.isPlaying,

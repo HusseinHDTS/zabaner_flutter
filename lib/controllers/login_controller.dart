@@ -14,14 +14,19 @@ class LoginController extends GetConnect {
   var error = false.obs;
   var errorMessage = "".obs;
   var loginCheck = false.obs;
+  var errorData = false.obs;
+  int _connectionTry = 0;
+  int _maxTry = 2;
   final GetStorage _getStorage = GetStorage();
   @override
   void onInit() async {
     super.onInit();
     allowAutoSignedCert = true;
+    customInit();
   }
 
   void customInit() async {
+    errorData.value = false;
     allowAutoSignedCert = true;
     await GetStorage.init();
     if (_getStorage.read('token') != null) {
@@ -35,10 +40,21 @@ class LoginController extends GetConnect {
               isGuest: false,
             ));
       } else {
-        loginCheck.value = true;
+        if(_connectionTry == _maxTry){
+          ColoredSnack(title: "خطا هنگام دریافت اطلاعات کاربری!",type: SnackType.ERROR);
+          errorData.value = true;
+          _connectionTry = 0;
+        }else{
+          _connectionTry ++;
+        }
       }
     } else {
-      loginCheck.value = true;
+      if(_connectionTry == _maxTry){
+        loginCheck.value = true;
+        _connectionTry = 0;
+      }else{
+        _connectionTry ++;
+      }
     }
   }
 
@@ -47,8 +63,7 @@ class LoginController extends GetConnect {
     String token = "NaN";
     loadingDialog("لطفا صبر کنید");
     token = fcmToken;
-    var _response =
-        await post(signinUrl, {"username": username, "password": password,"googleAccessToken":token});
+    var _response = await post(signinUrl, {"username": username, "password": password,"googleAccessToken":token});
     if (_response.statusCode == 201) {
       if (rememberMe) {
         try{

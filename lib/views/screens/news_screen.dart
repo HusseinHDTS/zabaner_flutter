@@ -121,25 +121,23 @@ class NewsScreen extends StatelessWidget {
               child: Container(
                 margin:
                     const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                child: Obx(
-                  () => _searchController.isDataLoaded()
-                      ? _searchController.dataError.isTrue
-                          ? SmartRefresher(
-                              controller: _searchController.refreshController4,
-                              onRefresh: () {
-                                _searchController.getData();
-                              },
-                              header: const MaterialClassicHeader(),
-                              child: ErrorLoading())
-                          : TabBarView(children: [
-                              ChildTab(controller: _searchController),
-                              AdultTab(controller: _searchController),
-                              NationalTab(controller: _searchController),
-                            ])
-                      : Center(
-                          child: Loading(),
-                        ),
-                ),
+                child: Obx(() => SmartRefresher(
+                    controller: _searchController.refreshController4,
+                    onRefresh: () {
+                      _searchController.getData();
+                    },
+                    header: const MaterialClassicHeader(),
+                    child: _searchController.dataError.isTrue
+                        ? ErrorLoading()
+                        : _searchController.isDataLoaded()
+                            ? TabBarView(children: [
+                                ChildTab(controller: _searchController),
+                                AdultTab(controller: _searchController),
+                                NationalTab(controller: _searchController),
+                              ])
+                            : Center(
+                                child: Loading(),
+                              ))),
               ),
             ));
       }),

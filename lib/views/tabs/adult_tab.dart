@@ -21,9 +21,12 @@ class AdultTab extends StatelessWidget{
               controller.getData();
             },
             header: const MaterialClassicHeader(),
-            child: ListView.builder(shrinkWrap: true,itemCount:controller.allAdultTabCategories.length,itemBuilder: (_context,index){
-              return ListModel(index: index,controller: controller,currentType: TabbarTypes.ADULT);
-            }),
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: ListView.builder(shrinkWrap: false,itemCount:controller.allAdultTabCategories.length,itemBuilder: (_context,index){
+                return ListModel(index: index,controller: controller,currentType: TabbarTypes.ADULT);
+              }),
+            ),
           ),
         ),
 

@@ -106,7 +106,7 @@ class ResourcesScreen extends StatelessWidget {
                                 _controller.getResources();
                               },
                               header: const MaterialClassicHeader(),
-                              child: _controller.dataError.isTrue ? ErrorLoading() : Obx(()=>_controller.isDataLoaded.isTrue ? ListView(
+                              child: Obx(()=> _controller.dataError.isTrue ? ErrorLoading() : _controller.isDataLoaded.isTrue ? ListView(
                                 children: [
                                   BookResources(
                                     isGuest: isGuest,

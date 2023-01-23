@@ -50,10 +50,11 @@ class ResourcesController extends GetxController with StateMixin {
       categories = (jsonDecode(request1.bodyString ?? ""));
       videoCategories = (jsonDecode(request2.bodyString ?? ""));
       podcastCategories = (jsonDecode(request3.bodyString ?? ""));
+      isDataLoaded.value = true;
     } else {
       dataError.value = true;
     }
-    isDataLoaded.value = true;
+
 
   }
 

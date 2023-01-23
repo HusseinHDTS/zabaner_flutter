@@ -11,6 +11,7 @@ import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/widgets/bottom_player.dart';
+import 'package:zabaner/views/widgets/subtitle_tile.dart';
 import 'package:zabaner/views/widgets/text_highlight.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -55,287 +56,303 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             ),
             body: Directionality(
               textDirection: TextDirection.ltr,
-              child: Obx(()=>controller.isDataLoaded.isTrue ? Column(
-                children: [
-                  Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: Get.width / 50, vertical: 5),
-                      child: AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Stack(
-                          children: [
-                            Obx(() => controller.videoInitialized.value
-                                ? ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Chewie(
-                                    controller:
-                                    controller.chewieController))
-                                : ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Container(decoration: BoxDecoration(color: Colors.grey),),
-                            ))
-                          ],
-                        ),
-                      )),
-
-                  // Icons
-                  SizedBox(
-                    width: Get.width / 1.1,
-                    height: Get.height / 20,
-                    child:
-                    // download and text visible icon
-                    Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              // bookmark icon
-                              Row(
-                                children: [
-                                  const Text("   انگلیسی:",
-                                      style: TextStyle(
-                                          fontFamily: "Yekan",
-                                          fontSize: 16)),
-                                  Obx(() => Switch(
-                                    value: controller.en.value,
-                                    onChanged: (value) {
-                                      controller.en.value = value;
-                                    },
-                                  ))
-                                ],
-                              ),
-
-                              Row(
-                                children: [
-                                  const Text(" فارسی:",
-                                      style: TextStyle(
-                                          fontFamily: "Yekan",
-                                          fontSize: 16)),
-                                  Obx(() => Switch(
-                                    value: controller.fa.value,
-                                    onChanged: (value) {
-                                      controller.fa.value = value;
-                                    },
-                                  ))
-                                ],
-                              ),
-                            ],
-                          ),
-                          InkWell(
-                            onTap: () => controller.autoScroll.toggle(),
-                            child: Obx(() => Container(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: Get.height / 100),
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(8),
-                                  color: controller.autoScroll.value
-                                      ? Colors.blue
-                                      : Colors.red),
-                              child: Row(children: const [
-                                Icon(Icons.arrow_drop_down_sharp,
-                                    color: Colors.black),
-                                Icon(Icons.arrow_drop_up_sharp,
-                                    color: Colors.black),
-                              ]),
-                            )),
-                          ),
-                        ]),
-                  ),
-
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      height: double.infinity,
-                      child: Stack(
-                        children: [
-                          Container(
+              child: Obx(() => controller.isDataLoaded.isTrue
+                  ? Column(
+                      children: [
+                        Container(
                             margin: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            child: GetBuilder<VideoController>(
-                              init: controller,
-                              builder: (_ctrler) {
-                                return SingleChildScrollView(
-                                  controller: _ctrler.scrollController,
-                                  child: Column(
-                                      children: List.generate(
-                                          _ctrler.getParAsLang(null).length,
-                                              (index) {
-                                            Widget returnWidget = Obx(() => Column(
-                                              children: [
-                                                _ctrler.en.value == true
-                                                    ? Directionality(
-                                                  textDirection:
-                                                  TextDirection.ltr,
-                                                  child: FutureBuilder<
-                                                      List<InlineSpan>>(
-                                                    future: _ctrler
-                                                        .getCurrentText(
-                                                        index, false),
-                                                    builder:
-                                                        (_context, item) {
-                                                      return RichText(
-                                                        text: TextSpan(
-                                                          style:
-                                                          getSubDefault(
-                                                              false),
-                                                          children:
-                                                          item.data,
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                )
-                                                    : Container(),
-                                                const SizedBox(
-                                                  height: 6,
-                                                ),
-                                                _ctrler.fa.value == true
-                                                    ? Directionality(
-                                                  textDirection:
-                                                  TextDirection.rtl,
-                                                  child: FutureBuilder<
-                                                      List<InlineSpan>>(
-                                                    future: _ctrler
-                                                        .getCurrentText(
-                                                        index, true),
-                                                    builder:
-                                                        (_context, item) {
-                                                      return RichText(
-                                                        text: TextSpan(
-                                                          style:
-                                                          getSubDefault(
-                                                              true),
-                                                          children:
-                                                          item.data,
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                )
-                                                    : Container(),
-                                                const SizedBox(
-                                                  height: 24,
-                                                ),
-                                              ],
-                                            ));
-                                            if (index ==
-                                                controller
+                                horizontal: Get.width / 50, vertical: 5),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Stack(
+                                children: [
+                                  Obx(() => controller.videoInitialized.value
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          child: Chewie(
+                                              controller:
+                                                  controller.chewieController))
+                                      : ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey),
+                                          ),
+                                        ))
+                                ],
+                              ),
+                            )),
+
+                        // Icons
+                        SizedBox(
+                          width: Get.width / 1.1,
+                          height: Get.height / 20,
+                          child:
+                              // download and text visible icon
+                              Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                Row(
+                                  children: [
+                                    // bookmark icon
+                                    Row(
+                                      children: [
+                                        const Text("   انگلیسی:",
+                                            style: TextStyle(
+                                                fontFamily: "Yekan",
+                                                fontSize: 16)),
+                                        Obx(() => Switch(
+                                              value: controller.en.value,
+                                              onChanged: (value) {
+                                                controller.en.value = value;
+                                              },
+                                            ))
+                                      ],
+                                    ),
+
+                                    Row(
+                                      children: [
+                                        const Text(" فارسی:",
+                                            style: TextStyle(
+                                                fontFamily: "Yekan",
+                                                fontSize: 16)),
+                                        Obx(() => Switch(
+                                              value: controller.fa.value,
+                                              onChanged: (value) {
+                                                controller.fa.value = value;
+                                              },
+                                            ))
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                InkWell(
+                                  onTap: () => controller.autoScroll.toggle(),
+                                  child: Obx(() => Container(
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: Get.height / 100),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color: controller.autoScroll.value
+                                                ? Colors.blue
+                                                : Colors.red),
+                                        child: Row(children: const [
+                                          Icon(Icons.arrow_drop_down_sharp,
+                                              color: Colors.black),
+                                          Icon(Icons.arrow_drop_up_sharp,
+                                              color: Colors.black),
+                                        ]),
+                                      )),
+                                ),
+                              ]),
+                        ),
+
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            height: double.infinity,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 4),
+                                  child: GetBuilder<VideoController>(
+                                    init: controller,
+                                    builder: (_ctrler) {
+                                      return SingleChildScrollView(
+                                        controller: _ctrler.scrollController,
+                                        child: Column(
+                                            children: List.generate(
+                                                _ctrler
                                                     .getParAsLang(null)
-                                                    .length -
-                                                    1) {
-                                              return Column(
-                                                children: [
-                                                  returnWidget,
-                                                  Obx(() => SizedBox(
-                                                    height: _ctrler.isHide.value
-                                                        ? hiddenHeight
-                                                        : normalHeight,
-                                                  )),
-                                                ],
-                                              );
-                                            }
-                                            return returnWidget;
-                                          })),
-                                );
-                              },
+                                                    .length, (index) {
+                                                  bool isTextEmpty = false;
+                                          Widget returnWidget = Obx(()=>SubtitleTile(faVisible: _ctrler.fa.value, enVisible: _ctrler.en.value, faTile: _ctrler.getCurrentText(index, true),enTile: _ctrler.getCurrentText(index, false)));
+                                          if (index ==
+                                              controller
+                                                      .getParAsLang(null)
+                                                      .length -
+                                                  1) {
+                                            return Column(
+                                              children: [
+                                                returnWidget,
+                                                Obx(() => SizedBox(
+                                                      height:
+                                                          _ctrler.isHide.value
+                                                              ? hiddenHeight
+                                                              : normalHeight,
+                                                    )),
+                                              ],
+                                            );
+                                          }
+                                          return returnWidget;
+                                        })),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Obx(() => Directionality(
+                                          textDirection: TextDirection.rtl,
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            height: controller.isHide.value
+                                                ? hiddenHeight
+                                                : normalHeight,
+                                            child: BottomPlayer(
+                                                isVideo: true,
+                                                forward: () {
+                                                  // var data = getPlayerIndex(
+                                                  //     controller
+                                                  //         .getParAsLang(
+                                                  //         null),
+                                                  //     controller
+                                                  //         .playIndexList,
+                                                  //     controller
+                                                  //         .playIndexInList,
+                                                  //     true);
+                                                  // controller.currentSavedTime.value = data[2];
+                                                  // controller.playerPosition.value = Duration(milliseconds: data[2]);
+                                                  // controller.playIndexList = data[0];
+                                                  // controller.playIndexInList = data[1];
+                                                  var newPos = controller.currentSavedTime.value+5100;
+                                                  if(newPos > controller.duration.value.inMilliseconds) newPos = controller.duration.value.inMilliseconds -100;
+                                                  controller.currentSavedTime.value = newPos;
+                                                  controller.playerPosition.value = Duration(milliseconds: newPos);
+                                                  controller.chewieController.seekTo(Duration(
+                                                      milliseconds: newPos));
+                                                },
+                                                backward: () {
+                                                  // var data = getPlayerIndex(
+                                                  //     controller
+                                                  //         .getParAsLang(
+                                                  //         null),
+                                                  //     controller
+                                                  //         .playIndexList,
+                                                  //     controller
+                                                  //         .playIndexInList,
+                                                  //     false);
+                                                  // controller.currentSavedTime.value = data[2];
+                                                  // controller.playerPosition.value = Duration(milliseconds: data[2]);
+                                                  // controller.playIndexList = data[0];
+                                                  // controller.playIndexInList = data[1];
+                                                  var newPos = controller.currentSavedTime.value-5100;
+                                                  if(newPos < 0) newPos = 0;
+                                                  controller.currentSavedTime.value = newPos;
+                                                  controller.playerPosition.value = Duration(milliseconds: newPos);
+                                                    controller.chewieController.seekTo(Duration(
+                                                        milliseconds: newPos));
+                                                },
+                                                isFileExists:
+                                                    controller.isVideoExists,
+                                                isInitialized:
+                                                    controller.videoInitialized,
+                                                isPlaying: controller.isPlaying,
+                                                onInitialize: () {
+                                                  controller.initVideo(
+                                                      controller
+                                                          .videoItems.value.id,
+                                                      controller.videoItems
+                                                          .value.videoPath);
+                                                },
+                                                resumePlayer: () {
+                                                  if (!controller
+                                                      .videoInitialized
+                                                      .value) return;
+                                                  controller.chewieController
+                                                      .togglePause();
+                                                  controller.chewieController
+                                                      .showControls;
+                                                  // controller.chewieController.notifyListeners();
+                                                },
+                                                pausePlayer: () {
+                                                  if (!controller
+                                                      .videoInitialized
+                                                      .value) return;
+                                                  controller.chewieController
+                                                      .togglePause();
+                                                },
+                                                downloadRequest: () =>
+                                                    controller.download(
+                                                        controller.videoItems
+                                                            .value.videoPath,
+                                                        controller.videoItems
+                                                            .value.id,
+                                                        controller.videoItems
+                                                            .value.title),
+                                                togglePlayer: () async {
+                                                  controller.chewieController
+                                                      .togglePause();
+                                                  return true;
+                                                },
+                                                toggleHide: () =>
+                                                    controller.isHide.toggle(),
+                                                togglePlayerSpeed: () {
+                                                  if (controller
+                                                      .isPlaying.value) {
+                                                    if (controller
+                                                            .playSpeed.value ==
+                                                        0.5) {
+                                                      controller
+                                                          .playSpeed.value = 1;
+                                                      controller
+                                                          .chewieController
+                                                          .videoPlayerController
+                                                          .setPlaybackSpeed(1);
+                                                    } else if (controller
+                                                            .playSpeed.value ==
+                                                        1) {
+                                                      controller
+                                                          .playSpeed.value = 2;
+                                                      controller
+                                                          .chewieController
+                                                          .videoPlayerController
+                                                          .setPlaybackSpeed(2);
+                                                    } else if (controller
+                                                            .playSpeed.value ==
+                                                        2) {
+                                                      controller.playSpeed
+                                                          .value = 0.5;
+                                                      controller
+                                                          .chewieController
+                                                          .videoPlayerController
+                                                          .setPlaybackSpeed(
+                                                              0.5);
+                                                    }
+                                                  }
+                                                },
+                                                playSpeed: controller.playSpeed,
+                                                player: controller
+                                                        .videoInitialized.value
+                                                    ? controller
+                                                        .chewieController
+                                                    : null,
+                                                isHide: controller.isHide,
+                                                repeat: controller.repeat,
+                                                duration:
+                                                    controller.duration.value,
+                                                position:
+                                                    controller.playerPosition),
+                                          ),
+                                        ))),
+                              ],
                             ),
                           ),
-                          Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Obx(() => Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: AnimatedContainer(
-                                  duration:
-                                  const Duration(milliseconds: 500),
-                                  height: controller.isHide.value
-                                      ? hiddenHeight
-                                      : normalHeight,
-                                  child: BottomPlayer(
-                                      isVideo: true,
-                                      isFileExists: controller.isVideoExists,
-                                      isInitialized:
-                                      controller.videoInitialized,
-                                      isPlaying:
-                                      controller.isPlaying,
-                                      onInitialize: () {
-                                        controller.initVideo(
-                                            controller
-                                                .videoItems.value.id,
-                                            controller.videoItems.value
-                                                .videoPath);
-                                      },
-                                      resumePlayer: () {
-                                        if(!controller.videoInitialized.value) return;
-                                        controller.chewieController.togglePause();
-                                        controller.chewieController.showControls;
-                                        // controller.chewieController.notifyListeners();
-                                      },
-                                      pausePlayer: () {
-                                        if(!controller.videoInitialized.value) return;
-                                        controller.chewieController.togglePause();
-                                      },
-                                      downloadRequest: () => controller.download(
-                                          controller.videoItems.value.videoPath,
-                                          controller.videoItems.value.id,
-                                          controller.videoItems.value.title),
-                                      togglePlayer: () async {
-                                        controller.chewieController
-                                            .togglePause();
-                                        return true;
-                                      },
-                                      toggleHide: () => controller.isHide.toggle(),
-                                      togglePlayerSpeed: () {
-                                        if (controller
-                                            .isPlaying.value) {
-                                          if (controller
-                                              .playSpeed.value ==
-                                              0.5) {
-                                            controller.playSpeed.value =
-                                            1;
-                                            controller.chewieController
-                                                .videoPlayerController
-                                                .setPlaybackSpeed(1);
-                                          } else if (controller
-                                              .playSpeed.value ==
-                                              1) {
-                                            controller.playSpeed.value =
-                                            2;
-                                            controller.chewieController
-                                                .videoPlayerController
-                                                .setPlaybackSpeed(2);
-                                          } else if (controller
-                                              .playSpeed.value ==
-                                              2) {
-                                            controller.playSpeed.value =
-                                            0.5;
-                                            controller.chewieController
-                                                .videoPlayerController
-                                                .setPlaybackSpeed(0.5);
-                                          }
-                                        }
-                                      },
-                                      playSpeed: controller.playSpeed,
-                                      player: controller.videoInitialized.value ? controller.chewieController : null,
-                                      isHide: controller.isHide,
-                                      repeat: controller.repeat,
-                                      duration: controller.duration.value,
-                                      position: controller.playerPosition),
-                                ),
-                              ))),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ) : Loading()),
+                        ),
+                      ],
+                    )
+                  : Loading()),
             )),
       ),
     );
   }
 }
-
 
 //Obx(()=>ListView.builder(
 //                                 physics: controller.autoScroll.value ? NeverScrollableScrollPhysics() : null,

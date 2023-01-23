@@ -51,7 +51,7 @@ class PocastResources extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
             child: Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: TextDirection.rtl,
               child: ListView.separated(
                   itemCount: categories.length,
                   scrollDirection: Axis.horizontal,
@@ -66,7 +66,7 @@ class PocastResources extends StatelessWidget {
                     return InkWell(
                       onTap: (){
                         // Get.to(() => PodcastListScreen(filter:categories[index]['title'] ,));
-                        Get.to(() => PodSubCategoryScreen(filter:categories[index]['title'] ,));
+                        Get.to(() => PodSubCategoryScreen(filter:categories[index]['_id'] ,));
                       },
                       child:Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

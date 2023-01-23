@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/controllers/news_data_controller.dart';
+import 'package:zabaner/controllers/sub_tabbar_item_controller.dart';
 import 'package:zabaner/models/tabbar_item.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/views/screens/tabbar_item_screen.dart';
@@ -88,8 +90,8 @@ class _SubTabbarItemScreen extends State<SubTabbarItemScreen> {
                           margin: EdgeInsets.all(12),
                           child: Column(children: [
                             Align(alignment:Alignment.topRight,child: ColoredText(items[index].title,textColor: Colors.black,)),
-                            SizedBox(height: 5,),
-                            ColoredText("سطح " +items[index].category +"\n\t\t\t\t\t" + "دسته ی : " +items[index].subCategory,textColor: Colors.black,textAlign: TextAlign.right,),
+                            SizedBox(height: 8,),
+                            Align(alignment:Alignment.centerRight,child: Container(margin:EdgeInsets.only(right: 8),child: ColoredText("سطح " +items[index].category,textColor: Colors.black,textAlign: TextAlign.right,))),
                           ],),
                         ),
                       )),

@@ -9,6 +9,7 @@ class SubtitleTile extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    bool hasFa = true,hasEn = true;
     return Container(
       child:faVisible == true ||
           enVisible == true
@@ -20,38 +21,49 @@ class SubtitleTile extends StatelessWidget{
             child:FutureBuilder<List<InlineSpan>>(
               future: enTile,
               builder: (_context , item){
-                return Container(
-                    child: RichText(
-                      text: TextSpan(
-                        style: getSubDefault(false),
-                        children:item.data,
-                      ),
-                    ));
+                hasEn = item.data != null && item.data!.isNotEmpty;
+                return Column(
+                  children: [
+                    item.data != null && item.data!.isNotEmpty ?  Container(
+                        child: RichText(
+                          text: TextSpan(
+                            style: getSubDefault(false),
+                            children:item.data,
+                          ),
+                        )) : Container(),
+                    item.data != null && item.data!.isNotEmpty ? SizedBox(
+                      height: 6,
+                    ) : Container()
+                  ],
+                );
               },),
           )
               : Container(),
-          SizedBox(
-            height: 6,
-          ),
           faVisible == true
               ? Directionality(
             textDirection: TextDirection.rtl,
             child:FutureBuilder<List<InlineSpan>>(
               future: faTile,
               builder: (_context , item){
-                return Container(
-                    child: RichText(
-                      text: TextSpan(
-                        style: getSubDefault(true),
-                        children:item.data,
-                      ),
-                    ));
+                hasFa = item.data != null && item.data!.isNotEmpty;
+                return Column(
+                  children: [
+                    item.data != null && item.data!.isNotEmpty ? Container(
+                        child: RichText(
+                          text: TextSpan(
+                            style: getSubDefault(true),
+                            children:item.data,
+                          ),
+                        )) : Container(),
+                    item.data != null && item.data!.isNotEmpty ? SizedBox(
+                      height: 24,
+                    ) : Container(),
+                  ],
+                );
               },),
           )
               : Container(),
-          SizedBox(
-            height: 24,
-          ),
+          hasFa ? SizedBox(height: 14,) : Container(),
         ],
       )
           : Container(),

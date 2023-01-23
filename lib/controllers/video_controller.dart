@@ -11,13 +11,10 @@ import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/models/video_items_model.dart';
 import 'package:video_player/video_player.dart';
-import 'package:zabaner/views/colors.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'dart:io' as io;
-
-import 'package:zabaner/widgets/colored_text.dart';
 
 class VideoController extends GetxController {
   // late VideoModel videoModel;
@@ -66,7 +63,9 @@ class VideoController extends GetxController {
   var isSubtitleLoaded = false.obs;
   var isVideoExists =false.obs;
   final Dio dio = Dio();
-  var playIndex = -1;
+  var playIndex = 0;
+  var playIndexList = 0;
+  var playIndexInList = 0;
   RxBool autoScroll = true.obs;
   late ScrollController scrollController;
   var bookmark = false.obs;
@@ -92,13 +91,11 @@ class VideoController extends GetxController {
   void customeInit(id,isGuest) async {
     forcedScreen = await isScreenForced();
     _dateTime = DateTime.now();
-    playIndex = 0;
     isPlaying = false.obs;
     isHide = false.obs;
     fa = true.obs;
     en = true.obs;
     playSpeed.value = 1;
-    playIndex = 0;
     downloadingPercent = 0.0.obs;
     downloadingState = "".obs;
     repeat = false.obs;
@@ -273,6 +270,10 @@ class VideoController extends GetxController {
       var ab = a[i].sentencesList;
       for (int o = 0 ; o < ab.length; o ++) {
         var b = ab[o];
+        if(currentSavedTime.value == b.time){
+          playIndexList = i;
+          playIndexInList = o;
+        }
         if (chewieController
                         .videoPlayerController.value.position.inMilliseconds >
                     b.time &&
@@ -284,9 +285,7 @@ class VideoController extends GetxController {
           if (currentSavedTime.value == b.time) {
             return;
           }
-          // if(isInEndTime.isTrue){
             isInEndTime.value = false;
-          // }
           if(b.time == currentSavedTime.value){
             return;
           }

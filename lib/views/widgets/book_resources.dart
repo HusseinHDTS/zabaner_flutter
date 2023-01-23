@@ -54,7 +54,7 @@ class BookResources extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
             child:  Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: TextDirection.rtl,
               child: ListView.separated(
                   itemCount: categories.length,
                   scrollDirection: Axis.horizontal,
@@ -68,7 +68,7 @@ class BookResources extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: (){
-                        Get.to(() => BooksListScreen(filter:categories[index]['title'] ,));
+                        Get.to(() => BooksListScreen(filter:categories[index]['_id'] ,));
                       },
                       child:Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

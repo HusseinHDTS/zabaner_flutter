@@ -45,31 +45,33 @@ class VideoResources extends StatelessWidget {
             )
           ],
         ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height / 5.4,
-          decoration: BoxDecoration(
-              color: Colors.grey[200], borderRadius: BorderRadius.circular(15)),
+        Directionality(
+          textDirection: TextDirection.rtl,
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: videoCategories.length,
-              padding: EdgeInsets.only(
-                left: MediaQuery.of(context).size.width / 25,
-                right: MediaQuery.of(context).size.width / 25,
-              ),
-              reverse: true,
-              itemBuilder: (context, index) {
-                return VideoListTile(
-                    resource: resource,
-                    isGuest: isGuest,
-                    imagePath: getUrl(videoCategories[index]['imagePath']),
-                    title: videoCategories[index]['title'],
-                    id: videoCategories[index]['_id']);
-              },
-              separatorBuilder: (context, index) => SizedBox(
-                width: MediaQuery.of(context).size.width / 15,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height / 5.4,
+            decoration: BoxDecoration(
+                color: Colors.grey[200], borderRadius: BorderRadius.circular(15)),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: videoCategories.length,
+                padding: EdgeInsets.only(
+                  left: MediaQuery.of(context).size.width / 25,
+                  right: MediaQuery.of(context).size.width / 25,
+                ),
+                itemBuilder: (context, index) {
+                  return VideoListTile(
+                      resource: resource,
+                      isGuest: isGuest,
+                      imagePath: getUrl(videoCategories[index]['imagePath']),
+                      title: videoCategories[index]['title'],
+                      id: videoCategories[index]['_id']);
+                },
+                separatorBuilder: (context, index) => SizedBox(
+                  width: MediaQuery.of(context).size.width / 15,
+                ),
               ),
             ),
           ),
@@ -103,7 +105,7 @@ class VideoListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.to(() => VideoListScreen(filter: title,)),
+      onTap: () => Get.to(() => VideoListScreen(filter: id,)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

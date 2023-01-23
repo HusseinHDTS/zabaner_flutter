@@ -15,6 +15,7 @@ const videoCategoryUrl = "$baseUrl/api/v1/video-categories";
 const podcastCategoryUrl = "$baseUrl/api/v1/podcast-categories";
 const getTabbarCategory = "$baseUrl/api/v1/tabbar-categories";
 const getChildTabbarCategory = "$baseUrl/api/v1/child-tabbar-categories";
+const getChildTabbarSubCategory = "$baseUrl/api/v1/child-tabbar-sub-categories";
 const getChildTabbarItems = "$baseUrl/api/v1/child-tabbar";
 const getAdultTabbarItems = "$baseUrl/api/v1/adult-tabbar";
 const getUpdateVersions = "$baseUrl/api/v1/versions";

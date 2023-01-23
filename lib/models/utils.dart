@@ -14,8 +14,8 @@ import 'package:zabaner/widgets/colored_text.dart';
 import 'package:html/parser.dart' as parser;
 
 
-final BUILD_MODE = "BAZAAR";
-// final BUILD_MODE = "OTHER";
+// final BUILD_MODE = "BAZAAR";
+final BUILD_MODE = "OTHER";
 
 int lvl1 = 1680;
 int lvl2 = 3600;
@@ -23,7 +23,7 @@ int lvl3 = 7200;
 int lvl4 = 4800;
 int lvl5 = lvl4;
 int lvl6 = lvl4;
-double hiddenHeight = Get.height / 7.5 / 1.5 , normalHeight = Get.height / 7.5;
+double hiddenHeight = Get.height / 8 / 1.5 , normalHeight = Get.height / 8;
 
 downloadDialog({required RxDouble downloadingPercent , required title}){
   Get.defaultDialog(
@@ -84,14 +84,47 @@ TextStyle getSubDefault(isFa) {
   return TextStyle(fontSize: isFa ? 17 : 18, color: Colors.black, fontFamily: "Neue_MD");
 }
 
-Widget ErrorLoading() {
+List<int> getPlayerIndex(List<SentenceModel> models , int listIndex , int inListIndex , bool forward){
+  var results = [listIndex,inListIndex];
+  if(forward){
+    var b = models[listIndex].sentencesList;
+
+    if(inListIndex+1 < b.length){
+      results[0] = listIndex;
+      results[1] = inListIndex+1;
+    }else{
+      // debugPrint("dsakdaksjekwajlkejas : ListIndex : " + listIndex.toString() +"    inListIndex : " + inListIndex.toString());
+
+      if(listIndex+1 < models.length){
+        results[0] = listIndex+1;
+        results[1] = 0;
+      }
+    }
+  }else{
+    if(inListIndex-1 > 0){
+      results[0] = listIndex;
+      results[1] = inListIndex-1;
+    }else{
+      if(listIndex-1 > 0){
+        var b = models[listIndex-1].sentencesList;
+        results[0] = listIndex-1;
+        results[1] = b.length-1;
+      }
+    }
+  }
+  // debugPrint("dsakdaksjekwajlkejas : ListIndex : " + results[0].toString() +"    inListIndex : " + results[1].toString());
+  return [results[0],results[1],models[results[0]].sentencesList[results[1]].time];
+}
+
+Widget ErrorLoading({String? title}) {
+  title = title ?? "خطا هنگام دریافت اطلاعات از سرور! لطفا مجددا تلاش کنید.";
   return Center(
       child: Container(
         child: Column(
           children: [
             Lottie.asset('assets/animations/server_error.json', height: 350),
             ColoredText(
-              "خطا هنگام دریافت اطلاعات از سرور! لطفا مجددا تلاش کنید.",
+              title,
               textDirection: TextDirection.rtl,
               textColor: Colors.red,
             ),
@@ -103,7 +136,7 @@ Widget ErrorLoading() {
 Widget Loading() {
   return Center(
       child: Container(
-        child: Lottie.asset('assets/animations/loading_main.json', height: 350),
+        child: Lottie.asset('assets/animations/loading_main1.json', height: 350),
       ));
 }
 
