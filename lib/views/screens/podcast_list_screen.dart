@@ -7,44 +7,27 @@ import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/podcast_play_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class PodcastListScreen extends StatelessWidget {
   PodcastListScreen({
     this.filter,
+    this.title,
+    this.from,
   });
   String? filter;
+  String? title;
+  String? from;
 
   @override
   Widget build(BuildContext context) {
-    final PodcastListController _controller = Get.put(PodcastListController(filter:filter));
+    from??="none";
+    final PodcastListController _controller = Get.put(PodcastListController(filter:filter,from: from));
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
           backgroundColor: const Color(0xffffffff),
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: const Color(0xffffffff),
-              elevation: 0,
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.black,
-                      ),
-                      Text(
-                        "بازگشت",
-                        style: TextStyle(
-                            fontFamily: "Yekan", color: Color(0xff000000)),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           body: Obx(()=>_controller.isDataLoaded.isTrue ? Padding(
               padding: EdgeInsets.symmetric(horizontal: Get.width / 40),
               child: Column(children: [
@@ -66,8 +49,8 @@ class PodcastListScreen extends StatelessWidget {
                       ),
 
                       // Hello Text
-                      const Text(
-                        "پادکست ها",
+                      Text(
+                        title ?? "پادکست ها",
                         style: TextStyle(fontFamily: "Yekan", fontSize: 18),
                       ),
 

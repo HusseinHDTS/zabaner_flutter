@@ -15,6 +15,8 @@ import 'package:zabaner/views/widgets/serach_text_input.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 import 'dart:math' as math;
 
+import 'package:zabaner/widgets/my_app_bar.dart';
+
 class ConversationScreen extends StatefulWidget {
   String id, title;
 
@@ -56,33 +58,7 @@ class _ConversationScreenState extends State<ConversationScreen>
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-            leadingWidth: Get.width,
-            backgroundColor: orange,
-            elevation: 0,
-            leading: Padding(
-              padding: EdgeInsets.only(right: Get.width / 40),
-              child: InkWell(
-                onTap: () => Get.back(),
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.arrow_back,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "بازگشت",
-                      style:
-                          TextStyle(fontFamily: "Yekan", color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            )),
+        appBar: ColoredAppBar(),
         backgroundColor: const Color(0xffffffff),
         // resizeToAvoidBottomInset: false,
         body: Container(
@@ -199,11 +175,11 @@ class _ConversationScreenState extends State<ConversationScreen>
                             flex: 0,
                             child: Container(
                               decoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: orangeDark),
+                                  shape: BoxShape.circle, color: primaryDark),
                               width: 50,
                               height: double.infinity,
                               child: Material(
-                                color: orangeDark,
+                                color: primaryDark,
                                 shape: const CircleBorder(),
                                 child: InkWell(
                                   customBorder: const CircleBorder(),
@@ -296,7 +272,7 @@ class _ConversationScreenState extends State<ConversationScreen>
 
     if (type == BubbleType.sendBubble) {
       align = Alignment.topRight;
-      smallColor = orange;
+      smallColor = primary;
       fromStr = "ارسال شده";
     } else {
       smallColor = Colors.white;

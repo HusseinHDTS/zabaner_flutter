@@ -93,7 +93,7 @@ class BookController extends GetxController {
     player.closeAudioSession();
   }
 
-  bool isFileExists(String filePath){
+  bool isFileExists(String filePath) {
     io.File audioFile = io.File(filePath);
     return audioFile.existsSync();
   }
@@ -177,7 +177,7 @@ class BookController extends GetxController {
   var currentSavedTime = (-1).obs;
   GlobalKey? ckey;
 
-  Future<List<InlineSpan>> getCurrentText(int index, bool _fa) async{
+  Future<List<InlineSpan>> getCurrentText(int index, bool _fa) async {
     List<InlineSpan> texts = [];
     SentenceModel model = getParAsLang(_fa)[index];
 
@@ -188,7 +188,6 @@ class BookController extends GetxController {
       isNowCurrentText =
           currentSavedTime.value == cm.time && isInEndTime.value == false;
       String textForCheck = StringHelper().filterString(playingText.value);
-
 
       var cckey = GlobalObjectKey(getRandomString(15));
 
@@ -224,14 +223,12 @@ class BookController extends GetxController {
                 b.time > currentSavedTime.value ||
             posEv.position.inMilliseconds < b.time &&
                 b.time < currentSavedTime.value) {
-            inlineSpans[i][o] = parseHtmlToTextSpan(
-                whiteSpaceForSentence(
-                    e[i].sentencesList[o].text.toString()),
-                getSubtitleTextStyle(true));
-            inlineSpansFa[i][o] = parseHtmlToTextSpan(
-                whiteSpaceForSentence(
-                    e[i].sentencesList[o].text.toString()),
-                getSubtitleTextStyle(true));
+          inlineSpans[i][o] = parseHtmlToTextSpan(
+              whiteSpaceForSentence(e[i].sentencesList[o].text.toString()),
+              getSubtitleTextStyle(true));
+          inlineSpansFa[i][o] = parseHtmlToTextSpan(
+              whiteSpaceForSentence(e[i].sentencesList[o].text.toString()),
+              getSubtitleTextStyle(true));
           isInEndTime.value = false;
           currentSavedTime.value = b.time;
           playingText.value = b.text.toString();
@@ -239,13 +236,13 @@ class BookController extends GetxController {
         }
         if (posEv.position.inMilliseconds > b.endTime &&
             b.endTime > currentSavedTime.value) {
-           inlineSpans[i][o] = parseHtmlToTextSpan(
-               whiteSpaceForSentence(b.text.toString()),
-               getSubtitleTextStyle(false));
-           inlineSpansFa[i][o] = parseHtmlToTextSpan(
-               whiteSpaceForSentence(e[i].sentencesList[o].text.toString()),
-               getSubtitleTextStyle(false));
-           bookScreenState!.setLists(inlineSpans, inlineSpansFa);
+          inlineSpans[i][o] = parseHtmlToTextSpan(
+              whiteSpaceForSentence(b.text.toString()),
+              getSubtitleTextStyle(false));
+          inlineSpansFa[i][o] = parseHtmlToTextSpan(
+              whiteSpaceForSentence(e[i].sentencesList[o].text.toString()),
+              getSubtitleTextStyle(false));
+          bookScreenState!.setLists(inlineSpans, inlineSpansFa);
           isInEndTime.value = true;
         }
       }
@@ -268,32 +265,21 @@ class BookController extends GetxController {
     }
   }
 
-  initSubtitle(id)async{
+  initSubtitle(id) async {
     var shouldR = false;
-    if (bookItemModel.subtitle.toString().trim().isNotEmpty) {
-      bool exists = await readExists("${id}en");
-      if(!exists){
-        var en = await _getConnect.get(bookItemModel.subtitle);
-        writeString(en.bodyString ??  "", "${id}en");
-      }
-      String data = await readString("${id}en");
-      var list = await getFullFromSrt(false, strP.parseSrt(data));
-      enParagraph.value = list.sentenceModel;
-      inlineSpans = list.subtitleTimes;
+    var faLink = bookItemModel.subtitleFa.toString();
+    var enLink = bookItemModel.subtitle.toString();
+    var resEn = await getSrtSubTitle("en", id, enLink);
+    var resFa = await getSrtSubTitle("fa", id, faLink);
+    if (resEn != null) {
+      enParagraph.value = resEn;
       shouldR = true;
     }
-    if (bookItemModel.subtitleFa.toString().trim().isNotEmpty) {
-      bool exists = await readExists("${id}en");
-      if(!exists){
-        var fa = await _getConnect.get(bookItemModel.subtitleFa);
-        writeString(fa.bodyString ??  "", "${id}en");
-      }
-      String data = await readString("${id}en");
-      var list = await getFullFromSrt(true, strP.parseSrt(data));
-      faParagraph.value = list.sentenceModel;
-      inlineSpansFa = list.subtitleTimes;
+    if (resFa != null) {
+      faParagraph.value = resFa;
       shouldR = true;
     }
+
     if (shouldR) {
       isSubtitleLoaded.value = true;
       return;
@@ -302,7 +288,6 @@ class BookController extends GetxController {
     faParagraph.value = getFullParagraphs(true, bookItemModel.paragraphs);
     enParagraph.value = getFullParagraphs(false, bookItemModel.paragraphs);
   }
-
 
   Future<void> checkForTime1(event) async {
     var item = bookItemModel;
@@ -407,17 +392,24 @@ class BookController extends GetxController {
   void download(String urlPath, String id, String title) async {
     io.File _checkFile = io.File(getUrlFileName(appDoc.path, id, urlPath));
     if (!_checkFile.existsSync()) {
+      CancelToken cancelToken = CancelToken();
+
       downloadDialog(
           downloadingPercent: downloadingPercent,
-          title: "در حال دانلود فایل صوتی");
+          title: "در حال دانلود فایل صوتی",
+          onDownloadCancel: () {
+            cancelToken.cancel();
+            Get.back();
+            Get.back();
+            ColoredSnack(title: "دانلود لغو شد", type: SnackType.ERROR);
+          });
 
       var _downloadRequest = await dio
           .download(urlPath, getUrlFileName(appDoc.path, id, urlPath),
               onReceiveProgress: (recive, total) {
         downloadingState.value = "downloading";
         downloadingPercent.value = recive / total;
-
-      });
+      }, deleteOnError: true, cancelToken: cancelToken);
       Get.closeAllSnackbars();
       Get.back();
 
@@ -465,6 +457,7 @@ class BookController extends GetxController {
       errorData.value = true;
       // getPodcastItemData(bookId,itemId,isGuest);
     }
-    isBookExists.value = isFileExists(getUrlFileName(appDoc.path,itemId,bookItemModel.podcastPath));
+    isBookExists.value = isFileExists(
+        getUrlFileName(appDoc.path, itemId, bookItemModel.podcastPath));
   }
 }

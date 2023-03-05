@@ -4,6 +4,7 @@ import 'package:zabaner/controllers/issue_controller.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class IssuesScreen extends StatefulWidget {
   const IssuesScreen({Key? key}) : super(key: key);
@@ -20,33 +21,7 @@ class _IssuesScreen extends State<IssuesScreen> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: orange,
-              elevation: 0,
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        "بازگشت",
-                        style:
-                            TextStyle(fontFamily: "Yekan", color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           backgroundColor: const Color(0xffffffff),
           body: Column(
             children: [
@@ -120,7 +95,7 @@ class _IssuesScreen extends State<IssuesScreen> {
                                               Flexible(flex:0,child: Container(width: 20,child: Container(),))
                                             ],
                                           ),
-                                      Align(alignment:Alignment.topLeft,child: Icon(isShowingContent.isTrue? Icons.arrow_drop_up_rounded : Icons.arrow_drop_down_rounded,color: orangeDark,),),
+                                      Align(alignment:Alignment.topLeft,child: Icon(isShowingContent.isTrue? Icons.arrow_drop_up_rounded : Icons.arrow_drop_down_rounded,color: primaryDark,),),
                                     ],
                                   )),
                                 ),

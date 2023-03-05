@@ -8,6 +8,7 @@ import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/views/screens/tabbar_item_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class SubTabbarItemScreen extends StatefulWidget {
   String? filter;
@@ -40,31 +41,7 @@ class _SubTabbarItemScreen extends State<SubTabbarItemScreen> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           backgroundColor: const Color(0xffffffff),
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: const Color(0xffEBB632),
-              elevation: 0,
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 4,),
-                      Text(
-                        "بازگشت",
-                        style: TextStyle(
-                            fontFamily: "Yekan", color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           body: ListView.builder(
               itemCount: items.length,
               itemBuilder: (_context, index) {
@@ -91,7 +68,7 @@ class _SubTabbarItemScreen extends State<SubTabbarItemScreen> {
                           child: Column(children: [
                             Align(alignment:Alignment.topRight,child: ColoredText(items[index].title,textColor: Colors.black,)),
                             SizedBox(height: 8,),
-                            Align(alignment:Alignment.centerRight,child: Container(margin:EdgeInsets.only(right: 8),child: ColoredText("سطح " +items[index].category,textColor: Colors.black,textAlign: TextAlign.right,))),
+                            Align(alignment:Alignment.centerRight,child: Container(margin:EdgeInsets.only(right: 8),child: ColoredText("سطح ${items[index].category}",textColor: Colors.black,textAlign: TextAlign.right,))),
                           ],),
                         ),
                       )),

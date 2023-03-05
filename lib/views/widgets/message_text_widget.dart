@@ -22,7 +22,7 @@ class MessageWidget extends StatelessWidget {
         child: InkWell(
           child: Container(
             decoration: BoxDecoration(
-                color: type == "question" ? orange : Colors.cyan,
+                color: type == "question" ? primary : Colors.cyan,
                 borderRadius: BorderRadius.circular(8)),
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             child: Padding(

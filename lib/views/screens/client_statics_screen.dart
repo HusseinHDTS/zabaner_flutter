@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:zabaner/controllers/static_screen_controller.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
 import 'package:zabaner/views/widgets/bar_chart_widget.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 import '../../models/level.dart';
 
 class StaticsScreen extends StatelessWidget {
@@ -17,31 +18,7 @@ class StaticsScreen extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           backgroundColor: const Color(0xffffffff),
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: const Color(0xffEBB632),
-              elevation: 0,
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 4,),
-                      Text(
-                        "بازگشت",
-                        style: TextStyle(
-                            fontFamily: "Yekan", color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           body: Column(
             children: [
               // Top of screen
@@ -239,7 +216,7 @@ class StaticsScreen extends StatelessWidget {
                 child: SizedBox(
                     width: Get.width,
                     child: const Text(
-                      "مدت زمان مطالعه منابع و اخبار",
+                      "مدت زمان مطالعه منابع",
                       style: TextStyle(
                           fontFamily: "Yekan",
                           fontSize: 11,

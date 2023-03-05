@@ -15,6 +15,9 @@ import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/widgets/bottom_player.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/custom_video_player.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
+import 'dart:io' as io;
 
 class TabbarItemScreen extends StatefulWidget {
   TabbarItem item;
@@ -48,43 +51,16 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
       child: Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            appBar: AppBar(
-                leadingWidth: Get.width,
-                backgroundColor: orange,
-                elevation: 0,
-                leading: Padding(
-                  padding: EdgeInsets.only(right: Get.width / 40),
-                  child: InkWell(
-                    onTap: () => Get.back(),
-                    child: Row(
-                      children: const [
-                        Icon(
-                          Icons.arrow_back,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          "بازگشت",
-                          style: TextStyle(
-                              fontFamily: "Yekan", color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
+            appBar: ColoredAppBar(),
             body: Directionality(
               textDirection: TextDirection.ltr,
               child: Column(children: [
-                Expanded(flex:0,child: Container(margin:EdgeInsets.all(8),child: AspectRatio(aspectRatio: 16/9,child: Obx(() => controller.videoInitialized.value
-                    ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Chewie(
-                        controller:
-                        controller.chewieController))
-                    : ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(decoration: BoxDecoration(color: Colors.grey),),
-                )),),)),
+                Expanded(flex:0,child: Container(margin:EdgeInsets.all(8),child: AspectRatio(aspectRatio: 16/9,child: Obx(() => controller.appDocInit.value ? getVideoView(io.File(getUrlFileName(controller.appDoc.path,  item.id,
+                    item.video)),
+                    CustomVideoType.STORAGE,
+                    withThumb: true,
+                    retryImage: customVideoPlayerTag.value == getUrlFileName(controller.appDoc.path, item.id,
+                        item.video),showPreviewOverlay: false) : Container()),),)),
                 Expanded(flex: 1,child: Container(height: double.infinity,),),
                 Expanded(flex:0,
                   child: Align(alignment: Alignment.bottomCenter,child: Obx(()=>AnimatedContainer(
@@ -92,100 +68,100 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
                     height: controller.isHide.value
                         ? hiddenHeight
                         : normalHeight,
-                    child: BottomPlayer(
-                        isVideo: true,
-                        forward: () {
-                          // var data = getPlayerIndex(
-                          //     controller
-                          //         .getParAsLang(
-                          //         null),
-                          //     controller
-                          //         .playIndexList,
-                          //     controller
-                          //         .playIndexInList,
-                          //     true);
-                          // controller.currentSavedTime.value = data[2];
-                          // controller.playerPosition.value = Duration(milliseconds: data[2]);
-                          // controller.playIndexList = data[0];
-                          // controller.playIndexInList = data[1];
-                          var newPos = controller.playerPosition.value.inMilliseconds+5100;
-                          if(newPos > controller.duration.value.inMilliseconds) newPos = controller.duration.value.inMilliseconds -100;
-                          controller.playerPosition.value = Duration(milliseconds: newPos);
-                          controller.chewieController.seekTo(Duration(
-                              milliseconds: newPos));
-                        },
-                        backward: () {
-                          // var data = getPlayerIndex(
-                          //     controller
-                          //         .getParAsLang(
-                          //         null),
-                          //     controller
-                          //         .playIndexList,
-                          //     controller
-                          //         .playIndexInList,
-                          //     false);
-                          // controller.currentSavedTime.value = data[2];
-                          // controller.playerPosition.value = Duration(milliseconds: data[2]);
-                          // controller.playIndexList = data[0];
-                          // controller.playIndexInList = data[1];
-                          var newPos = controller.playerPosition.value.inMilliseconds-5100;
-                          if(newPos < 0) newPos = 0;
-                          controller.playerPosition.value = Duration(milliseconds: newPos);
-                          controller.chewieController.seekTo(Duration(
-                              milliseconds: newPos));
-                        },
-                        isFileExists: controller.isVideoExists,
-                        isInitialized:controller.videoInitialized,
-                        isPlaying: controller.isPlaying,
-                        onInitialize: (){
-                          controller.initVideo(item.id,item.video);
-                        },
-                        resumePlayer: () =>
-                        controller.videoInitialized.value
-                            ? controller.chewieController.togglePause()
-                            : {},
-                        pausePlayer: () => controller
-                            .videoInitialized.value
-                            ? controller.chewieController.togglePause()
-                            : {},
-                        downloadRequest: (){
-                          if (item.video.substring(item.video.lastIndexOf(".") + 1) == "mp4") {
-                            controller.download(item.video, item.id, item.title);
-                          } else {
-                            Get.back();
-                            ColoredSnack(
-                                title: "ویدیویی برای این بخش وجود ندارد", type: SnackType.ERROR);
-                          }
-                        },
-                        togglePlayer: () async{
-                          controller.chewieController.togglePause();
-                          return true;
-                        },
-                        toggleHide: ()=>controller.isHide.toggle(),
-                        togglePlayerSpeed: (){
-                          if (controller.isPlaying.value) {
-                            if (controller.playSpeed.value ==
-                                0.5) {
-                              controller.playSpeed.value = 1;
-                              controller.chewieController.videoPlayerController.setPlaybackSpeed(1);
-                            } else if (controller.playSpeed.value ==1) {
-                              controller.playSpeed.value = 2;
-                              controller.chewieController.videoPlayerController.setPlaybackSpeed(2);
-                            } else if (controller.playSpeed.value ==2) {
-                              controller.playSpeed.value = 0.5;
-                              controller.chewieController.videoPlayerController.setPlaybackSpeed(0.5);
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: BottomPlayer(
+                          isVideo: true,
+                          forward: () {
+                            // var data = getPlayerIndex(
+                            //     controller
+                            //         .getParAsLang(
+                            //         null),
+                            //     controller
+                            //         .playIndexList,
+                            //     controller
+                            //         .playIndexInList,
+                            //     true);
+                            // controller.currentSavedTime.value = data[2];
+                            // controller.playerPosition.value = Duration(milliseconds: data[2]);
+                            // controller.playIndexList = data[0];
+                            // controller.playIndexInList = data[1];
+                            var newPos = controller.playerPosition.value.inMilliseconds+5100;
+                            if(newPos > controller.duration.value.inMilliseconds) newPos = controller.duration.value.inMilliseconds -100;
+                            controller.playerPosition.value = Duration(milliseconds: newPos);
+                            customVideoPlayerController!.seekTo(newPos.toDouble());
+                          },
+                          backward: () {
+                            // var data = getPlayerIndex(
+                            //     controller
+                            //         .getParAsLang(
+                            //         null),
+                            //     controller
+                            //         .playIndexList,
+                            //     controller
+                            //         .playIndexInList,
+                            //     false);
+                            // controller.currentSavedTime.value = data[2];
+                            // controller.playerPosition.value = Duration(milliseconds: data[2]);
+                            // controller.playIndexList = data[0];
+                            // controller.playIndexInList = data[1];
+                            var newPos = controller.playerPosition.value.inMilliseconds-5100;
+                            if(newPos < 0) newPos = 0;
+                            controller.playerPosition.value = Duration(milliseconds: newPos);
+                            customVideoPlayerController!.seekTo(newPos.toDouble());
+                          },
+                          isFileExists: controller.isVideoExists,
+                          isInitialized:controller.videoInitialized,
+                          isPlaying: controller.isPlaying,
+                          onInitialize: (){
+                            controller.initVideo(item.id,item.video);
+                          },
+                          resumePlayer: () =>
+                          controller.videoInitialized.value
+                              ? customVideoPlayerController!.togglePause()
+                              : {},
+                          pausePlayer: () => controller
+                              .videoInitialized.value
+                              ? customVideoPlayerController!.togglePause()
+                              : {},
+                          downloadRequest: (){
+                            if (item.video.substring(item.video.lastIndexOf(".") + 1) == "mp4") {
+                              controller.download(item.video, item.id, item.title);
+                            } else {
+                              Get.back();
+                              ColoredSnack(
+                                  title: "ویدیویی برای این بخش وجود ندارد", type: SnackType.ERROR);
                             }
-                          }
-                        },
-                        playSpeed: controller.playSpeed,
-                        player: controller.videoInitialized.value ? controller.chewieController : null,
-                        isHide: controller.isHide,
-                        repeat: controller.repeat,
-                        duration: controller.duration.value,
-                        position: controller.playerPosition),
+                          },
+                          togglePlayer: () async{
+                            customVideoPlayerController!.togglePause();
+                            return true;
+                          },
+                          toggleHide: ()=>controller.isHide.toggle(),
+                          togglePlayerSpeed: (){
+                            if (controller.isPlaying.value) {
+                              if (controller.playSpeed.value ==
+                                  0.5) {
+                                controller.playSpeed.value = 1;
+                                customVideoPlayerController!.videoPlayerController.setPlaybackSpeed(1);
+                              } else if (controller.playSpeed.value ==1) {
+                                controller.playSpeed.value = 2;
+                                customVideoPlayerController!.videoPlayerController.setPlaybackSpeed(2);
+                              } else if (controller.playSpeed.value ==2) {
+                                controller.playSpeed.value = 0.5;
+                                customVideoPlayerController!.videoPlayerController.setPlaybackSpeed(0.5);
+                              }
+                            }
+                          },
+                          playSpeed: controller.playSpeed,
+                          player: controller.videoInitialized.value ? customVideoPlayerController!.videoPlayerController : null,
+                          isHide: controller.isHide,
+                          repeat: controller.repeat,
+                          duration: controller.duration.value,
+                          position: controller.playerPosition),
+                    ),
                   )),),
                 ),
-
               ],),
             ),
           )),

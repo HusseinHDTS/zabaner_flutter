@@ -1,3 +1,4 @@
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:srt_parser/srt_parser.dart' as strP;
+import 'package:zabaner/controllers/custom_video_player_controller.dart';
 import 'package:zabaner/models/html.dart';
 import 'package:zabaner/models/sentence_model.dart';
 import 'package:zabaner/models/urls.dart';
@@ -19,7 +21,8 @@ import 'dart:io' as io;
 class VideoController extends GetxController {
   // late VideoModel videoModel;
   late VideoPlayerController _videoController;
-  late ChewieController chewieController;
+
+  // late ChewieController chewieController;
   var faParagraph = <SentenceModel>[].obs;
   var enParagraph = <SentenceModel>[].obs;
   var isSubtitlesLoaded = false.obs;
@@ -61,7 +64,7 @@ class VideoController extends GetxController {
   final GetStorage _getStorage = GetStorage();
   var isPlaying = false.obs;
   var isSubtitleLoaded = false.obs;
-  var isVideoExists =false.obs;
+  var isVideoExists = false.obs;
   final Dio dio = Dio();
   var playIndex = 0;
   var playIndexList = 0;
@@ -82,13 +85,17 @@ class VideoController extends GetxController {
   void dispose() async {
     super.dispose();
     onClose();
-    chewieController.dispose();
+    customVideoPlayerController != null
+        ? customVideoPlayerController!.pause()
+        : {};
   }
-  bool isFileExists(String filePath){
+
+  bool isFileExists(String filePath) {
     io.File audioFile = io.File(filePath);
     return audioFile.existsSync();
   }
-  void customeInit(id,isGuest) async {
+
+  void customeInit(id, isGuest) async {
     forcedScreen = await isScreenForced();
     _dateTime = DateTime.now();
     isPlaying = false.obs;
@@ -103,10 +110,11 @@ class VideoController extends GetxController {
     duration = const Duration(milliseconds: 0).obs;
     playerPosition = const Duration(milliseconds: 0).obs;
     getVideoItemData(id, isGuest).then((value) {
-      if(!value){
+      if (!value) {
         errorData.value = true;
       }
-      isVideoExists.value = fileExists(getUrlFileName(appDoc.path, videoItems.value.id, videoItems.value.videoPath));
+      isVideoExists.value = fileExists(getUrlFileName(
+          appDoc.path, videoItems.value.id, videoItems.value.videoPath));
       initSubtitle(id);
     });
   }
@@ -115,7 +123,11 @@ class VideoController extends GetxController {
   void onClose() async {
     // TODO: implement onClose
     super.onClose();
-    videoInitialized.isFalse ? {} : chewieController.isPlaying ? () {} : chewieController.pause();
+    customVideoPlayerController == null
+        ? {}
+        : customVideoPlayerController!.isPlaying.value
+            ? () {}
+            : customVideoPlayerController!.pause();
     Map times = _getStorage.read('timers') ?? {};
     var lastTimer = times[
             '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ??
@@ -146,7 +158,9 @@ class VideoController extends GetxController {
       times['totall'] = times['totall'] + (add.inSeconds).toInt();
     }
     await _getStorage.write('timers', times);
-    chewieController.pause();
+    customVideoPlayerController != null
+        ? customVideoPlayerController!.pause()
+        : {};
   }
 
   var currentSavedTime = 0.obs;
@@ -177,23 +191,20 @@ class VideoController extends GetxController {
           ckey = cckey;
         }
       }
+      texts.add(parseHtmlToTextSpan(whiteSpaceForSentence(cm.text.toString()),
+          getSubtitleTextStyle(isNowCurrentText)));
       texts.add(WidgetSpan(
         child: SizedBox.fromSize(
           size: Size.zero,
           key: cckey,
         ),
       ));
-      texts.add(parseHtmlToTextSpan(whiteSpaceForSentence(cm.text.toString()), getSubtitleTextStyle(isNowCurrentText)));
-
     }
     return texts;
   }
 
   List<SentenceModel> getParAsLang(bool? fa) {
     if (fa == null) {
-      if (faParagraph.length == enParagraph.length) {
-        return enParagraph;
-      }
       if (faParagraph.length > enParagraph.length) {
         return faParagraph;
       } else {
@@ -211,10 +222,12 @@ class VideoController extends GetxController {
 
   Future<void> checkForTime2() async {
     for (int i = 0; i < videoItems.value.paragraphs.length; i++) {
-      if (chewieController.videoPlayerController.value.position.inMilliseconds >
+      if (customVideoPlayerController!
+                      .videoPlayerController.value.position.inMilliseconds >
                   videoItems.value.paragraphs[i].pst &&
               videoItems.value.paragraphs[i].pst > currentSavedTime.value ||
-          chewieController.videoPlayerController.value.position.inMilliseconds <
+          customVideoPlayerController!
+                      .videoPlayerController.value.position.inMilliseconds <
                   videoItems.value.paragraphs[i].pst &&
               videoItems.value.paragraphs[i].pst < currentSavedTime.value) {
         isInEndTime.value = false;
@@ -238,7 +251,8 @@ class VideoController extends GetxController {
         playingTextFa.value = videoItems.value.paragraphs[i].fa;
         playIndex = i;
       }
-      if (chewieController.videoPlayerController.value.position.inMilliseconds >
+      if (customVideoPlayerController!
+                  .videoPlayerController.value.position.inMilliseconds >
               videoItems.value.paragraphs[i].pstEnd &&
           videoItems.value.paragraphs[i].pstEnd > currentSavedTime.value) {
         isInEndTime.value = true;
@@ -268,62 +282,62 @@ class VideoController extends GetxController {
     int currentIndx = 0;
     for (int i = 0; i < a.length; i++) {
       var ab = a[i].sentencesList;
-      for (int o = 0 ; o < ab.length; o ++) {
+      for (int o = 0; o < ab.length; o++) {
         var b = ab[o];
-        if(currentSavedTime.value == b.time){
+        if (currentSavedTime.value == b.time) {
           playIndexList = i;
           playIndexInList = o;
         }
-        if (chewieController
+        if (customVideoPlayerController!
                         .videoPlayerController.value.position.inMilliseconds >
                     b.time &&
                 b.time > currentSavedTime.value ||
-            chewieController
+            customVideoPlayerController!
                         .videoPlayerController.value.position.inMilliseconds <
                     b.time &&
                 b.time < currentSavedTime.value) {
           if (currentSavedTime.value == b.time) {
             return;
           }
-            isInEndTime.value = false;
-          if(b.time == currentSavedTime.value){
+          isInEndTime.value = false;
+          if (b.time == currentSavedTime.value) {
             return;
           }
 
           currentSavedTime.value = b.time;
 
-          if(playingText.value != b.text.toString()){
+          if (playingText.value != b.text.toString()) {
             playingText.value = b.text.toString();
           }
-          if(playingTextFa.value != b.text.toString()){
-              playingTextFa.value = b.text.toString();
-          }
-          if (autoScroll.value &&
-              isPlaying.value == true &&
-              ckey != null &&
-              isInEndTime.value != true) {
-            if (ckey!.currentContext != null) {
-              RenderBox box = ckey!.currentContext!.findRenderObject() as RenderBox;
-              Offset position =
-              box.localToGlobal(Offset.zero); //this is global position
-              double y = position.dy;
-              // scrollController.jumpTo(y+40);
-
-              scrollController.animateTo(y - 400 + (scrollController.offset),
-                  duration: Duration(milliseconds: 2000), curve: Curves.linear);
-              // scrollController.jumpTo(y - 400 + (scrollController.offset));
-            }
+          if (playingTextFa.value != b.text.toString()) {
+            playingTextFa.value = b.text.toString();
           }
         }
-        if (chewieController
+        if (customVideoPlayerController!
                     .videoPlayerController.value.position.inMilliseconds >
                 b.endTime &&
             b.endTime > currentSavedTime.value) {
           // if(isInEndTime.isFalse){
-            isInEndTime.value = true;
+          isInEndTime.value = true;
           // }
         }
-        currentIndx ++;
+        currentIndx++;
+      }
+    }
+    if (autoScroll.value &&
+        isPlaying.value == true &&
+        ckey != null &&
+        isInEndTime.value != true) {
+      if (ckey!.currentContext != null) {
+        RenderBox box = ckey!.currentContext!.findRenderObject() as RenderBox;
+        Offset position =
+            box.localToGlobal(Offset.zero); //this is global position
+        double y = position.dy - 480;
+        // scrollController.jumpTo(y+40);
+
+        scrollController.animateTo(y + (scrollController.offset),
+            duration: Duration(milliseconds: 2000), curve: Curves.linear);
+        // scrollController.jumpTo(y - 400 + (scrollController.offset));
       }
     }
   }
@@ -371,11 +385,12 @@ class VideoController extends GetxController {
   }
 
   void play() async {
-    if (chewieController.isPlaying) {
+    if (customVideoPlayerController!.isPlaying.value) {
       isPlaying.value = true;
-      duration.value = chewieController.videoPlayerController.value.duration;
+      duration.value =
+          customVideoPlayerController!.videoPlayerController.value.duration;
       playerPosition.value =
-          chewieController.videoPlayerController.value.position;
+          customVideoPlayerController!.videoPlayerController.value.position;
       if (!forcedScreen!) {
         forcedScreen = true;
         keepScreenOn();
@@ -390,31 +405,22 @@ class VideoController extends GetxController {
     }
   }
 
-  initSubtitle(id)async{
+  initSubtitle(id) async {
     var shouldR = false;
-    if (videoItems.value.subtitle.toString().trim().isNotEmpty) {
-      bool exists = await readExists("${id}en");
-      if(!exists){
-        var en = await _getConnect.get(videoItems.value.subtitle);
-        writeString(en.bodyString ??  "", "${id}en");
-      }
-      String data = await readString("${id}en");
-      var list = await getFullFromSrt(false, strP.parseSrt(data));
-      enParagraph.value = list.sentenceModel;
+    isSubtitleLoaded.value = false;
+    var faLink = videoItems.value.subtitleFa.toString();
+    var enLink = videoItems.value.subtitle.toString();
+    var resEn = await getSrtSubTitle("en", id, enLink);
+    var resFa = await getSrtSubTitle("fa", id, faLink);
+    if (resEn != null) {
+      enParagraph.value = resEn;
       shouldR = true;
     }
-    if (videoItems.value.subtitleFa.toString().trim().isNotEmpty) {
-      bool exists = await readExists("${id}en");
-      if(!exists){
-        var fa = await _getConnect.get(videoItems.value.subtitleFa);
-        writeString(fa.bodyString ??  "", "${id}en");
-      }
-      String data = await readString("${id}en");
-      var list = await getFullFromSrt(true, strP.parseSrt(data));
-      faParagraph.value = list.sentenceModel;
+    if (resFa != null) {
+      faParagraph.value = resFa;
+      shouldR = true;
+    }
 
-      shouldR = true;
-    }
     if (shouldR) {
       isSubtitleLoaded.value = true;
       return;
@@ -480,45 +486,69 @@ class VideoController extends GetxController {
       _getStorage.remove('timers');
       Get.offAll(LoginScreen());
     } else {
-      errorData.value=true;
+      errorData.value = true;
     }
     return false;
   }
 
-  initVideo(id,urlPath){
+  initVideo(id, urlPath) {
+    if (customVideoPlayerController != null) {
+      customVideoPlayerController!.dispose();
+    }
+    customVideoPlayerController = CustomVideoPlayerController(
+        CachedVideoPlayerController.file(
+            io.File(getUrlFileName(appDoc.path, id, urlPath)),
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true)),
+        autoInit: false,
+        fullscreenOnStart: false);
+
+    customVideoPlayerController!.init(autoPlay: true).then((value) {
+      customVideoPlayerTag.value =
+          io.File(getUrlFileName(appDoc.path, id, urlPath)).path;
+      customVideoPlayerController!.videoPlayerController.addListener(play);
+      videoInitialized.value = true;
+    });
+    return;
     _videoController = VideoPlayerController.file(
         io.File(getUrlFileName(appDoc.path, id, urlPath)));
-    chewieController = ChewieController(
-      videoPlayerController: _videoController,
-      autoPlay: false,
-      looping: false,
-      hideControlsTimer: const Duration(seconds: 2),
-      aspectRatio: 16 / 9,
-      showControls: true,
-      showControlsOnInitialize: false,
-      placeholder: Container(
-        color: Colors.grey,
-      ),
-      showOptions: false,
-      autoInitialize: true,
-    );
+    // chewieController = ChewieController(
+    //   videoPlayerController: _videoController,
+    //   autoPlay: false,
+    //   looping: false,
+    //   hideControlsTimer: const Duration(seconds: 2),
+    //   aspectRatio: 16 / 9,
+    //   showControls: true,
+    //   showControlsOnInitialize: false,
+    //   placeholder: Container(
+    //     color: Colors.grey,
+    //   ),
+    //   showOptions: false,
+    //   autoInitialize: true,
+    // );
     _videoController.addListener(play);
     videoInitialized.value = true;
   }
 
   Future<void> download(String urlPath, String id, String title) async {
-    isSubtitleLoaded.value = false;
     io.File _checkFile = io.File(getUrlFileName(appDoc.path, id, urlPath));
     // io.File _checkFile = io.File(getUrlFileName(appDoc.path, getRandomString(15), urlPath));
     if (!_checkFile.existsSync()) {
-      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود ویدیو");
+      CancelToken cancelToken = CancelToken();
+      downloadDialog(
+          downloadingPercent: downloadingPercent,
+          title: "در حال دانلود ویدیو",
+          onDownloadCancel: () {
+            cancelToken.cancel();
+            Get.back();
+            Get.back();
+            ColoredSnack(title: "دانلود لغو شد", type: SnackType.ERROR);
+          });
       var _downloadRequest = await dio
           .download(urlPath, getUrlFileName(appDoc.path, id, urlPath),
               onReceiveProgress: (recive, total) {
         downloadingState.value = "downloading";
         downloadingPercent.value = recive / total;
-
-      });
+      },deleteOnError: true,cancelToken: cancelToken);
       Get.closeAllSnackbars();
       Get.back();
 

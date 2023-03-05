@@ -50,7 +50,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                           Navigator.pop(context);
                         },
                         child: const Icon(Icons.arrow_back)),
-                    backgroundColor: orange,
+                    backgroundColor: primary,
                     actions: [
                       InkWell(
                         onTap: () => controller.autoScroll.toggle(),

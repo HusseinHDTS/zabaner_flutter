@@ -11,11 +11,13 @@ class PodSubCategories {
     required  this.id,
     required  this.title,
     required  this.category,
+    required  this.isDirect,
     required  this.imagePath,
   });
 
   final String id;
   final String title;
+  final String isDirect;
   final String category;
   final String imagePath;
 
@@ -24,6 +26,7 @@ class PodSubCategories {
     return PodSubCategories(
       id: json["_id"],
       title: json["title"] ?? "",
+      isDirect: json["isDirect"] ?? "",
       category: json["category"] ?? "",
       imagePath: imagePath,
     );
@@ -33,6 +36,7 @@ class PodSubCategories {
     "_id": id,
     "title": title,
     "category": category,
+    "isDirect": isDirect,
     "imagePath": imagePath,
   };
 }

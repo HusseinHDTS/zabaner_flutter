@@ -118,14 +118,12 @@ class NewsDetailController extends GetxController {
       for (var item in newsDetail.paragraphs) {
         if (item.fa.isNotEmpty) {
           break;
-        } else {
-        }
+        } else {}
       }
       for (var item in newsDetail.paragraphs) {
         if (item.en.isNotEmpty) {
           break;
-        } else {
-        }
+        } else {}
       }
       bookmark.value = newsDetail.bookmark;
       isDataLoaded.value = true;
@@ -154,22 +152,25 @@ class NewsDetailController extends GetxController {
           : bookmark.value = false;
       return true;
     } else {
-      ColoredSnack(title: "Error",description: _request.statusText.toString(),type: SnackType.WARNING);
+      ColoredSnack(
+          title: "Error",
+          description: _request.statusText.toString(),
+          type: SnackType.WARNING);
     }
     return false;
   }
 
-  void togglePlayer(String filePath) async{
+  void togglePlayer(String filePath) async {
     bool forced = await isScreenForced();
     if (!isPlaying.value) {
       playAudio(filePath);
-      if(!forced){
+      if (!forced) {
         keepScreenOn();
       }
     } else {
       player.pausePlayer();
       isPlaying.value = false;
-      if(forced){
+      if (forced) {
         keepScreenNormal();
       }
     }
@@ -198,12 +199,12 @@ class NewsDetailController extends GetxController {
           duration.value = event.duration;
           playerPosition.value = event.position;
           isScreenForced().then((value) {
-            if(player.isPlaying){
-              if(!value){
+            if (player.isPlaying) {
+              if (!value) {
                 keepScreenOn();
               }
-            }else{
-              if(value){
+            } else {
+              if (value) {
                 keepScreenNormal();
               }
             }
@@ -225,17 +226,27 @@ class NewsDetailController extends GetxController {
           }
         });
       } else {
-        ColoredSnack(title: "ابتدا فایل صورتی را دانلود کنید",type: SnackType.ERROR);
+        ColoredSnack(
+            title: "ابتدا فایل صورتی را دانلود کنید", type: SnackType.ERROR);
       }
     } catch (e) {
-      ColoredSnack(title: "Error",description: "$e",type: SnackType.ERROR);
+      ColoredSnack(title: "Error", description: "$e", type: SnackType.ERROR);
     }
   }
 
   void download(String urlPath, String id, String title) async {
-    io.File _checkFile = io.File( getUrlFileName(appDoc.path,id,urlPath));
+    io.File _checkFile = io.File(getUrlFileName(appDoc.path, id, urlPath));
     if (!_checkFile.existsSync()) {
-      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود فایل صوتی");
+      CancelToken cancelToken = CancelToken();
+      downloadDialog(
+          downloadingPercent: downloadingPercent,
+          title: "در حال دانلود فایل صوتی",
+          onDownloadCancel: () {
+            cancelToken.cancel();
+            Get.back();
+            Get.back();
+            ColoredSnack(title: "دانلود لغو شد", type: SnackType.ERROR);
+          });
       // Get.defaultDialog(
       //     title: "در حال دانلود فایل صوتی",
       //     onWillPop: () async => downloadingPercent.value == 1 ? true : false,
@@ -244,20 +255,20 @@ class NewsDetailController extends GetxController {
       //           value: downloadingPercent.value,
       //         )));
       var _downloadRequest = await dio
-          .download(urlPath,  getUrlFileName(appDoc.path,id,urlPath),
+          .download(urlPath, getUrlFileName(appDoc.path, id, urlPath),
               onReceiveProgress: (recive, total) {
         downloadingState.value = "downloading";
         downloadingPercent.value = recive / total;
-      });
+      },deleteOnError: true,cancelToken: cancelToken);
 
       Get.closeAllSnackbars();
       Get.back();
 
       if (_downloadRequest.statusCode == 200) {
-        ColoredSnack(title: "دانلود با موفقیت به اتمام رسید",type: SnackType.SUCCESS);
+        ColoredSnack(
+            title: "دانلود با موفقیت به اتمام رسید", type: SnackType.SUCCESS);
         downloadingPercent.value = 0;
       }
-    } else {
-    }
+    } else {}
   }
 }

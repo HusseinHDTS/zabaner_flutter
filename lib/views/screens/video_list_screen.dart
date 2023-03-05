@@ -7,10 +7,13 @@ import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
 import 'package:zabaner/views/screens/video_detailt_screen.dart';
+import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class VideoListScreen extends StatelessWidget {
-  VideoListScreen({Key? key, this.filter}) : super(key: key);
+  VideoListScreen({Key? key, this.filter, this.title}) : super(key: key);
   String? filter;
+  String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -19,30 +22,7 @@ class VideoListScreen extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           backgroundColor: const Color(0xffffffff),
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: const Color(0xffffffff),
-              elevation: 0,
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.black,
-                      ),
-                      Text(
-                        "بازگشت",
-                        style: TextStyle(
-                            fontFamily: "Yekan", color: Color(0xff000000)),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           body: Obx(()=>_controller.isDataLoaded.isTrue ? Padding(
               padding: EdgeInsets.symmetric(horizontal: Get.width / 40),
               child: Column(children: [
@@ -64,10 +44,7 @@ class VideoListScreen extends StatelessWidget {
                       ),
 
                       // Hello Text
-                      const Text(
-                        "مصاحبه های ویدیویی",
-                        style: TextStyle(fontFamily: "Yekan", fontSize: 18),
-                      ),
+                      ColoredText(title ?? "مصاحبه های Speakout",textSize: 18,textDirection: TextDirection.rtl,),
 
                       // Logo in top left
                       SizedBox.square(

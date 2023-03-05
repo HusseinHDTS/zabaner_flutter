@@ -68,7 +68,7 @@ class _PodcastPlayState extends State<PodcastPlay> {
                     Navigator.pop(context);
                   },
                   child: const Icon(Icons.arrow_back)),
-              backgroundColor: orange,
+              backgroundColor: primary,
               actions: [
                 InkWell(
                   onTap: () => controller.autoScroll.toggle(),

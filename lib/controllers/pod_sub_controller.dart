@@ -13,7 +13,8 @@ class PodcSubController extends GetxController {
   var errorData = false.obs;
   var isDataLoaded = false.obs;
   String? filter;
-  PodcSubController({this.filter});
+  String? link;
+  PodcSubController({this.filter,this.link});
 
   @override
   void onInit() async {
@@ -21,13 +22,52 @@ class PodcSubController extends GetxController {
     await getData();
   }
 
-  Future<void> getData() async {
+  Future<void> getData({String? tLink}) async {
     errorData.value = false;
     isDataLoaded.value = false;
+    link??=getPodcastSub1Categories;
+    tLink??=link;
     var bodyRequest = {
       "category": filter.toString(),
     };
-    final _request = await _getConnect.post(getPodcastSubCategories,bodyRequest);
+    final _request = await _getConnect.post(tLink,bodyRequest);
+      subCategories.value = podSubCatListModelFromJson(_request.bodyString ?? "");
+      refreshController.refreshCompleted();
+      isDataLoaded.value = true;
+      // change(null, status: RxStatus.success());
+      // errorData.value = true;
+      // getData();
+    // }
+  }
+}
+class PodcSub1Controller extends GetxController {
+  final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
+  RefreshController refreshController = RefreshController();
+  var subCategories = <PodSubCategories>[].obs;
+  var errorData = false.obs;
+  var isDataLoaded = false.obs;
+  String? filter;
+  String? link;
+  bool? normal;
+  PodcSub1Controller({this.filter,this.link,this.normal});
+
+  @override
+  void onInit() async {
+    normal??=true;
+    super.onInit();
+    await getData();
+  }
+
+  Future<void> getData({String? tLink}) async {
+    errorData.value = false;
+    isDataLoaded.value = false;
+    link??=getPodcastSub1Categories;
+    tLink??=link;
+    var bodyRequest = {
+      "category": filter.toString(),
+      "wtu": normal.toString(),
+    };
+    final _request = await _getConnect.post(tLink,bodyRequest);
       subCategories.value = podSubCatListModelFromJson(_request.bodyString ?? "");
       refreshController.refreshCompleted();
       isDataLoaded.value = true;

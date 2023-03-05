@@ -80,7 +80,7 @@ class BookScreenState extends State<BookScreen> {
                       Navigator.pop(context);
                     },
                     child: const Icon(Icons.arrow_back)),
-                backgroundColor: orange,
+                backgroundColor: primary,
                 actions: [
                   // Obx(() => controller.downloadingState.value == "downloading"
                   //     ? CircleAvatar(

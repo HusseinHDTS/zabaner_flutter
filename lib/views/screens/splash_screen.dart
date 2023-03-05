@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fullscreen/fullscreen.dart';
 import 'package:get/get.dart';
 import 'package:simple_progress_indicators/simple_progress_indicators.dart';
 import 'package:zabaner/controllers/splash_timer_controller.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -11,6 +13,7 @@ class SplashScreen extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
+    // exitFullScreenMode();
     return _SplashScreen();
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/models/resources_model.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/book_screen.dart';
 import 'package:zabaner/views/screens/books_list_screen.dart';
 import 'package:zabaner/models/extensions.dart';
@@ -21,90 +22,87 @@ class BookResources extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                right: MediaQuery.of(context).size.width / 30,
-                bottom: MediaQuery.of(context).size.height / 66,
-              ),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width / 12,
-                height: MediaQuery.of(context).size.height / 30,
-                child: Image.asset(
-                  "assets/images/bookr.png",
-                  fit: BoxFit.fill,
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  right: MediaQuery.of(context).size.width / 30,
+                  bottom: MediaQuery.of(context).size.height / 66,
+                ),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width / 12,
+                  height: MediaQuery.of(context).size.height / 30,
+                  child: Image.asset(
+                    "assets/images/bookr.png",
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
-            ),
-            const Text(
-              "   داستان های کوتاه",
-              style: TextStyle(
-                  fontFamily: "Yekan",
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
-            )
-          ],
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height / 5.4,
-          decoration: BoxDecoration(
-              color: Colors.grey[200], borderRadius: BorderRadius.circular(15)),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            child:  Directionality(
-              textDirection: TextDirection.rtl,
-              child: ListView.separated(
-                  itemCount: categories.length,
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width / 25,
-                    right: MediaQuery.of(context).size.width / 25,
-                  ),
-                  separatorBuilder: (context, index) => SizedBox(
-                    width: MediaQuery.of(context).size.width / 15,
-                  ),
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: (){
-                        Get.to(() => BooksListScreen(filter:categories[index]['_id'] ,));
-                      },
-                      child:Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width / 4.2,
-                            height: MediaQuery.of(context).size.height / 7.3,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                image: DecorationImage(
-                                    image: CachedNetworkImageProvider(
-                                        getUrl(categories[index]['imagePath']),
-                                    ),
-                                    )),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 4.2,
-                            child: Text(
-                              categories[index]['title'],
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: Color(0xff000000), fontSize: 12, fontFamily: "Yekan"),
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  }),
-            ),
+              const Text(
+                "   داستان های کوتاه",
+                style: TextStyle(
+                    fontFamily: "Yekan",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+              )
+            ],
           ),
         ),
-        Divider(
-          color: const Color(0xffDBDBDB),
-          height: MediaQuery.of(context).size.height / 30,
-          endIndent: MediaQuery.of(context).size.width / 20,
+        resourcesBackground(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height / 5.4,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: ListView.separated(
+                    itemCount: categories.length,
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width / 25,
+                      right: MediaQuery.of(context).size.width / 25,
+                    ),
+                    separatorBuilder: (context, index) => SizedBox(
+                          width: MediaQuery.of(context).size.width / 15,
+                        ),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Get.to(() => BooksListScreen(
+                                filter: categories[index]['_id'],
+                                title: categories[index]['title'],
+                              ));
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width / 4.2,
+                              height: MediaQuery.of(context).size.height / 7.3,
+                              child: Center(child: ClipRRect(borderRadius:BorderRadius.circular(8),child: Container(child: CachedNetworkImage(imageUrl: getUrl(categories[index]['imagePath']),),)),),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width / 4.2,
+                              child: Center(
+                                child: ColoredText(
+                                  getText(categories[index]['title']),
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  textSize: 12,
+                                ),
+                              ),
+                            )
+
+                          ],
+                        ),
+                      );
+                    }),
+              ),
+            )),
+        SizedBox(
+          height: 18,
         )
       ],
     );
@@ -141,9 +139,10 @@ class BookListTile extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 image: DecorationImage(
-                    image: CachedNetworkImageProvider(
-                      "$baseUrl$imagePath",
-                    ),)),
+                  image: CachedNetworkImageProvider(
+                    "$baseUrl$imagePath",
+                  ),
+                )),
           ),
 
           // title

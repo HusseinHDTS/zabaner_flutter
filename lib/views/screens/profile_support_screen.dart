@@ -192,7 +192,7 @@ class ProfileSupport extends StatelessWidget {
               height: 50,
               margin: const EdgeInsets.only(right: 18, left: 18, top: 18),
               decoration: BoxDecoration(
-                  color: orangeDark, borderRadius: BorderRadius.circular(8)),
+                  color: primaryDark, borderRadius: BorderRadius.circular(8)),
               child: Center(
                 child: ColoredText(
                   "ارسال پیام",

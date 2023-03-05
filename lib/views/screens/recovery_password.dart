@@ -118,7 +118,7 @@ class RecoveryPasswordScreen extends StatelessWidget {
                                       width: double.infinity,
                                       height: double.infinity,
                                       child: Center(child: ColoredText("+ 98",textColor: Colors.black45,textSize: 10,textDirection: TextDirection.ltr,)),
-                                      decoration: BoxDecoration(color:Colors.white,borderRadius: BorderRadius.circular(8),border: Border.all(color: orange,width: 1)),
+                                      decoration: BoxDecoration(color:Colors.white,borderRadius: BorderRadius.circular(8),border: Border.all(color: primary,width: 1)),
                                     ),
                                   )),
                             ],
@@ -143,7 +143,7 @@ class RecoveryPasswordScreen extends StatelessWidget {
                               ),
                               style: ButtonStyle(
                                   backgroundColor:
-                                      MaterialStateProperty.all(orange),
+                                      MaterialStateProperty.all(primary),
                                   shape: MaterialStateProperty.all(
                                       RoundedRectangleBorder(
                                           borderRadius:

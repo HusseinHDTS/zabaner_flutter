@@ -13,6 +13,7 @@ import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/views/screens/splash_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class WebViewScreen extends StatefulWidget {
   String url, amount, description, email, phone, type, timeOfSub;
@@ -50,33 +51,7 @@ class _WebViewScreen extends State<WebViewScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-            leadingWidth: Get.width,
-            backgroundColor: const Color(0xffEBB632),
-            elevation: 0,
-            leading: Padding(
-              padding: EdgeInsets.only(right: Get.width / 40),
-              child: InkWell(
-                onTap: () => Get.back(),
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.arrow_back,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Text(
-                      "بازگشت",
-                      style:
-                          TextStyle(fontFamily: "Yekan", color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            )),
+        appBar: ColoredAppBar(),
         body: Obx(() => Column(
               children: [
                 Directionality(

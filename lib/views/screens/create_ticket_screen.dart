@@ -5,6 +5,7 @@ import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/widgets/serach_text_input.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class CreateTicketScreen extends StatefulWidget {
   const CreateTicketScreen({Key? key}) : super(key: key);
@@ -21,33 +22,7 @@ class _CreateTicketScreen extends State<CreateTicketScreen> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: orange,
-              elevation: 0,
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        "بازگشت",
-                        style:
-                            TextStyle(fontFamily: "Yekan", color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           backgroundColor: const Color(0xffffffff),
           body: Column(
             children: [
@@ -103,11 +78,11 @@ class _CreateTicketScreen extends State<CreateTicketScreen> {
                               const Icon(
                                 Icons.cloud_upload_outlined,
                                 size: 80,
-                                color: orangeDark,
+                                color: primaryDark,
                               ),
                               ColoredText(
                                 "برای اپلود عکس کلیک کنید",
-                                textColor: orangeDark,
+                                textColor: primaryDark,
                               ),
                               ColoredText(
                                 "محدودیت حجم : 4 مگابایت",
@@ -144,7 +119,7 @@ class _CreateTicketScreen extends State<CreateTicketScreen> {
                       height: 50,
                       margin: EdgeInsets.symmetric(horizontal: 18),
                       decoration: BoxDecoration(
-                          color: orangeDark,
+                          color: primaryDark,
                           borderRadius: BorderRadius.circular(8)),
                       child: Center(
                         child: ColoredText(

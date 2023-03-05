@@ -27,6 +27,7 @@ class LoginController extends GetConnect {
 
   void customInit() async {
     errorData.value = false;
+    loginCheck.value = false;
     allowAutoSignedCert = true;
     await GetStorage.init();
     if (_getStorage.read('token') != null) {
@@ -34,7 +35,6 @@ class LoginController extends GetConnect {
         'accept': 'application/json',
         'Authorization': 'Bearer ${_getStorage.read('token')}'
       });
-
       if (_request.statusCode == 200) {
         Get.offAll(() => MainScreen(
               isGuest: false,
@@ -53,6 +53,7 @@ class LoginController extends GetConnect {
         loginCheck.value = true;
         _connectionTry = 0;
       }else{
+        customInit();
         _connectionTry ++;
       }
     }

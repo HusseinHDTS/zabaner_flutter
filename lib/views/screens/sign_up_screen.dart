@@ -182,7 +182,7 @@ class SignupScreen extends StatelessWidget {
                                                         error: _controller
                                                             .error.value,
                                                         maxLength: index == 3
-                                                            ? 10
+                                                            ? 11
                                                             : null,
                                                         keyboardType: index == 3
                                                             ? TextInputType
@@ -191,9 +191,15 @@ class SignupScreen extends StatelessWidget {
                                                                 .emailAddress,
                                                         onChanged: (text) {
                                                           if (index == 3) {
+                                                            if(text.toString().length > 0){
+                                                              if(text.toString().characters.characterAt(0).toString() == "0"){
+                                                                text = text.substring(1);
+                                                              }
+                                                            }
                                                             signupParamerts[
                                                                     index] =
                                                                 "0" + text;
+                                                            debugPrint("qwtytncxmnkjsadkwqd : " + signupParamerts[index].toString());
                                                           } else {
                                                             signupParamerts[
                                                                 index] = text;
@@ -236,7 +242,7 @@ class SignupScreen extends StatelessWidget {
                                                                             8),
                                                                 border: Border.all(
                                                                     color:
-                                                                        orange,
+                                                                        primary,
                                                                     width: 1)),
                                                           ),
                                                         ))
@@ -279,7 +285,7 @@ class SignupScreen extends StatelessWidget {
                             margin:
                             EdgeInsets.symmetric(vertical: Get.height / 60),
                             decoration: BoxDecoration(
-                                color: _controller.isAgreed() ? orange : Colors.grey,
+                                color: _controller.isAgreed() ? primary : Colors.grey,
                                 borderRadius: BorderRadius.circular(11)),
                             child: const Center(
                               child: Text(

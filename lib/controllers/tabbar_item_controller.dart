@@ -1,4 +1,5 @@
 import 'package:better_player/better_player.dart';
+import 'package:cached_video_player/cached_video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:zabaner/controllers/custom_video_player_controller.dart';
 import 'package:zabaner/models/sentence_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
@@ -23,7 +25,8 @@ import 'package:zabaner/widgets/colored_snack.dart';
 class TabbarItemController extends GetxController with StateMixin {
   // late VideoModel videoModel;
   late VideoPlayerController _videoController;
-  late ChewieController chewieController;
+
+  // late ChewieController chewieController;
 
   var isHide = false.obs;
   var videoInitialized = false.obs;
@@ -47,34 +50,41 @@ class TabbarItemController extends GetxController with StateMixin {
   final GetConnect _getConnect = GetConnect();
   final GetStorage _getStorage = GetStorage();
   RefreshController refreshController = RefreshController();
-  bool? forcedScreen ;
+  bool? forcedScreen;
   var errorData = false.obs;
   var isPlaying = false.obs;
   final Dio dio = Dio();
   var playIndex = -1;
   RxBool autoScroll = true.obs;
+  RxBool appDocInit = false.obs;
   late AutoScrollController scrollController;
   var bookmark = false.obs;
   var item;
+
   @override
   void onInit() async {
     super.onInit();
     _getConnect.allowAutoSignedCert = true;
     scrollController = AutoScrollController();
+    appDoc = await path.getApplicationDocumentsDirectory();
+    appDocInit.value = true;
   }
 
   @override
   void dispose() async {
     super.dispose();
     onClose();
-    chewieController.dispose();
+    customVideoPlayerController != null
+        ? customVideoPlayerController!.dispose()
+        : {};
   }
-  bool isFileExists(String filePath){
+
+  bool isFileExists(String filePath) {
     io.File audioFile = io.File(filePath);
     return audioFile.existsSync();
   }
-  void customeInit(itm) async{
-    appDoc = await path.getApplicationDocumentsDirectory();
+
+  void customeInit(itm) async {
     forcedScreen = await isScreenForced();
     item = itm;
     _dateTime = DateTime.now();
@@ -91,14 +101,17 @@ class TabbarItemController extends GetxController with StateMixin {
     playingText = "".obs;
     duration = const Duration(milliseconds: 0).obs;
     playerPosition = const Duration(milliseconds: 0).obs;
-    isVideoExists.value = isFileExists(getUrlFileName(appDoc.path,item.id,item.video));
+    isVideoExists.value =
+        isFileExists(getUrlFileName(appDoc.path, item.id, item.video));
   }
 
   @override
   void onClose() async {
     // TODO: implement onClose
     super.onClose();
-    chewieController.isPlaying ? () {} : chewieController.pause();
+    customVideoPlayerController == null
+        ? () {}
+        : customVideoPlayerController!.pause();
     Map times = _getStorage.read('timers') ?? {};
     var lastTimer = times[
             '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ??
@@ -130,28 +143,26 @@ class TabbarItemController extends GetxController with StateMixin {
     }
     await _getStorage.write('timers', times);
     // _getStorage.remove('timers');
-    try{
-      chewieController.pause();
-    }catch(e){
+    try {
+      customVideoPlayerController!.pause();
+    } catch (e) {
       e.printError();
     }
   }
 
-
-
-
-  void play() async{
-
-    if (chewieController.isPlaying) {
+  void play() async {
+    if (customVideoPlayerController!.isPlaying.value) {
       isPlaying.value = true;
-      duration.value = chewieController.videoPlayerController.value.duration;
-      playerPosition.value = chewieController.videoPlayerController.value.position;
-      if(!forcedScreen!){
+      duration.value =
+          customVideoPlayerController!.videoPlayerController.value.duration;
+      playerPosition.value =
+          customVideoPlayerController!.videoPlayerController.value.position;
+      if (!forcedScreen!) {
         forcedScreen = true;
         keepScreenOn();
       }
     } else {
-      if(forcedScreen!){
+      if (forcedScreen!) {
         forcedScreen = false;
         keepScreenNormal();
       }
@@ -174,116 +185,152 @@ class TabbarItemController extends GetxController with StateMixin {
           ? bookmark.value = true
           : bookmark.value = false;
     } else {
-      ColoredSnack(title: "Error",description: _request.statusText.toString(),type: SnackType.ERROR);
+      ColoredSnack(
+          title: "Error",
+          description: _request.statusText.toString(),
+          type: SnackType.ERROR);
     }
   }
-  AndroidInitializationSettings initializationSettingsAndroid =const AndroidInitializationSettings('podcast');
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =FlutterLocalNotificationsPlugin();
+
+  AndroidInitializationSettings initializationSettingsAndroid =
+      const AndroidInitializationSettings('podcast');
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   Future<void> _initNotification(String filePath) async {
-    InitializationSettings initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,);
-     AndroidNotificationDetails androidNotificationDetails =  AndroidNotificationDetails("Zabaner", "Zabaner");
-    NotificationDetails notificationDetails =NotificationDetails(android: androidNotificationDetails);
-    flutterLocalNotificationsPlugin.show(0, "دانلود فایل تکمیل شد!", "برای باز کردن فایل کلیک کنید",notificationDetails ,payload: filePath);
+    InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails("Zabaner", "Zabaner");
+    NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    flutterLocalNotificationsPlugin.show(0, "دانلود فایل تکمیل شد!",
+        "برای باز کردن فایل کلیک کنید", notificationDetails,
+        payload: filePath);
   }
 
-  void downloadPDF(String urlPath, String id, String title) async{
+  void downloadPDF(String urlPath, String id, String title) async {
     title += ".pdf";
-      Get.defaultDialog(
-          title: "در حال دانلود ویدیو",
-          onWillPop: () async => downloadingPercent.value == 1 ? true : false,
-          backgroundColor: orange,
-          content: Obx(() =>
-              CircularProgressIndicator(
-                value: downloadingPercent.value,
-              )));
-      var _downloadRequest = await dio
-          .download(urlPath, appDoc.path + id + title,
-          onReceiveProgress: (recive, total) {
-            downloadingState.value = "downloading";
-            downloadingPercent.value = recive / total;
-          });
+    Get.defaultDialog(
+        title: "در حال دانلود ویدیو",
+        onWillPop: () async => downloadingPercent.value == 1 ? true : false,
+        backgroundColor: primary,
+        content: Obx(() => CircularProgressIndicator(
+              value: downloadingPercent.value,
+            )));
+    var _downloadRequest = await dio.download(urlPath, appDoc.path + id + title,
+        onReceiveProgress: (recive, total) {
+      downloadingState.value = "downloading";
+      downloadingPercent.value = recive / total;
+    });
+    try {
+      Get.closeAllSnackbars();
+      Get.back();
+    } catch (e) {
+      e.printError();
+    }
+
+    if (_downloadRequest.statusCode == 200) {
       try {
-        Get.closeAllSnackbars();
-        Get.back();
+        ColoredSnack(
+            title: "دانلود با موفقیت به اتمام رسید", type: SnackType.SUCCESS);
       } catch (e) {
         e.printError();
       }
-
-      if (_downloadRequest.statusCode == 200) {
-        try{
-          ColoredSnack(title: "دانلود با موفقیت به اتمام رسید",type: SnackType.SUCCESS);
-        }catch (e){
-          e.printError();
-        }
-        downloadingPercent.value = 0;
-        _initNotification(io.File(appDoc.path + id + title).path);
-      }
+      downloadingPercent.value = 0;
+      _initNotification(io.File(appDoc.path + id + title).path);
+    }
   }
 
-  initVideo(id,urlPath){
+  initVideo(id, urlPath) {
+    if (customVideoPlayerController != null) {
+      customVideoPlayerController!.dispose();
+    }
+    customVideoPlayerController = CustomVideoPlayerController(
+        CachedVideoPlayerController.file(
+            io.File(getUrlFileName(appDoc.path, id, urlPath)),
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true)),
+        autoInit: false,
+        fullscreenOnStart: false);
+
+    customVideoPlayerController!.init(autoPlay: true).then((value) {
+      customVideoPlayerTag.value =
+          io.File(getUrlFileName(appDoc.path, id, urlPath)).path;
+      customVideoPlayerController!.videoPlayerController.addListener(play);
+      videoInitialized.value = true;
+    });
+    return;
     BetterPlayerConfiguration betterPlayerConfiguration =
-    const BetterPlayerConfiguration(
-      aspectRatio: 16/9,
+        const BetterPlayerConfiguration(
+      aspectRatio: 16 / 9,
       fit: BoxFit.contain,
-      controlsConfiguration: BetterPlayerControlsConfiguration(showControlsOnInitialize: false),
+      controlsConfiguration:
+          BetterPlayerControlsConfiguration(showControlsOnInitialize: false),
     );
     BetterPlayerDataSource dataSource;
-    dataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, urlPath);
-    if (fileExists( getUrlFileName(appDoc.path,id,urlPath))) {
-      dataSource = BetterPlayerDataSource(
-          BetterPlayerDataSourceType.file, getUrlFileName(appDoc.path,id,urlPath));
+    dataSource =
+        BetterPlayerDataSource(BetterPlayerDataSourceType.network, urlPath);
+    if (fileExists(getUrlFileName(appDoc.path, id, urlPath))) {
+      dataSource = BetterPlayerDataSource(BetterPlayerDataSourceType.file,
+          getUrlFileName(appDoc.path, id, urlPath));
       _videoController = VideoPlayerController.file(
-          io.File(getUrlFileName(appDoc.path,id,urlPath)));
-
+          io.File(getUrlFileName(appDoc.path, id, urlPath)));
+    } else {
+      dataSource =
+          BetterPlayerDataSource(BetterPlayerDataSourceType.network, urlPath);
+      _videoController = VideoPlayerController.network(urlPath,
+          videoPlayerOptions: VideoPlayerOptions(
+              mixWithOthers: true, allowBackgroundPlayback: false));
     }
-    else {
-      dataSource = BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network, urlPath);
-      _videoController =
-          VideoPlayerController.network(urlPath);
-
-    }
-    chewieController = ChewieController(
-      videoPlayerController: _videoController,
-      autoPlay: false,
-      looping: false,
-      hideControlsTimer: const Duration(seconds: 2),
-      aspectRatio: 16 / 9,
-      showControls: true,
-      showControlsOnInitialize: false,
-      placeholder: Container(
-        color: Colors.grey,
-      ),
-      autoInitialize: true,
-    );
+    // chewieController = ChewieController(
+    //   videoPlayerController: _videoController,
+    //   autoPlay: false,
+    //   looping: false,
+    //   hideControlsTimer: const Duration(seconds: 2),
+    //   aspectRatio: 16 / 9,
+    //   showControls: true,
+    //   showControlsOnInitialize: false,
+    //   placeholder: Container(
+    //     color: Colors.grey,
+    //   ),
+    //   autoInitialize: true,
+    // );
     _videoController.addListener(play);
     videoInitialized.value = true;
   }
+
   Future<void> download(String urlPath, String id, String title) async {
     errorData.value = false;
-    io.File _checkFile = io.File(getUrlFileName(appDoc.path,id,urlPath));
+    io.File _checkFile = io.File(getUrlFileName(appDoc.path, id, urlPath));
     if (!_checkFile.existsSync()) {
-      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود ویدیو");
+      CancelToken cancelToken = CancelToken();
+      downloadDialog(
+          downloadingPercent: downloadingPercent,
+          title: "در حال دانلود ویدیو",
+          onDownloadCancel: () {
+            cancelToken.cancel();
+            Get.back();
+            Get.back();
+            ColoredSnack(title: "دانلود لغو شد",type: SnackType.ERROR);
+          });
       var _downloadRequest = await dio
-          .download(urlPath,  getUrlFileName(appDoc.path,id,urlPath),
+          .download(urlPath, getUrlFileName(appDoc.path, id, urlPath),
           onReceiveProgress: (recive, total) {
             downloadingState.value = "downloading";
             downloadingPercent.value = recive / total;
-
-          });
+          },deleteOnError: true,cancelToken: cancelToken);
       Get.closeAllSnackbars();
       Get.back();
 
       if (_downloadRequest.statusCode == 200) {
-        ColoredSnack(title: "دانلود با موفقیت به اتمام رسید",type: SnackType.SUCCESS);
+        ColoredSnack(
+            title: "دانلود با موفقیت به اتمام رسید", type: SnackType.SUCCESS);
         downloadingPercent.value = 0;
       }
-    } else {
-    }
+    } else {}
     isVideoExists.value = true;
   }
 
@@ -291,5 +338,4 @@ class TabbarItemController extends GetxController with StateMixin {
     io.File _checkFile = io.File(path);
     return _checkFile.existsSync();
   }
-
 }

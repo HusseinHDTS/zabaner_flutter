@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_intro/flutter_intro.dart';
 import 'package:get/get.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:zabaner/controllers/custom_date_picker_controller.dart';
 import 'package:zabaner/controllers/main_screen_controller.dart';
 import 'package:zabaner/controllers/resources_controller.dart';
 import 'package:zabaner/views/colors.dart';
@@ -12,6 +14,7 @@ import 'package:zabaner/views/screens/client_statics_screen.dart';
 import 'package:zabaner/views/screens/home_screen.dart';
 import 'package:zabaner/views/screens/news_detail_screen.dart';
 import 'package:zabaner/views/screens/news_screen.dart';
+import 'package:zabaner/views/screens/online_class.dart';
 import 'package:zabaner/views/screens/pocast_screen.dart';
 import 'package:zabaner/views/screens/podcast_play_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
@@ -22,7 +25,9 @@ import '../../widgets/colored_text.dart';
 
 class MainScreen extends StatelessWidget {
   MainScreen({Key? key, required this.isGuest, this.firstTime = false})
-      : super(key: key);
+      : super(key: key){
+    Get.put(CustomDatePickerController());
+  }
   final MainScreenController _controller = Get.put(MainScreenController());
 
   final bool isGuest;
@@ -35,6 +40,12 @@ class MainScreen extends StatelessWidget {
   bool newsDetailScreenBool = false;
   bool podcastScreenBool = false;
   bool videoScreenBool = false;
+  int _showCaseSize = 0;
+
+  // Widget Showcase({child}){
+  //   _showCaseSize += 1;
+  //   return Showcase(child: child);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -79,31 +90,29 @@ class MainScreen extends StatelessWidget {
         },
         child: Stack(
           children: [
-            ShowCaseWidget(
-                autoPlay: false,
-                enableAutoPlayLock: false,
-                builder: Builder(
-                  builder: (_context) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      bool tourTime =
-                          _controller.getStorage.read("tour") ?? false;
-                      Timer(const Duration(milliseconds: 500), () {
-                        if (!tourTime) {
-                          ShowCaseWidget.of(_context).startShowCase([
-                            _controller.keyOne,
-                            _controller.keyTwo,
-                            _controller.keyThree,
-                            _controller.keyFour,
-                            _controller.keyFive,
-                            _controller.keySix,
-                          ]);
-                          _controller.getStorage.write('tour', true);
-                        }
-                      });
-                    });
-                    return Scaffold(
-                      body: SizedBox.expand(
-                          child: Column(
+            ShowCaseWidget(builder: Builder(
+              builder: (_context) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  bool tourTime =
+                      _controller.getStorage.read("tour") ?? false;
+                  Timer(const Duration(milliseconds: 500), () {
+                    // if (!tourTime) {
+                    ShowCaseWidget.of(_context).startShowCase([
+                      _controller.keyOne,
+                      _controller.keyTwo,
+                      _controller.keyThree,
+                      _controller.keyFour,
+                      _controller.keyFive,
+                      _controller.keySix,
+                    ]);
+                    // Intro.of(context).start();
+                    // _controller.getStorage.write('tour', true);
+                    // }
+                  });
+                });
+                return Scaffold(
+                  body: SizedBox.expand(
+                      child: Column(
                         children: [
                           Expanded(
                             flex: 1,
@@ -119,47 +128,47 @@ class MainScreen extends StatelessWidget {
                                     key: _controller.navigationKey[0],
                                     onGenerateRoute: (settings) =>
                                         MaterialPageRoute(
-                                      settings: settings,
-                                      builder: (context) {
-                                        switch (settings.name) {
-                                          case '/statics':
-                                            return StaticsScreen();
-                                          case '/profile':
-                                            return ProfileScreen(
-                                              isGuest: isGuest,
-                                            );
-                                            // case '/bookScreen':
-                                            bookScreenBool = true;
-                                          // return bookScreen = BookScreen(
-                                          //   isGuest: isGuest,
-                                          // );
-                                          case "/podcast":
-                                            return PodcastScreen(
-                                              isGuest: isGuest,
-                                            );
-                                          case "/playPodcast":
-                                            podcastScreenBool = true;
-                                            // return podcastScreen = PodcastPlay(
+                                          settings: settings,
+                                          builder: (context) {
+                                            switch (settings.name) {
+                                              case '/statics':
+                                                return StaticsScreen();
+                                              case '/profile':
+                                                return ProfileScreen(
+                                                  isGuest: isGuest,
+                                                );
+                                                // case '/bookScreen':
+                                                bookScreenBool = true;
+                                            // return bookScreen = BookScreen(
                                             //   isGuest: isGuest,
                                             // );
-                                            break;
-                                          // case "/newsDetail":
-                                          //   return NewsDetailScreen(isGuest: isGuest);
-                                          case "/home":
+                                              case "/podcast":
+                                                return PodcastScreen(
+                                                  isGuest: isGuest,
+                                                );
+                                              case "/playPodcast":
+                                                podcastScreenBool = true;
+                                                // return podcastScreen = PodcastPlay(
+                                                //   isGuest: isGuest,
+                                                // );
+                                                break;
+                                            // case "/newsDetail":
+                                            //   return NewsDetailScreen(isGuest: isGuest);
+                                              case "/home":
+                                                return HomeScreen(
+                                                  isGuest: isGuest,
+                                                );
+                                              case "/video":
+                                                videoScreenBool = true;
+                                                // return videoScreen =
+                                                //     VideoDetailScreen(isGuest: isGuest);
+                                                break;
+                                            }
                                             return HomeScreen(
                                               isGuest: isGuest,
                                             );
-                                          case "/video":
-                                            videoScreenBool = true;
-                                            // return videoScreen =
-                                            //     VideoDetailScreen(isGuest: isGuest);
-                                            break;
-                                        }
-                                        return HomeScreen(
-                                          isGuest: isGuest,
-                                        );
-                                      },
-                                    ),
+                                          },
+                                        ),
                                   ),
 
                                   // Resources screen and navigate and Book, Podcast screen
@@ -167,45 +176,45 @@ class MainScreen extends StatelessWidget {
                                     key: _controller.navigationKey[1],
                                     onGenerateRoute: (settings) =>
                                         MaterialPageRoute(
-                                      settings: settings,
-                                      builder: (context) {
-                                        switch (settings.name) {
-                                          case '/bookScreen':
-                                            bookScreenBool = true;
-                                            // return bookScreen = BookScreen(
-                                            //   isGuest: isGuest,
-                                            // );
-                                            break;
-                                          case '/profile':
-                                            return ProfileScreen(
-                                              isGuest: isGuest,
-                                            );
-                                          case "/podcast":
-                                            return PodcastScreen(
-                                              isGuest: isGuest,
-                                            );
-                                          case "/playPodcast":
-                                            podcastScreenBool = true;
-                                            // return podcastScreen = PodcastPlay(
-                                            //   isGuest: isGuest,
-                                            // );
-                                            break;
+                                          settings: settings,
+                                          builder: (context) {
+                                            switch (settings.name) {
+                                              case '/bookScreen':
+                                                bookScreenBool = true;
+                                                // return bookScreen = BookScreen(
+                                                //   isGuest: isGuest,
+                                                // );
+                                                break;
+                                              case '/profile':
+                                                return ProfileScreen(
+                                                  isGuest: isGuest,
+                                                );
+                                              case "/podcast":
+                                                return PodcastScreen(
+                                                  isGuest: isGuest,
+                                                );
+                                              case "/playPodcast":
+                                                podcastScreenBool = true;
+                                                // return podcastScreen = PodcastPlay(
+                                                //   isGuest: isGuest,
+                                                // );
+                                                break;
 
-                                          case "/resource":
+                                              case "/resource":
+                                                return ResourcesScreen(
+                                                  isGuest: isGuest,
+                                                );
+                                              case "/video":
+                                                videoScreenBool = true;
+                                                // return videoScreen =
+                                                //     VideoDetailScreen(isGuest: isGuest);
+                                                break;
+                                            }
                                             return ResourcesScreen(
                                               isGuest: isGuest,
                                             );
-                                          case "/video":
-                                            videoScreenBool = true;
-                                            // return videoScreen =
-                                            //     VideoDetailScreen(isGuest: isGuest);
-                                            break;
-                                        }
-                                        return ResourcesScreen(
-                                          isGuest: isGuest,
-                                        );
-                                      },
-                                    ),
+                                          },
+                                        ),
                                   ),
 
                                   // News screen and navigate to news pages
@@ -213,57 +222,79 @@ class MainScreen extends StatelessWidget {
                                     key: _controller.navigationKey[2],
                                     onGenerateRoute: (settings) =>
                                         MaterialPageRoute(
-                                      settings: settings,
-                                      builder: (context) {
-                                        if (settings.name == '/news') {
-                                          return NewsScreen(
-                                            isGuest: isGuest,
-                                          );
-                                        }
-                                        if (settings.name == '/profile') {
-                                          return ProfileScreen(
-                                            isGuest: isGuest,
-                                          );
-                                        }
-                                        return NewsScreen(
-                                          isGuest: isGuest,
-                                        );
-                                      },
-                                    ),
-                                  )
+                                          settings: settings,
+                                          builder: (context) {
+                                            if (settings.name == '/news') {
+                                              return NewsScreen(
+                                                isGuest: isGuest,
+                                              );
+                                            }
+                                            if (settings.name == '/profile') {
+                                              return ProfileScreen(
+                                                isGuest: isGuest,
+                                              );
+                                            }
+                                            return NewsScreen(
+                                              isGuest: isGuest,
+                                            );
+                                          },
+                                        ),
+                                  ),
+                                  Navigator(
+                                    key: _controller.navigationKey[3],
+                                    onGenerateRoute: (settings) =>
+                                        MaterialPageRoute(
+                                          settings: settings,
+                                          builder: (context) {
+                                            return OnlineClass();
+                                          },
+                                        ),
+                                  ),
                                 ],
                               ),
                             ),
                           ),
                           Obx(() => _controller.shouldShowContent()
                               ? Expanded(
-                                  flex: 0,
-                                  child: Container(
-                                    child: Row(
-                                      children: [
-                                        Flexible(
-                                            flex: 1,
-                                            child: Container(
-                                              child: Showcase(
-                                                targetPadding:
-                                                    const EdgeInsets.all(5),
-                                                key: _controller.keyOne,
-                                                description:
-                                                    _controller.intros[0],
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    _controller
-                                                        .changeCurrentPage(0);
-                                                  },
-                                                  child: Center(
-                                                      child: Column(
+                              flex: 0,
+                              child: Container(
+                                width: double.infinity,
+                                height: 60,
+                                decoration: BoxDecoration(color: primary),
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 8),
+                                          decoration: BoxDecoration(),
+                                          child: Showcase(
+                                            onToolTipClick: (){
+                                              ShowCaseWidget.of(_context).dismiss();
+                                            },
+                                            disableDefaultTargetGestures: true,
+                                            targetPadding:
+                                            const EdgeInsets.all(5),
+                                            key: _controller.keyOne,
+                                            description:
+                                            _controller.intros[0],
+                                            child: InkWell(
+                                              onTap: () {
+                                                _controller
+                                                    .changeCurrentPage(0,_context);
+                                              },
+                                              child: Center(
+                                                  child: Column(
                                                     children: [
                                                       Expanded(
                                                         flex:1,
                                                         child: Opacity(
                                                             opacity: _controller
-                                                                        .getCurrentPos() ==
-                                                                    0
+                                                                .getCurrentPos() ==
+                                                                0
                                                                 ? 1
                                                                 : 0.4,
                                                             child: Image.asset(
@@ -275,43 +306,47 @@ class MainScreen extends StatelessWidget {
                                                         flex:0,
                                                         child: Center(
                                                             child: ColoredText(
-                                                          "خانه",
-                                                          textColor: _controller
-                                                                      .getCurrentPos() ==
+                                                              "خانه",
+                                                              textColor: _controller
+                                                                  .getCurrentPos() ==
                                                                   0
-                                                              ? Colors.black87
-                                                              : Colors.black38,
-                                                          textSize: 12,
-                                                          fontWeight:
+                                                                  ? Colors.black87
+                                                                  : Colors.black38,
+                                                              textSize: 12,
+                                                              fontWeight:
                                                               FontWeight.bold,
-                                                        )),
+                                                            )),
                                                       ),
                                                     ],
                                                   )),
-                                                ),
-                                              ),
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 8),
-                                              decoration: BoxDecoration(),
-                                            )),
-                                        Flexible(
-                                            flex: 1,
-                                            child: Container(
-                                              child: Showcase(
-                                                targetPadding:
-                                                    const EdgeInsets.all(5),
-                                                key: _controller.keyTwo,
-                                                description:
-                                                    _controller.intros[1],
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    _controller
-                                                        .changeCurrentPage(1);
-                                                  },
-                                                  child: Center(
-                                                      child: Column(
+                                            ),
+                                          ),
+                                        )),
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 8),
+                                          decoration: BoxDecoration(),
+                                          child: Showcase(
+                                            onToolTipClick: (){
+                                              ShowCaseWidget.of(_context).dismiss();
+                                            },
+                                            disableDefaultTargetGestures: true,
+                                            targetPadding:
+                                            const EdgeInsets.all(5),
+                                            key: _controller.keyTwo,
+                                            description:
+                                            _controller.intros[1],
+                                            child: InkWell(
+                                              onTap: () {
+                                                _controller
+                                                    .changeCurrentPage(1,_context);
+                                              },
+                                              child: Center(
+                                                  child: Column(
                                                     children: [
                                                       Expanded(
                                                         flex:1,
@@ -343,30 +378,34 @@ class MainScreen extends StatelessWidget {
                                                       ),
                                                     ],
                                                   )),
-                                                ),
-                                              ),
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 8),
-                                              decoration: BoxDecoration(),
-                                            )),
-                                        Flexible(
-                                            flex: 1,
-                                            child: Container(
-                                              child: Showcase(
-                                                targetPadding:
-                                                    const EdgeInsets.all(5),
-                                                key: _controller.keyThree,
-                                                description:
-                                                    _controller.intros[2],
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    _controller
-                                                        .changeCurrentPage(2);
-                                                  },
-                                                  child: Center(
-                                                      child: Column(
+                                            ),
+                                          ),
+                                        )),
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 8),
+                                          decoration: BoxDecoration(),
+                                          child: Showcase(
+                                            onToolTipClick: (){
+                                              ShowCaseWidget.of(_context).dismiss();
+                                            },
+                                            disableDefaultTargetGestures: true,
+                                            targetPadding:
+                                            const EdgeInsets.all(5),
+                                            key: _controller.keyThree,
+                                            description:
+                                            _controller.intros[2],
+                                            child: InkWell(
+                                              onTap: () {
+                                                _controller
+                                                    .changeCurrentPage(2,_context);
+                                              },
+                                              child: Center(
+                                                  child: Column(
                                                     children: [
                                                       Expanded(
                                                         flex:1,
@@ -398,26 +437,73 @@ class MainScreen extends StatelessWidget {
                                                       ),
                                                     ],
                                                   )),
-                                                ),
-                                              ),
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 12, vertical: 8),
-                                              decoration: BoxDecoration(),
-                                            )),
-                                      ],
-                                    ),
-                                    width: double.infinity,
-                                    height: 60,
-                                    decoration: BoxDecoration(color: orange),
-                                  ))
+                                            ),
+                                          ),
+                                        )),
+                                    Flexible(
+                                        flex: 1,
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 8),
+                                          decoration: BoxDecoration(),
+                                          child: Showcase(
+                                            targetPadding:
+                                            const EdgeInsets.all(5),
+                                            key: _controller.keySeven,
+                                            description:
+                                            _controller.intros[6],
+                                            child: InkWell(
+                                              onTap: () {
+                                                _controller
+                                                    .changeCurrentPage(3,_context);
+                                              },
+                                              child: Center(
+                                                  child: Column(
+                                                    children: [
+                                                      Expanded(
+                                                        flex:1,
+                                                        child: Opacity(
+                                                            opacity: _controller
+                                                                .getCurrentPos() ==
+                                                                3
+                                                                ? 1
+                                                                : 0.4,
+                                                            child: Image.asset(
+                                                              "assets/images/online_class.png",
+                                                            )),
+                                                      ),
+                                                      SizedBox(height: 2,),
+                                                      Expanded(
+                                                        flex:0,
+                                                        child: Center(
+                                                            child: ColoredText(
+                                                              "کلاس آنلاین",
+                                                              textColor: _controller
+                                                                  .getCurrentPos() ==
+                                                                  3
+                                                                  ? Colors.black87
+                                                                  : Colors.black38,
+                                                              textSize: 12,
+                                                              fontWeight:
+                                                              FontWeight.bold,
+                                                            )),
+                                                      ),
+                                                    ],
+                                                  )),
+                                            ),
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                              ))
                               : Container())
                         ],
                       )),
-                    );
-                  },
-                )),
+                );
+              },
+            ))
           ],
         ),
       ),

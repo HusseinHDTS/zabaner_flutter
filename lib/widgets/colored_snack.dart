@@ -1,3 +1,4 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/views/colors.dart';
@@ -18,6 +19,7 @@ class ColoredSnack {
   double? borderRadius;
   Duration? duration;
   SnackType? type;
+  bool? newFace;
 
   ColoredSnack(
       {this.position,
@@ -26,6 +28,7 @@ class ColoredSnack {
       this.type,
       this.title,
       this.description,
+      this.newFace,
       this.titleColor,
       this.descriptionColor,
       this.duration,
@@ -38,6 +41,7 @@ class ColoredSnack {
     borderRadius ??= 8;
     duration ??= const Duration(seconds: 5);
     title ??= "";
+    newFace ??= false;
     description ??= "";
     type ??= SnackType.OLD;
 
@@ -50,6 +54,37 @@ class ColoredSnack {
       snackColor = snackbarWarningTransparent;
     }else if(type == SnackType.OLD){
       snackColor = snackbarOldTransparent;
+    }
+    if(!newFace!){
+      oldSnack(snackColor);
+    }else{
+      newSnack(snackColor);
+    }
+  }
+
+  newSnack(snackColor){
+    // SnackBar(
+    //   /// need to set following properties for best effect of awesome_snackbar_content
+    //   elevation: 0,
+    //   behavior: SnackBarBehavior.floating,
+    //   backgroundColor: Colors.transparent,
+    //   content: AwesomeSnackbarContent(
+    //     title: 'On Snap!',
+    //     message:
+    //     'This is an example error message that will be shown in the body of snackbar!',
+    //
+    //     /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+    //     contentType: ContentType.failure,
+    //   ),
+    // );
+
+  }
+
+  oldSnack(snackColor){
+    try{
+      Get.closeAllSnackbars();
+    }catch(e){
+      e.printError();
     }
     Get.rawSnackbar(
       backgroundColor: snackColor,
@@ -71,4 +106,5 @@ class ColoredSnack {
       ],
     );
   }
+
 }

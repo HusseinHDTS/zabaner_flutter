@@ -8,6 +8,15 @@ import 'package:zabaner/widgets/colored_snack.dart';
 const baseUrl = "https://app.zabaner.ir";
 // const baseUrl = "https://138.201.100.200:3000";
 const signinUrl = "$baseUrl/api/v1/auth/signin";
+const createUserTeacher = "$baseUrl/api/v1/user-teachers/create";
+const updateUserTeacherPrice = "$baseUrl/api/v1/user-teachers/price";
+const createOnlineClass = "$baseUrl/api/v1/online-class/create";
+const updateUserTeacher = "$baseUrl/api/v1/user-teachers/updateInfo";
+const updateTeacherProfileImage = "$baseUrl/api/v1/user-teachers/image";
+const createBankUserTeacher = "$baseUrl/api/v1/user-teachers/bank";
+const getCurrentTeacherUser = "$baseUrl/api/v1/user-teachers";
+const getAllUserTeachers = "$baseUrl/api/v1/user-teachers";
+const getAllTeacherClass = "$baseUrl/api/v1/online-class";
 const signupUrl = "$baseUrl/api/v1/auth/signup";
 const newsCategoryUrl = "$baseUrl/api/v1/news-categories";
 const subCategoryUrl = "$baseUrl/api/v1/sub-categories";
@@ -25,6 +34,7 @@ const getAllAdultTabCategories = "$baseUrl/api/v1/adult-mc-categories";
 const getAllNationalTabCategories = "$baseUrl/api/v1/national-mc-categories";
 const newsCategoryContentUrl = "$baseUrl/api/v1/news";
 const getPodcastSubCategories = "$baseUrl/api/v1/podcast-sub-categories";
+const getPodcastSub1Categories = "$baseUrl/api/v1/podcast-sub-1-categories";
 const resourcesUrl = "$baseUrl/api/v1/resources/home";
 const profileInformationUrl = "$baseUrl/api/v1/user";
 const paymentCheck = "$baseUrl/api/v1/user/payment";
@@ -120,6 +130,18 @@ String getRandomString(int length) {
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 }
 
+String getSrtFileName(language , id , path){
+  String result = path.toString().substring(path.toString().lastIndexOf("/")+1);
+  result = result
+      .substring(0, result.lastIndexOf("."))
+      .replaceAll(".", "")
+      .trim()
+      .replaceAll(" ", "")
+      .replaceAll("%20", "");
+
+  return ( id + result + language).toString().trim();
+}
+
 String getUrlFileName(appDir, id, path) {
   String result = path.toString().substring(path.toString().lastIndexOf("/"));
   result = result
@@ -136,6 +158,9 @@ String getUrl(path) {
   String _path = path.toString();
   String _imagePath = _path.toString();
   String imagePath = "";
+  if(_imagePath.toString().trim().isEmpty){
+    return "";
+  }
   if (_imagePath.characters.first == '/') {
     imagePath = baseUrl + _imagePath.replaceAll("//", "/");
   } else {

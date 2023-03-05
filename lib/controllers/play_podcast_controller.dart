@@ -21,8 +21,7 @@ import 'package:zabaner/widgets/colored_text.dart';
 import 'package:zabaner/widgets/my_app_bar.dart';
 import 'package:srt_parser/srt_parser.dart' as strP;
 
-
-class PlayPodcastController extends GetxController{
+class PlayPodcastController extends GetxController {
   final GetConnect _getConnect = GetConnect();
   late DateTime _dateTime;
   final FlutterSoundPlayer player = FlutterSoundPlayer();
@@ -36,7 +35,7 @@ class PlayPodcastController extends GetxController{
   var isDataLoaded = false.obs;
   var ind = 0;
   var faParagraph = <SentenceModel>[].obs;
-  var enParagraph = <SentenceModel>[].obs ;
+  var enParagraph = <SentenceModel>[].obs;
   RxBool autoScroll = true.obs;
   var en = true.obs, fa = true.obs;
   var playingText = "".obs;
@@ -53,6 +52,7 @@ class PlayPodcastController extends GetxController{
   var playerPosition = const Duration().obs;
   var repeat = false.obs;
   var downloadingState = "".obs;
+
   @override
   void onInit() async {
     super.onInit();
@@ -63,8 +63,6 @@ class PlayPodcastController extends GetxController{
     downloadingPercent = 0.0.obs;
     downloadingState = "".obs;
   }
-
-
 
   void customeInit() {
     _dateTime = DateTime.now();
@@ -82,31 +80,21 @@ class PlayPodcastController extends GetxController{
     playSpeed.value = 1;
   }
 
-  void initSubtitle(id)async{
+  void initSubtitle(id) async {
     var shouldR = false;
-    if (podcastItem.subtitle.toString().trim().isNotEmpty) {
-      bool exists = await readExists("${id}en");
-      if(!exists){
-        var en = await _getConnect.get(podcastItem.subtitle);
-        writeString(en.bodyString ??  "", "${id}en");
-      }
-      String data = await readString("${id}en");
-      var list = await getFullFromSrt(false, strP.parseSrt(data));
-      enParagraph.value = list.sentenceModel;
+    var faLink = podcastItem.subtitleFa.toString();
+    var enLink = podcastItem.subtitle.toString();
+    var resEn = await getSrtSubTitle("en", id, enLink);
+    var resFa = await getSrtSubTitle("fa", id, faLink);
+    if (resEn != null) {
+      enParagraph.value = resEn;
       shouldR = true;
     }
-    if (podcastItem.subtitleFa.toString().trim().isNotEmpty) {
-      bool exists = await readExists("${id}en");
-      if(!exists){
-        var fa = await _getConnect.get(podcastItem.subtitleFa);
-        writeString(fa.bodyString ??  "", "${id}en");
-      }
-      String data = await readString("${id}en");
-      var list = await getFullFromSrt(true, strP.parseSrt(data));
-      faParagraph.value = list.sentenceModel;
+    if (resFa != null) {
+      faParagraph.value = resFa;
+      shouldR = true;
+    }
 
-      shouldR = true;
-    }
     if (shouldR) {
       isSubtitleLoaded.value = true;
       return;
@@ -120,17 +108,21 @@ class PlayPodcastController extends GetxController{
   void onClose() async {
     // TODO: implement onClose
     super.onClose();
-    player.isPlaying ? {} : player.pausePlayer();
+    player.isOpen()
+        ? player.isPlaying
+            ? {}
+            : player.pausePlayer()
+        : {};
     Map times = _getStorage.read('timers') ?? {};
     var lastTimer = times[
-    '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ??
+            '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ??
         0;
     if (times[
-    '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ==
+            '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] ==
         null) {
       times.addAll(<String, int>{
         '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}':
-        (DateTime.now().difference(_dateTime).inSeconds + lastTimer).toInt()
+            (DateTime.now().difference(_dateTime).inSeconds + lastTimer).toInt()
       });
     } else {
       times['${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}'] =
@@ -139,7 +131,7 @@ class PlayPodcastController extends GetxController{
     if (times['totall'] == null) {
       times.addAll(<String, dynamic>{
         'totall':
-        (DateTime.now().difference(_dateTime).inSeconds + lastTimer).toInt()
+            (DateTime.now().difference(_dateTime).inSeconds + lastTimer).toInt()
       });
     } else {
       var n = DateTime.now();
@@ -170,76 +162,82 @@ class PlayPodcastController extends GetxController{
     }
   }
 
-
-  bool isFileExists(String filePath){
+  bool isFileExists(String filePath) {
     io.File audioFile = io.File(filePath);
     return audioFile.existsSync();
   }
 
   Future<void> download(String urlPath, String id, String title) async {
-    io.File _checkFile = io.File(getUrlFileName(appDoc.path,id,urlPath));
+    io.File _checkFile = io.File(getUrlFileName(appDoc.path, id, urlPath));
     if (!_checkFile.existsSync()) {
-      downloadDialog(downloadingPercent: downloadingPercent, title: "در حال دانلود فایل صوتی");
+      CancelToken cancelToken = CancelToken();
+      downloadDialog(
+          downloadingPercent: downloadingPercent,
+          title: "در حال دانلود فایل صوتی",
+          onDownloadCancel: () {
+            cancelToken.cancel();
+            Get.back();
+            Get.back();
+            ColoredSnack(title: "دانلود لغو شد", type: SnackType.ERROR);
+          });
 
       var _downloadRequest = await dio
-          .download(urlPath,  getUrlFileName(appDoc.path,id,urlPath),
-          onReceiveProgress: (recive, total) {
-            downloadingState.value = "downloading";
-            downloadingPercent.value = recive / total;
-
-          });
+          .download(urlPath, getUrlFileName(appDoc.path, id, urlPath),
+              onReceiveProgress: (recive, total) {
+        downloadingState.value = "downloading";
+        downloadingPercent.value = recive / total;
+      },deleteOnError: true,cancelToken: cancelToken);
       Get.closeAllSnackbars();
       Get.back();
 
       if (_downloadRequest.statusCode == 200) {
-        ColoredSnack(title: "دانلود با موفقیت به اتمام رسید",type: SnackType.SUCCESS);
+        ColoredSnack(
+            title: "دانلود با موفقیت به اتمام رسید", type: SnackType.SUCCESS);
         downloadingPercent.value = 0;
       }
-    } else {
-
-    }
+    } else {}
     isPodcastExists.value = true;
   }
 
-
-  Future<String> getLyrData(id) async{
+  Future<String> getLyrData(id) async {
     return await readString("${id}en");
   }
 
   GlobalKey? ckey;
+
   Future<List<InlineSpan>> getCurrentText(int index, bool _fa) async {
     List<InlineSpan> texts = [];
-    try{
-    SentenceModel model = getParAsLang(_fa)[index];
-    int size = model.sentencesList.length;
-    for (int i = 0; i < size; i++) {
-      SentenceIndex cm = model.sentencesList[i];
-      bool isNowCurrentText = false;
-      isNowCurrentText =
-          currentSavedTime.value == cm.time && isInEndTime.value == false;
-      String textForCheck = StringHelper().filterString(playingText.value);
+    try {
+      SentenceModel model = getParAsLang(_fa)[index];
+      int size = model.sentencesList.length;
+      for (int i = 0; i < size; i++) {
+        SentenceIndex cm = model.sentencesList[i];
+        bool isNowCurrentText = false;
+        isNowCurrentText =
+            currentSavedTime.value == cm.time && isInEndTime.value == false;
+        String textForCheck = StringHelper().filterString(playingText.value);
 
-      var cckey = GlobalObjectKey(getRandomString(15));
+        var cckey = GlobalObjectKey(getRandomString(15));
 
-      if (isNowCurrentText &&
-          textForCheck.trim().isNotEmpty) {
-        if (fa.value == true && en.value == true) {
-          if (_fa == false) {
+        if (isNowCurrentText && textForCheck.trim().isNotEmpty) {
+          if (fa.value == true && en.value == true) {
+            if (_fa == false) {
+              ckey = cckey;
+            }
+          } else {
             ckey = cckey;
           }
-        } else {
-          ckey = cckey;
         }
+        texts.add(WidgetSpan(
+          child: SizedBox.fromSize(
+            size: Size.zero,
+            key: cckey,
+          ),
+        ));
+        texts.add(parseHtmlToTextSpan(whiteSpaceForSentence(cm.text.toString()),
+            getSubtitleTextStyle(isNowCurrentText)));
       }
-      texts.add(WidgetSpan(
-        child: SizedBox.fromSize(
-          size: Size.zero,
-          key: cckey,
-        ),
-      ));
-      texts.add(parseHtmlToTextSpan(whiteSpaceForSentence(cm.text.toString()), getSubtitleTextStyle(isNowCurrentText)));
-    }
-    }catch(e){
+    } catch (e) {
       e.printError();
     }
     return texts;
@@ -251,26 +249,24 @@ class PlayPodcastController extends GetxController{
     var _request = isGuest
         ? await _getConnect.get(getPodcastDetailUrl + podcastId)
         : await _getConnect.get(
-      getPodcastDetailUrl + podcastId,
-      headers: {
-        'accept': 'application/json',
-        'Authorization': 'Bearer ${_getStorage.read('token')}'
-      },
-    );
+            getPodcastDetailUrl + podcastId,
+            headers: {
+              'accept': 'application/json',
+              'Authorization': 'Bearer ${_getStorage.read('token')}'
+            },
+          );
 
     if (_request.statusCode == 200) {
       podcastItem = podcastItemModelFromJson(_request.bodyString ?? "");
       for (var item in podcastItem.paragraphs) {
         if (item.fa.isNotEmpty) {
           break;
-        } else {
-        }
+        } else {}
       }
       for (var item in podcastItem.paragraphs) {
         if (item.en.isNotEmpty) {
           break;
-        } else {
-        }
+        } else {}
       }
       for (var item in podcastItem.paragraphs) {
         if (item.en.isNotEmpty) {
@@ -293,33 +289,32 @@ class PlayPodcastController extends GetxController{
     }
     isDataLoaded.value = true;
   }
-  int nextTime= 0 , preTime = 0;
+
+  int nextTime = 0, preTime = 0;
+
   checkForTime(event) {
     List<SentenceModel> a = getParAsLang(false);
     var posEv = event;
     for (int i = 0; i < a.length; i++) {
       for (int o = 0; o < a[i].sentencesList.length; o++) {
         var b = a[i].sentencesList[o];
-        if (posEv.position.inMilliseconds >
-            b.time &&
-            b.time > currentSavedTime.value ||
-            posEv.position.inMilliseconds <
-                b.time &&
+        if (posEv.position.inMilliseconds > b.time &&
+                b.time > currentSavedTime.value ||
+            posEv.position.inMilliseconds < b.time &&
                 b.time < currentSavedTime.value) {
           if (currentSavedTime.value == b.time) {
             return;
           }
           isInEndTime.value = false;
           currentSavedTime.value = b.time;
-          if(playingText.value != b.text.toString()){
+          if (playingText.value != b.text.toString()) {
             playingText.value = b.text.toString();
           }
-          if(playingTextFa.value != b.text.toString()){
+          if (playingTextFa.value != b.text.toString()) {
             playingTextFa.value = b.text.toString();
           }
         }
-        if (posEv.position.inMilliseconds >
-            b.endTime &&
+        if (posEv.position.inMilliseconds > b.endTime &&
             b.endTime > currentSavedTime.value) {
           // if(isInEndTime.isFalse){
           isInEndTime.value = true;
@@ -334,7 +329,7 @@ class PlayPodcastController extends GetxController{
       if (ckey!.currentContext != null) {
         RenderBox box = ckey!.currentContext!.findRenderObject() as RenderBox;
         Offset position =
-        box.localToGlobal(Offset.zero); //this is global position
+            box.localToGlobal(Offset.zero); //this is global position
         double y = position.dy;
 
         scrollController.animateTo(y - 200 + (scrollController.offset),
@@ -343,24 +338,21 @@ class PlayPodcastController extends GetxController{
     }
   }
 
-
-
-  void togglePlayer(String filePath) async{
+  void togglePlayer(String filePath) async {
     bool forced = await isScreenForced();
     if (!isPlaying.value) {
       playAudio(filePath);
-      if(!forced){
+      if (!forced) {
         keepScreenOn();
       }
     } else {
       player.pausePlayer();
       isPlaying.value = false;
-      if(forced){
+      if (forced) {
         keepScreenNormal();
       }
     }
   }
-
 
   void playAudio(String filePath) async {
     try {
@@ -390,10 +382,11 @@ class PlayPodcastController extends GetxController{
           checkForTime(event);
         });
       } else {
-        ColoredSnack(title: "ابتدا فایل صورتی را دانلود کنید",type: SnackType.WARNING);
+        ColoredSnack(
+            title: "ابتدا فایل صورتی را دانلود کنید", type: SnackType.WARNING);
       }
     } catch (e) {
-      ColoredSnack(title: "Error",description: "$e",type: SnackType.ERROR);
+      ColoredSnack(title: "Error", description: "$e", type: SnackType.ERROR);
     }
   }
 }

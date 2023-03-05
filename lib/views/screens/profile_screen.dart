@@ -7,6 +7,7 @@ import 'package:zabaner/views/screens/profile_account_screen.dart';
 import 'package:zabaner/views/screens/profile_setting_screen.dart';
 import 'package:zabaner/views/screens/profile_support_screen.dart';
 import 'package:zabaner/views/widgets/profile_tab_widget.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key, required this.isGuest}) : super(key: key);
@@ -20,31 +21,7 @@ class ProfileScreen extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-            leadingWidth: Get.width,
-            backgroundColor: const Color(0xffEBB632),
-            elevation: 0,
-            leading: Padding(
-              padding: EdgeInsets.only(right: Get.width / 40),
-              child: InkWell(
-                onTap: () => Get.back(),
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.arrow_back,
-                      size: 20,
-                      color: Colors.white,
-                    ),
-                    SizedBox(width: 4,),
-                    Text(
-                      "بازگشت",
-                      style: TextStyle(
-                          fontFamily: "Yekan", color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            )),
+        appBar: ColoredAppBar(),
         backgroundColor: const Color(0xffffffff),
         // resizeToAvoidBottomInset: false,
         body: Padding(

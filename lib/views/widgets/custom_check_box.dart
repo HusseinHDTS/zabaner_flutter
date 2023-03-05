@@ -19,9 +19,9 @@ Widget customCheckBox(double width, double height, String text,
             width: width,
             height: height,
             decoration: BoxDecoration(
-                border: Border.all(color: orange),
+                border: Border.all(color: primary),
                 borderRadius: BorderRadius.circular(6),
-                color: checked.value ? orange : Colors.white),
+                color: checked.value ? primary : Colors.white),
             child: checked.value
                 ? const Icon(
               Icons.done_rounded,

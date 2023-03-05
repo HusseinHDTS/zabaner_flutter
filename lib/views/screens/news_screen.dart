@@ -38,7 +38,7 @@ class NewsScreen extends StatelessWidget {
             resizeToAvoidBottomInset: true,
             backgroundColor: const Color(0xffffffff),
             appBar: AppBar(
-              backgroundColor: orange,
+              backgroundColor: primary,
               titleSpacing: 0,
               elevation: 0,
               title: Column(

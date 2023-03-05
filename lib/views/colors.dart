@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-const orange = Color(0xffEBB632);
-const orangeDark = Color(0xffe2a403);
+const primary = Color(0xffEBB632);
+const primaryDark = Color(0xffe2a403);
+const primaryDate = Color(0xff0066ff);
 const orangeDarkTransparent = Color(0xd9e2a403);
 const orangeMessage = Color(0xd5d69d05);
 const redExitColor = Color(0xffac0000);
+var cancelDownloadColor = primary.withOpacity(0.2);
 const selectedSettingsColor = Color(0x36ffb600);
 const deSelectedSettingsColor = Color(0xebb632);
 

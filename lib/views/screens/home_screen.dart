@@ -1,11 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_intro/flutter_intro.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as dateHelper;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:showcaseview/showcaseview.dart';
+// import 'package:showcaseview/showcaseview.dart';
 import 'package:zabaner/controllers/home_data_controller.dart';
 import 'package:zabaner/controllers/main_screen_controller.dart';
+import 'package:zabaner/controllers/online_class_controller.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/level.dart';
 import 'package:zabaner/models/utils.dart';
@@ -18,8 +21,14 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:zabaner/views/screens/video_detailt_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-   HomeScreen({Key? key, required this.isGuest}) : super(key: key);
+
+  HomeScreen({Key? key, required this.isGuest}) : super(key: key);
   final bool isGuest;
+
+
+  // Widget Showcase({child}){
+  //   return Intro(child: child,borderRadius: BorderRadius.circular(8),);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +154,7 @@ class HomeScreen extends StatelessWidget {
                                               percent: _controller.totallSecond
                                                   .levelPercent(),
                                               animation: true,
-                                              progressColor: orange,
+                                              progressColor: primary,
                                               animationDuration: 1000,
                                               lineWidth: 6,
                                               center: Text(

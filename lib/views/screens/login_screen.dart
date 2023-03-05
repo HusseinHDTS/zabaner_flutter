@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                                             },
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                  color: orangeDark,
+                                                  color: primaryDark,
                                                   borderRadius:
                                                   BorderRadius.circular(8)),
                                               child: Container(
@@ -266,7 +266,7 @@ class LoginScreen extends StatelessWidget {
                                               style: ButtonStyle(
                                                   backgroundColor:
                                                       MaterialStateProperty.all(
-                                                          orange),
+                                                          primary),
                                                   shape:
                                                       MaterialStateProperty.all(
                                                           RoundedRectangleBorder(
@@ -304,7 +304,7 @@ class LoginScreen extends StatelessWidget {
                                                         " ایجاد کنید",
                                                         style: TextStyle(
                                                             fontSize: 12,
-                                                            color: orange,
+                                                            color: primary,
                                                             fontFamily:
                                                                 "Yekan"),
                                                       ),
@@ -322,7 +322,7 @@ class LoginScreen extends StatelessWidget {
                                                     "\nرمز عبور خود را فرموش کرده ام",
                                                     style: TextStyle(
                                                         fontSize: 9,
-                                                        color: orange,
+                                                        color: primary,
                                                         fontFamily: "Yekan"),
                                                   ),
                                                 ),
@@ -413,7 +413,7 @@ class LoginScreen extends StatelessWidget {
                                           style: ButtonStyle(
                                               backgroundColor:
                                                   MaterialStateProperty.all(
-                                                      orange),
+                                                      primary),
                                               shape: MaterialStateProperty.all(
                                                   RoundedRectangleBorder(
                                                       borderRadius:

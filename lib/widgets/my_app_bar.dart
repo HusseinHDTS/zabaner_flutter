@@ -1,39 +1,72 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
-class MyAppBar extends StatelessWidget {
-  static double height = 90;
-  static Color? appbarColor = Colors.yellow[700];
-  String? _title;
-  GestureTapCallback? _onBackClick;
-  MyAppBar(String title,{GestureTapCallback? onBackClick}){
-    _title = title;
-    _onBackClick = onBackClick;
-  }
+class ColoredAppBar extends StatefulWidget implements PreferredSizeWidget  {
+  String? title;
+  Color? backgroundColor;
+  Color? iconColor;
+  bool? transparentBackground;
+  bool? showBackText;
+  double? elevation;
+
+  ColoredAppBar(
+      {this.title,
+      this.elevation,
+      this.transparentBackground,
+      this.showBackText,
+      this.backgroundColor,
+      Key? key})
+      : super(key: key);
+
+  @override
+  State<ColoredAppBar> createState() => _ColoredAppBar();
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => AppBar().preferredSize;
+}
+
+
+class _ColoredAppBar extends State<ColoredAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      child: SafeArea(
-        child: Stack(children: [
-          Align(alignment: Alignment.center,child: ColoredText(_title!,textColor: Colors.white,textSize: 18,),),
-          Align(alignment: Alignment.centerRight,child: Container(margin: EdgeInsets.only(right: 12),child: InkWell(child: Icon(Icons.arrow_back,color: Colors.white,),onTap: _onBackClick,)),)
-        ],),
-      ),
-      decoration: BoxDecoration(color:appbarColor , boxShadow: [
-        BoxShadow(
-          color: Colors.grey,
-          offset: Offset(
-            5.0,
-            5.0,
-          ),
-          blurRadius: 10.0,
-          spreadRadius: 0.7,
-        ),
-      ]),
+    widget.title ??= "";
+    widget.backgroundColor ??= primary;
+    widget.iconColor ??= Colors.white;
+    widget.transparentBackground ??= false;
+    widget.showBackText ??= true;
+    widget.elevation ??= 0;
+
+    if(widget.transparentBackground == true){
+      widget.backgroundColor = Colors.black12;
+    }
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: AppBar(
+          leadingWidth: Get.width,
+          backgroundColor: widget.backgroundColor,
+          elevation: widget.elevation,
+          leading: Padding(
+            padding: EdgeInsets.symmetric(horizontal: Get.width / 40),
+            child: InkWell(
+              onTap: () => Get.back(),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.arrow_back,
+                    size: 20,
+                    color: widget.iconColor,
+                  ),
+                  SizedBox(width: 8,),
+                  widget.showBackText! ? ColoredText("بازگشت", textColor: Colors.white) : Container()
+                ],
+              ),
+            ),
+          )),
     );
   }
-
 }

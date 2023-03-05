@@ -30,15 +30,15 @@ class TabbarItem {
     final String pdf;
 
     factory TabbarItem.fromJson(Map<String, dynamic> json) {
-      String imagePath = getUrl(json["imagePath"]);
-      String filePath = getUrl(json["videoPath"]);
-      String pdfPath = getUrl(json["pdfPath"]);
+      String imagePath = getUrl(json["imagePath"] ?? "");
+      String filePath = getUrl(json["videoPath"] ?? "");
+      String pdfPath = getUrl(json["pdfPath"] ?? "");
       return TabbarItem(
         id: json["_id"],
         image: imagePath,
-        title: json["title"],
-        subCategory: json["subCategory"],
-        category: json["category"],
+        title: json["title"] ?? "",
+        subCategory: json["subCategory"] ?? "",
+        category: (json["category"] ?? "" ).toString() == "null" ? "" : (json["category"] ?? "" ).toString(),
         video: filePath,
         pdf: pdfPath,
       );

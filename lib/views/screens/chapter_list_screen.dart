@@ -8,6 +8,7 @@ import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/book_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class ChapterListScreen extends StatelessWidget {
   const ChapterListScreen({Key? key, required this.id, required this.type ,required this.imageLink})
@@ -22,30 +23,7 @@ class ChapterListScreen extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Scaffold(
           backgroundColor: const Color(0xffffffff),
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: const Color(0xffffffff),
-              elevation: 0,
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.black,
-                      ),
-                      Text(
-                        "بازگشت",
-                        style: TextStyle(
-                            fontFamily: "Yekan", color: Color(0xff000000)),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           body: Obx(()=>_controller.isDataLoaded.isTrue ? Stack(
             children: [
               Padding(

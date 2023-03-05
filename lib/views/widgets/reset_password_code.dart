@@ -32,10 +32,10 @@ class ResetPasswordCode extends StatelessWidget {
             filled: true,
             counterText: "",
             focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: orange, width: 0.7),
+                borderSide: BorderSide(color: primary, width: 0.7),
                 borderRadius: BorderRadius.all(Radius.circular(10))),
             enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: orange, width: 0.7),
+                borderSide: BorderSide(color: primary, width: 0.7),
                 borderRadius: BorderRadius.all(Radius.circular(10)))),
       ),
     ));

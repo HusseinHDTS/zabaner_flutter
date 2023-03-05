@@ -157,7 +157,7 @@ class SetNewPasswordScreen extends StatelessWidget {
                             ),
                             style: ButtonStyle(
                                 backgroundColor:
-                                    MaterialStateProperty.all(orange),
+                                    MaterialStateProperty.all(primary),
                                 shape: MaterialStateProperty.all(
                                     RoundedRectangleBorder(
                                         borderRadius:

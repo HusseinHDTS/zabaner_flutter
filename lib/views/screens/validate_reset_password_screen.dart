@@ -211,7 +211,7 @@ class ValidateResetPasswordCode extends StatelessWidget {
                               ),
                               style: ButtonStyle(
                                   backgroundColor:
-                                      MaterialStateProperty.all(orange),
+                                      MaterialStateProperty.all(primary),
                                   shape: MaterialStateProperty.all(
                                       RoundedRectangleBorder(
                                           borderRadius:
@@ -244,7 +244,7 @@ class ValidateResetPasswordCode extends StatelessWidget {
                                         "ارسال مجدد کد",
                                         style: TextStyle(
                                           fontSize: 9,
-                                          color: orange,
+                                          color: primary,
                                           fontFamily: "Yekan",
                                         ),
                                       ))

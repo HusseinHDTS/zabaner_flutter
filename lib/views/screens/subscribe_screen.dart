@@ -13,6 +13,7 @@ import 'package:zabaner/views/screens/web_view_screen.dart';
 import 'package:zabaner/views/tabs/list_model.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class SubscribeScreen extends StatefulWidget {
   TabbarTypes typeForBuy;
@@ -50,37 +51,7 @@ class _SubscribeScreen extends State<SubscribeScreen> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           backgroundColor: const Color(0xffffffff),
-          appBar: AppBar(
-              leadingWidth: Get.width,
-              backgroundColor: const Color(0xffEBB632),
-              elevation: 0,
-              title: ColoredText(
-                title.toString(),
-                textColor: Colors.white,
-              ),
-              leading: Padding(
-                padding: EdgeInsets.only(right: Get.width / 40),
-                child: InkWell(
-                  onTap: () => Get.back(),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        "بازگشت",
-                        style:
-                            TextStyle(fontFamily: "Yekan", color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
+          appBar: ColoredAppBar(),
           body: SafeArea(
             child: Obx(() => !_controller.isDataLoaded()
                 ? Center(
@@ -266,7 +237,7 @@ class SubscribeTypeItem extends StatelessWidget {
                       ColoredText(
                         controller.getCurrentSelectedPrice(pos) +
                             " هزار تومان ",
-                        textColor: orangeDark,
+                        textColor: primaryDark,
                       ),
                     ],
                   ))

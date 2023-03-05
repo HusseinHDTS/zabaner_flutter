@@ -15,6 +15,9 @@ import 'package:zabaner/views/widgets/subtitle_tile.dart';
 import 'package:zabaner/views/widgets/text_highlight.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/custom_video_player.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
+import 'dart:io' as io;
 
 class VideoDetailScreen extends StatefulWidget {
   VideoDetailScreen({Key? key, required this.isGuest, required this.id})
@@ -45,15 +48,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-            appBar: AppBar(
-              leading: InkWell(
-                  onTap: () {
-                    controller.onClose();
-                    Navigator.pop(context);
-                  },
-                  child: const Icon(Icons.arrow_back)),
-              backgroundColor: orange,
-            ),
+            appBar: ColoredAppBar(),
             body: Directionality(
               textDirection: TextDirection.ltr,
               child: Obx(() => controller.isDataLoaded.isTrue
@@ -64,25 +59,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                 horizontal: Get.width / 50, vertical: 5),
                             child: AspectRatio(
                               aspectRatio: 16 / 9,
-                              child: Stack(
-                                children: [
-                                  Obx(() => controller.videoInitialized.value
-                                      ? ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: Chewie(
-                                              controller:
-                                                  controller.chewieController))
-                                      : ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey),
-                                          ),
-                                        ))
-                                ],
-                              ),
+                              child: ClipRRect(borderRadius: BorderRadius.circular(18),child: Obx(() => getVideoView(io.File(getUrlFileName(controller.appDoc.path,  controller.videoItems.value.id,
+                                  controller.videoItems.value.videoPath)),
+                                  CustomVideoType.STORAGE,
+                                  withThumb: true,
+                                  retryImage: customVideoPlayerTag.value == getUrlFileName(controller.appDoc.path, controller.videoItems.value.id,
+                                      controller.videoItems.value.videoPath),showPreviewOverlay: false)),),
                             )),
 
                         // Icons
@@ -90,7 +72,6 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                           width: Get.width / 1.1,
                           height: Get.height / 20,
                           child:
-                              // download and text visible icon
                               Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -165,32 +146,31 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                     builder: (_ctrler) {
                                       return SingleChildScrollView(
                                         controller: _ctrler.scrollController,
-                                        child: Column(
+                                        child: Obx(()=>_ctrler.isSubtitleLoaded.isTrue ? Column(
                                             children: List.generate(
                                                 _ctrler
                                                     .getParAsLang(null)
                                                     .length, (index) {
-                                                  bool isTextEmpty = false;
-                                          Widget returnWidget = Obx(()=>SubtitleTile(faVisible: _ctrler.fa.value, enVisible: _ctrler.en.value, faTile: _ctrler.getCurrentText(index, true),enTile: _ctrler.getCurrentText(index, false)));
-                                          if (index ==
-                                              controller
+                                              Widget returnWidget = Obx(()=>SubtitleTile(faVisible: _ctrler.fa.value, enVisible: _ctrler.en.value, faTile: _ctrler.getCurrentText(index, true),enTile: _ctrler.getCurrentText(index, false)));
+                                              if (index ==
+                                                  controller
                                                       .getParAsLang(null)
                                                       .length -
-                                                  1) {
-                                            return Column(
-                                              children: [
-                                                returnWidget,
-                                                Obx(() => SizedBox(
+                                                      1) {
+                                                return Column(
+                                                  children: [
+                                                    returnWidget,
+                                                    Obx(() => SizedBox(
                                                       height:
-                                                          _ctrler.isHide.value
-                                                              ? hiddenHeight
-                                                              : normalHeight,
+                                                      _ctrler.isHide.value
+                                                          ? hiddenHeight
+                                                          : normalHeight,
                                                     )),
-                                              ],
-                                            );
-                                          }
-                                          return returnWidget;
-                                        })),
+                                                  ],
+                                                );
+                                              }
+                                              return returnWidget;
+                                            })) : Container()),
                                       );
                                     },
                                   ),
@@ -225,8 +205,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                   if(newPos > controller.duration.value.inMilliseconds) newPos = controller.duration.value.inMilliseconds -100;
                                                   controller.currentSavedTime.value = newPos;
                                                   controller.playerPosition.value = Duration(milliseconds: newPos);
-                                                  controller.chewieController.seekTo(Duration(
-                                                      milliseconds: newPos));
+                                                  customVideoPlayerController!.seekTo(newPos.toDouble());
                                                 },
                                                 backward: () {
                                                   // var data = getPlayerIndex(
@@ -246,8 +225,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                   if(newPos < 0) newPos = 0;
                                                   controller.currentSavedTime.value = newPos;
                                                   controller.playerPosition.value = Duration(milliseconds: newPos);
-                                                    controller.chewieController.seekTo(Duration(
-                                                        milliseconds: newPos));
+                                                  customVideoPlayerController!.seekTo(newPos.toDouble());
                                                 },
                                                 isFileExists:
                                                     controller.isVideoExists,
@@ -265,18 +243,18 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                   if (!controller
                                                       .videoInitialized
                                                       .value) return;
-                                                  controller.chewieController
-                                                      .togglePause();
-                                                  controller.chewieController
-                                                      .showControls;
+                                                  customVideoPlayerController!
+                                                      .togglePlay();
+                                                  // controller.chewieController
+                                                  //     .showControls;
                                                   // controller.chewieController.notifyListeners();
                                                 },
                                                 pausePlayer: () {
                                                   if (!controller
                                                       .videoInitialized
                                                       .value) return;
-                                                  controller.chewieController
-                                                      .togglePause();
+                                                  customVideoPlayerController!
+                                                      .togglePlay();
                                                 },
                                                 downloadRequest: () =>
                                                     controller.download(
@@ -287,8 +265,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                         controller.videoItems
                                                             .value.title),
                                                 togglePlayer: () async {
-                                                  controller.chewieController
-                                                      .togglePause();
+                                                  customVideoPlayerController!
+                                                      .togglePlay();
                                                   return true;
                                                 },
                                                 toggleHide: () =>
@@ -301,8 +279,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                         0.5) {
                                                       controller
                                                           .playSpeed.value = 1;
-                                                      controller
-                                                          .chewieController
+                                                      customVideoPlayerController!
                                                           .videoPlayerController
                                                           .setPlaybackSpeed(1);
                                                     } else if (controller
@@ -310,8 +287,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                         1) {
                                                       controller
                                                           .playSpeed.value = 2;
-                                                      controller
-                                                          .chewieController
+                                                      customVideoPlayerController!
                                                           .videoPlayerController
                                                           .setPlaybackSpeed(2);
                                                     } else if (controller
@@ -319,8 +295,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                         2) {
                                                       controller.playSpeed
                                                           .value = 0.5;
-                                                      controller
-                                                          .chewieController
+                                                      customVideoPlayerController!
                                                           .videoPlayerController
                                                           .setPlaybackSpeed(
                                                               0.5);
@@ -330,8 +305,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                 playSpeed: controller.playSpeed,
                                                 player: controller
                                                         .videoInitialized.value
-                                                    ? controller
-                                                        .chewieController
+                                                    ? customVideoPlayerController!.videoPlayerController
                                                     : null,
                                                 isHide: controller.isHide,
                                                 repeat: controller.repeat,

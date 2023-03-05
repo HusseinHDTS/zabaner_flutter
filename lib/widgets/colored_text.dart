@@ -12,13 +12,14 @@ class ColoredText extends StatelessWidget {
   TextDirection? textDirection;
   TextAlign? textAlign;
   bool? defaultFont , selectable;
-
+  TextOverflow? overflow;
   ColoredText(String this.text,
       {this.maxLines,
       this.textColor,
       this.textSize,
       this.textAlign,
       this.fontFamily,
+      this.overflow,
       this.fontWeight,
       this.defaultFont,
       this.selectable,
@@ -38,6 +39,7 @@ class ColoredText extends StatelessWidget {
         fontSize: textSize,
         fontWeight: fontWeight,
         backgroundColor: backgroundColor,
+        overflow: overflow,
       );
     }else{
       textStyle = TextStyle(
@@ -46,6 +48,7 @@ class ColoredText extends StatelessWidget {
         fontSize: textSize,
         fontWeight: fontWeight,
         backgroundColor: backgroundColor,
+        overflow: overflow
       );
     }
 

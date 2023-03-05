@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/controllers/news_data_controller.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/SubTabbarItemScreen.dart';
 import 'package:zabaner/views/screens/subscribe_screen.dart';
@@ -30,31 +31,39 @@ class ListModel extends StatelessWidget {
     mainModel = [];
     hasSubCategory ??= false;
     if (hasSubCategory!) {
-      currentTitle = controller.allChildTabCategories[index]["title"].toString();
+      currentTitle =
+          controller.allChildTabCategories[index]["title"].toString();
       controller.subCategoryModel.forEach((element) {
-        if (element.category.toString() == controller.allChildTabCategories[index]["_id"].toString()) {
+        if (element.category.toString() ==
+            controller.allChildTabCategories[index]["_id"].toString()) {
           mainModel.add(element);
         }
       });
     } else {
       if (currentType == TabbarTypes.ADULT) {
-        currentTitle = controller.allAdultTabCategories[index]["title"].toString();
+        currentTitle =
+            controller.allAdultTabCategories[index]["title"].toString();
         controller.adultTabbarItemModel.forEach((element) {
-          if (element.category.toString() == controller.allAdultTabCategories[index]["_id"].toString()) {
+          if (element.category.toString() ==
+              controller.allAdultTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
         });
       } else if (currentType == TabbarTypes.CHILD) {
-        currentTitle = controller.allChildTabCategories[index]["title"].toString();
+        currentTitle =
+            controller.allChildTabCategories[index]["title"].toString();
         controller.childTabbarItemModel.forEach((element) {
-          if (element.category.toString() == controller.allChildTabCategories[index]["_id"].toString()) {
+          if (element.category.toString() ==
+              controller.allChildTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
         });
       } else if (currentType == TabbarTypes.NATIONAL) {
-        currentTitle = controller.allNationalTabCategories[index]["title"].toString();
+        currentTitle =
+            controller.allNationalTabCategories[index]["title"].toString();
         controller.nationalTabbarItemModel.forEach((element) {
-          if (element.category.toString() == controller.allNationalTabCategories[index]["_id"].toString()) {
+          if (element.category.toString() ==
+              controller.allNationalTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
         });
@@ -75,125 +84,133 @@ class ListModel extends StatelessWidget {
         SizedBox(
           height: 5,
         ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height / 5.4,
-          decoration: BoxDecoration(
-              color: Colors.grey[200], borderRadius: BorderRadius.circular(15)),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                separatorBuilder: (context, index) => SizedBox(
-                      width: MediaQuery.of(context).size.width / 15,
-                    ),
-                padding: EdgeInsets.only(
-                  left: MediaQuery.of(context).size.width / 25,
-                  right: MediaQuery.of(context).size.width / 25,
-                ),
-                itemCount: mainModel.length,
-                itemBuilder: (_context, index) {
-                  return InkWell(
-                    onTap: () {
-                      if (currentType == TabbarTypes.NATIONAL) {
-                        if (controller.profileInformation.hasNationalSub ==
-                            null) {
-                          Get.defaultDialog(
-                              title: "شما اشتراک بخش آزمون ها را ندارید",
-                              titleStyle: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                              content: SubscribeDialog(currentType));
-                          return;
+        resourcesBackground(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height / 5.4,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (context, index) => SizedBox(
+                        width: MediaQuery.of(context).size.width / 15,
+                      ),
+                  padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width / 25,
+                    right: MediaQuery.of(context).size.width / 25,
+                  ),
+                  itemCount: mainModel.length,
+                  itemBuilder: (_context, index) {
+                    return InkWell(
+                      onTap: () {
+                        if (currentType == TabbarTypes.NATIONAL) {
+                          if (controller.profileInformation.hasNationalSub ==
+                              null) {
+                            Get.defaultDialog(
+                                title: "شما اشتراک بخش آزمون ها را ندارید",
+                                titleStyle: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                content: SubscribeDialog(currentType));
+                            return;
+                          }
+                        } else if (currentType == TabbarTypes.ADULT) {
+                          if (controller.profileInformation.hasAdultSub ==
+                              null) {
+                            Get.defaultDialog(
+                                title: "شما اشتراک بخش بزرگسالان را ندارید",
+                                titleStyle: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                content: SubscribeDialog(currentType));
+                            return;
+                          }
+                        } else if (currentType == TabbarTypes.CHILD) {
+                          if (controller.profileInformation.hasChildSub ==
+                              null) {
+                            Get.defaultDialog(
+                                title: "شما اشتراک بخش کودکان را ندارید",
+                                titleStyle: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                content: SubscribeDialog(currentType));
+                            return;
+                          }
                         }
-                      } else if (currentType == TabbarTypes.ADULT) {
-                        if (controller.profileInformation.hasAdultSub == null) {
-                          Get.defaultDialog(
-                              title: "شما اشتراک بخش بزرگسالان را ندارید",
-                              titleStyle: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                              content: SubscribeDialog(currentType));
-                          return;
+                        if (hasSubCategory!) {
+                          var items = controller.childTabbarItemModel;
+                          // Get.to(() => SubTabbarItemScreen(
+                          //     filter: mainModel[index].id, items: items));
+                          Get.to(() => TabbarSubCategoryScreen(
+                                filter: mainModel[index],
+                                items: items,
+                              ));
+                        } else {
+                          if (mainModel[index].video.substring(
+                                  mainModel[index].video.lastIndexOf("/") +
+                                      1) ==
+                              "undefined") {
+                            ColoredSnack(
+                                title: "خطا هنگام پیدا کردن ویدیو",
+                                type: SnackType.ERROR);
+                            return;
+                          }
+                          Get.to(() => TabbarItemScreen(mainModel[index]));
                         }
-                      } else if (currentType == TabbarTypes.CHILD) {
-                        if (controller.profileInformation.hasChildSub == null) {
-                          Get.defaultDialog(
-                              title: "شما اشتراک بخش کودکان را ندارید",
-                              titleStyle: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                              content: SubscribeDialog(currentType));
-                          return;
-                        }
-                      }
-                      if (hasSubCategory!) {
-                        var items = controller.childTabbarItemModel;
-                        // Get.to(() => SubTabbarItemScreen(
-                        //     filter: mainModel[index].id, items: items));
-                        Get.to(() => TabbarSubCategoryScreen(filter: mainModel[index],items: items,));
-                      } else {
-                        if (mainModel[index].video.substring(
-                                mainModel[index].video.lastIndexOf("/") + 1) ==
-                            "undefined") {
-                          ColoredSnack(
-                              title: "خطا هنگام پیدا کردن ویدیو",
-                              type: SnackType.ERROR);
-                          return;
-                        }
-                        Get.to(() => TabbarItemScreen(mainModel[index]));
-                      }
-                    },
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SizedBox(height: 12,),
-                          Expanded(
-                            flex:1,
-                            child: Container(
-                              child: Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width / 4,
-                                    child: CachedNetworkImage(
-                                      imageUrl: mainModel[index].image,
+                      },
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                child: Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Container(
+                                      width:
+                                          MediaQuery.of(context).size.width / 4,
+                                      child: CachedNetworkImage(
+                                        imageUrl: mainModel[index].image,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            flex:0,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width / 3.8,
-                              child: Text(
-                                mainModel[index].title,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    color: Color(0xff000000),
-                                    fontSize: 10,
-                                    fontFamily: "Yekan"),
+                            Expanded(
+                              flex: 0,
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width / 3.8,
+                                child: Text(
+                                  mainModel[index].title,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      color: Color(0xff000000),
+                                      fontSize: 10,
+                                      fontFamily: "Yekan"),
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 12,),
-                        ],
+                            SizedBox(
+                              height: 12,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
-          ),
-        ),
+                    );
+                  }),
+            ))
       ],
     );
   }

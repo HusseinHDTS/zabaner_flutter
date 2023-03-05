@@ -4,15 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/models/resources_model.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/video_detailt_screen.dart';
 import 'package:zabaner/views/screens/video_list_screen.dart';
+import 'package:zabaner/widgets/colored_text.dart';
 
 class VideoResources extends StatelessWidget {
   const VideoResources(
-      {Key? key, required this.resource,required this.videoCategories, required this.isGuest})
+      {Key? key,
+      required this.resource,
+      required this.videoCategories,
+      required this.isGuest})
       : super(key: key);
   final List<Resource> resource;
-  final  videoCategories;
+  final videoCategories;
   final bool isGuest;
 
   @override
@@ -20,62 +25,60 @@ class VideoResources extends StatelessWidget {
     // return Container();
     return Column(
       children: [
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                right: MediaQuery.of(context).size.width / 30,
-                // bottom: MediaQuery.of(context).size.height / 150,
-              ),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width / 12,
-                height: MediaQuery.of(context).size.height / 20,
-                child: Image.asset(
-                  "assets/images/video.png",
-                  fit: BoxFit.fill,
-                ),
-              ),
-            ),
-            const Text(
-              "  مصاحبه های ویدیویی",
-              style: TextStyle(
-                  fontFamily: "Yekan",
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
-            )
-          ],
-        ),
-        Directionality(
-          textDirection: TextDirection.rtl,
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height / 5.4,
-            decoration: BoxDecoration(
-                color: Colors.grey[200], borderRadius: BorderRadius.circular(15)),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: videoCategories.length,
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+              Padding(
                 padding: EdgeInsets.only(
-                  left: MediaQuery.of(context).size.width / 25,
-                  right: MediaQuery.of(context).size.width / 25,
+                  right: MediaQuery.of(context).size.width / 30,
+                  // bottom: MediaQuery.of(context).size.height / 150,
                 ),
-                itemBuilder: (context, index) {
-                  return VideoListTile(
-                      resource: resource,
-                      isGuest: isGuest,
-                      imagePath: getUrl(videoCategories[index]['imagePath']),
-                      title: videoCategories[index]['title'],
-                      id: videoCategories[index]['_id']);
-                },
-                separatorBuilder: (context, index) => SizedBox(
-                  width: MediaQuery.of(context).size.width / 15,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width / 12,
+                  height: MediaQuery.of(context).size.height / 20,
+                  child: Image.asset(
+                    "assets/images/video.png",
+                    fit: BoxFit.fill,
+                  ),
                 ),
               ),
-            ),
+              ColoredText(
+                "مصاحبه های Speakout",
+                textSize: 14,
+                fontWeight: FontWeight.w500,
+                textDirection: TextDirection.rtl,
+              )
+            ],
           ),
         ),
+        resourcesBackground(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height / 5.4,
+          child: Directionality(textDirection: TextDirection.rtl, child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: videoCategories.length,
+              padding: EdgeInsets.only(
+                left: MediaQuery.of(context).size.width / 25,
+                right: MediaQuery.of(context).size.width / 25,
+              ),
+              itemBuilder: (context, index) {
+                return VideoListTile(
+                    resource: resource,
+                    isGuest: isGuest,
+                    imagePath: getUrl(videoCategories[index]['imagePath']),
+                    title: videoCategories[index]['title'],
+                    id: videoCategories[index]['_id']);
+              },
+              separatorBuilder: (context, index) => SizedBox(
+                width: MediaQuery.of(context).size.width / 15,
+              ),
+            ),
+          )),
+        ),
+        SizedBox(height: 18,)
         // Divider(
         //   color: const Color(0xffDBDBDB),
         //   height: MediaQuery.of(context).size.height / 30,
@@ -83,6 +86,7 @@ class VideoResources extends StatelessWidget {
       ],
     );
   }
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
@@ -102,31 +106,30 @@ class VideoListTile extends StatelessWidget {
   final String imagePath, title, id;
   final bool isGuest;
   final List<Resource> resource;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.to(() => VideoListScreen(filter: id,)),
+      onTap: () => Get.to(() => VideoListScreen(
+            filter: id,
+            title: title,
+          )),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
             width: MediaQuery.of(context).size.width / 4,
             height: MediaQuery.of(context).size.height / 7.3,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                image: DecorationImage(
-                    image: CachedNetworkImageProvider(
-                      imagePath,
-                    ),)),
+            child: Center(child: ClipRRect(borderRadius:BorderRadius.circular(8),child: Container(child: CachedNetworkImage(imageUrl: imagePath,),)),),
           ),
           SizedBox(
             width: MediaQuery.of(context).size.width / 3.8,
             child: Text(
-              title,
+              getText(title),
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: Color(0xff000000), fontSize: 10, fontFamily: "Yekan"),
+                  color: Color(0xff000000), fontSize: 12, fontFamily: "Yekan"),
             ),
           )
         ],
