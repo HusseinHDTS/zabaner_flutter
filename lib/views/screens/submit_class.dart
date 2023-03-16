@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:zabaner/controllers/custom_date_picker_controller.dart';
 import 'package:zabaner/controllers/online_class_controller.dart';
 import 'package:zabaner/controllers/submit_class_controller.dart';
+import 'package:zabaner/models/custom_date.dart';
 import 'package:zabaner/models/user_teachers.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
@@ -29,6 +30,16 @@ class _SubmitClass extends State<SubmitClass> {
 
   @override
   Widget build(BuildContext context) {
+    List<CustomDate>? customDates;
+    try{
+      customDates = customDateListModelFromJson(widget.item.freeTimes);
+      customDates.removeWhere((element){
+        if(element.isFree.toString() == "true"){
+          return true;
+        }
+        return false;
+      });
+    }catch(e){e.printError();}
     return Scaffold(
       appBar: ColoredAppBar(),
       body: Container(
@@ -116,6 +127,7 @@ class _SubmitClass extends State<SubmitClass> {
                     child: CustomDatePicker(
                       controller: Get.find(),
                       autoSelectNext: widget.selectedPos != 0,
+                      deActiveDates: customDates,
                       maxTimes:
                           widget.selectedPos == 0 ? 1 : widget.selectedPos,
                     ),

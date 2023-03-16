@@ -8,6 +8,7 @@ import 'package:cached_video_preview/cached_video_preview.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:fullscreen/fullscreen.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
@@ -381,7 +382,12 @@ dropdownItems(List<String> items, RxString cItem, onChange,
       ));
 }
 
-checkBox(String title, RxBool value, onChange) {
+checkBox(String title, RxBool value, onChange,{Color? boxColor,Color? textColor,Color? activeColor,Color? checkColor,bool? circular}) {
+  circular??=false;
+  textColor??= Colors.black;
+  boxColor??= Colors.black;
+  activeColor??= primaryDark;
+  checkColor??= Colors.white;
   return InkWell(
     onTap: () {
       onChange(!value.value);
@@ -391,12 +397,20 @@ checkBox(String title, RxBool value, onChange) {
         Checkbox(
           value: value.value,
           onChanged: onChange,
-          checkColor: Colors.white,
-          activeColor: primaryDark,
+          fillColor: MaterialStateColor.resolveWith((states) => boxColor!),
+          hoverColor: boxColor,
+          splashRadius: 18,
+          shape: circular? CircleBorder(side: BorderSide(color: activeColor,width: 1.4,style: BorderStyle.solid)) : null,
+          side: MaterialStateBorderSide.resolveWith(
+                (states) => BorderSide(width: 1.4, color: activeColor!),
+          ),
+          checkColor: checkColor,
+          activeColor: activeColor,
         ),
         ColoredText(
           title,
           textSize: 12,
+          textColor: textColor,
         ),
       ],
     ),
@@ -565,6 +579,7 @@ Widget ErrorLoading({String? title}) {
 }
 
 Widget Loading() {
+  return Center(child: CircularProgressIndicator(),);
   return Center(
       child: Container(
     child: Lottie.asset('assets/animations/loading_main1.json', height: 350),
@@ -718,9 +733,10 @@ Widget resourcesBackground({Widget? child, double? width, double? height}) {
 }
 
 Widget getVideoView(var path, CustomVideoType type,
-    {bool? withThumb, bool? retryImage, bool? showPreviewOverlay}) {
+    {bool? withThumb, bool? retryImage, bool? showPreviewOverlay,bool? fullscreenOnStart}) {
   withThumb ??= false;
   retryImage ??= false;
+  fullscreenOnStart ??= true;
   showPreviewOverlay ??= true;
   File? file;
   if (type == CustomVideoType.STORAGE) {
@@ -774,31 +790,45 @@ Widget getVideoView(var path, CustomVideoType type,
                                           height:
                                               constraints.maxHeight / (3.5 * 1),
                                           child: InkWell(
-                                            onTap: () {
+                                            onTap: () async{
                                               if (customVideoPlayerController !=
                                                   null) {
                                                 customVideoPlayerController!
                                                     .dispose();
                                               }
                                               isVideoInitializing.value = true;
-                                              // if (!customVideoPlayerController!.isCurrentPlayer(path)) {
-                                              //   customVideoPlayerController!.initVideoPlayer(path, type,
-                                              //       tag: path, autoInit: false);
-                                              // }
-                                              customVideoPlayerController =
-                                                  CustomVideoPlayerController(
-                                                      CachedVideoPlayerController.network(
-                                                          path,
-                                                          videoPlayerOptions:
-                                                              VideoPlayerOptions(
-                                                                  mixWithOthers:
-                                                                      true)),
-                                                      autoInit: false,
-                                                      fullscreenOnStart: true);
+                                              var fileInfo = await checkCacheFor(path);
+                                              if(fileInfo == null){
+                                                customVideoPlayerController =
+                                                    CustomVideoPlayerController(
+                                                        CachedVideoPlayerController.network(
+                                                            path,
+                                                            videoPlayerOptions:
+                                                            VideoPlayerOptions(
+                                                                mixWithOthers:
+                                                                true)),
+                                                        autoInit: false,
+                                                        fullscreenOnStart: fullscreenOnStart);
+                                              }else{
+                                                customVideoPlayerController =
+                                                    CustomVideoPlayerController(
+                                                        CachedVideoPlayerController.file(
+                                                            fileInfo.file,
+                                                            videoPlayerOptions:
+                                                            VideoPlayerOptions(
+                                                                mixWithOthers:
+                                                                true)),
+                                                        autoInit: false,
+                                                        fullscreenOnStart: true);
+                                              }
+
 
                                               customVideoPlayerController!
                                                   .init(autoPlay: true)
                                                   .then((value) {
+                                                    if(fileInfo == null){
+                                                      checkedForUrl(path);
+                                                    }
                                                 isImageReady.value = true;
                                               });
                                               customVideoPlayerTag.value = path;
@@ -878,7 +908,7 @@ Widget getVideoView(var path, CustomVideoType type,
                                                                           true)),
                                                           autoInit: false,
                                                           fullscreenOnStart:
-                                                              true);
+                                                          fullscreenOnStart);
 
                                                   customVideoPlayerController!
                                                       .init(autoPlay: true)
@@ -925,6 +955,17 @@ Widget getVideoView(var path, CustomVideoType type,
         }));
 }
 
+Future<FileInfo?> checkCacheFor(String url) async{
+  final FileInfo? value = await DefaultCacheManager().getFileFromCache(url);
+  return value;
+}
+
+void checkedForUrl(String url) async{
+  await DefaultCacheManager().getSingleFile(url).then((value){
+
+  });
+}
+
 String smallerPrice(val1, val2) {
   var var1 = int.parse(val1.toString().replaceAll(",", ""));
   var var2 = int.parse(val2.toString().replaceAll(",", ""));
@@ -956,22 +997,45 @@ String formatPrice(value, {bool? showUnit, int? count}) {
   return "${formatter.format(int.parse(val.replaceAll(",", "")))}$unit";
 }
 
-String getCurrentDayDatePicker(int index) {
+String getCurrentDayDatePicker(int index,{bool? allText}) {
+  allText??=false;
   String day = "";
   if (index == 0) {
     day = "شنبه";
   } else if (index == 1) {
-    day = "1شنبه";
+    if(allText){
+      day = "یک‌شنبه";
+    }else {
+      day = "1شنبه";
+    }
   } else if (index == 2) {
-    day = "2شنبه";
+    if(allText){
+      day = "دو‌شنبه";
+    }else {
+      day = "2شنبه";
+    }
   } else if (index == 3) {
-    day = "3شنبه";
+    if(allText){
+      day = "سه‌شنبه";
+    }else {
+      day = "3شنبه";
+    }
   } else if (index == 4) {
-    day = "4شنبه";
+    if(allText){
+      day = "چهار‌شنبه";
+    }else {
+      day = "4شنبه";
+    }
   } else if (index == 5) {
-    day = "5شنبه";
+    if(allText){
+      day = "یک‌شنبه";
+    }else {
+      day = "5شنبه";
+    }
   } else if (index == 6) {
     day = "جمعه";
+  }else{
+    day = "??????";
   }
   return day;
 }

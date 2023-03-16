@@ -149,6 +149,7 @@ class ListModel extends StatelessWidget {
                           Get.to(() => TabbarSubCategoryScreen(
                                 filter: mainModel[index],
                                 items: items,
+                                submitTitle: mainModel[index].title,
                               ));
                         } else {
                           if (mainModel[index].video.substring(
@@ -186,6 +187,9 @@ class ListModel extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                            ),
+                            SizedBox(
+                              height: 5,
                             ),
                             Expanded(
                               flex: 0,

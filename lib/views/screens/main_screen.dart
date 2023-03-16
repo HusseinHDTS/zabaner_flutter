@@ -20,6 +20,7 @@ import 'package:zabaner/views/screens/podcast_play_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
 import 'package:zabaner/views/screens/resources_screen.dart';
 import 'package:zabaner/views/screens/video_detailt_screen.dart';
+import 'package:zabaner/widgets/cuostm_showcase.dart';
 
 import '../../widgets/colored_text.dart';
 
@@ -96,18 +97,19 @@ class MainScreen extends StatelessWidget {
                   bool tourTime =
                       _controller.getStorage.read("tour") ?? false;
                   Timer(const Duration(milliseconds: 500), () {
-                    // if (!tourTime) {
+                    if (!tourTime) {
                     ShowCaseWidget.of(_context).startShowCase([
                       _controller.keyOne,
                       _controller.keyTwo,
                       _controller.keyThree,
+                      _controller.keySeven,
                       _controller.keyFour,
                       _controller.keyFive,
                       _controller.keySix,
                     ]);
                     // Intro.of(context).start();
-                    // _controller.getStorage.write('tour', true);
-                    // }
+                    _controller.getStorage.write('tour', true);
+                    }
                   });
                 });
                 return Scaffold(
@@ -271,8 +273,9 @@ class MainScreen extends StatelessWidget {
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 8),
                                           decoration: BoxDecoration(),
-                                          child: Showcase(
-                                            onToolTipClick: (){
+                                          child: CustomShowcase(
+                                            nextButtonText: "رد کردن",
+                                            onNextButtonTap: (){
                                               ShowCaseWidget.of(_context).dismiss();
                                             },
                                             disableDefaultTargetGestures: true,
@@ -330,8 +333,9 @@ class MainScreen extends StatelessWidget {
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 8),
                                           decoration: BoxDecoration(),
-                                          child: Showcase(
-                                            onToolTipClick: (){
+                                          child: CustomShowcase(
+                                            nextButtonText: "رد کردن",
+                                            onNextButtonTap: (){
                                               ShowCaseWidget.of(_context).dismiss();
                                             },
                                             disableDefaultTargetGestures: true,
@@ -389,8 +393,9 @@ class MainScreen extends StatelessWidget {
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 8),
                                           decoration: BoxDecoration(),
-                                          child: Showcase(
-                                            onToolTipClick: (){
+                                          child: CustomShowcase(
+                                            nextButtonText: "رد کردن",
+                                            onNextButtonTap: (){
                                               ShowCaseWidget.of(_context).dismiss();
                                             },
                                             disableDefaultTargetGestures: true,
@@ -448,7 +453,12 @@ class MainScreen extends StatelessWidget {
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 12, vertical: 8),
                                           decoration: BoxDecoration(),
-                                          child: Showcase(
+                                          child: CustomShowcase(
+                                            nextButtonText: "رد کردن",
+                                            onNextButtonTap: (){
+                                              ShowCaseWidget.of(_context).dismiss();
+                                            },
+                                            disableDefaultTargetGestures: true,
                                             targetPadding:
                                             const EdgeInsets.all(5),
                                             key: _controller.keySeven,

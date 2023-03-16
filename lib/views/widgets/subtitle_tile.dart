@@ -11,6 +11,7 @@ class SubtitleTile extends StatelessWidget{
   Widget build(BuildContext context) {
     bool hasFa = true,hasEn = true;
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 3),
       child:faVisible == true ||
           enVisible == true
           ? Column(
@@ -25,10 +26,14 @@ class SubtitleTile extends StatelessWidget{
                 return Column(
                   children: [
                     item.data != null && item.data!.isNotEmpty ?  Container(
-                        child: RichText(
-                          text: TextSpan(
-                            style: getSubDefault(false),
-                            children:item.data,
+                      width:double.infinity,
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: RichText(
+                            text: TextSpan(
+                              style: getSubDefault(false),
+                              children:item.data,
+                            ),
                           ),
                         )) : Container(),
                     item.data != null && item.data!.isNotEmpty ? SizedBox(
@@ -49,10 +54,14 @@ class SubtitleTile extends StatelessWidget{
                 return Column(
                   children: [
                     item.data != null && item.data!.isNotEmpty ? Container(
-                        child: RichText(
-                          text: TextSpan(
-                            style: getSubDefault(true),
-                            children:item.data,
+                        width:double.infinity,
+                        child: Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: RichText(
+                            text: TextSpan(
+                              style: getSubDefault(true),
+                              children:item.data,
+                            ),
                           ),
                         )) : Container(),
                     item.data != null && item.data!.isNotEmpty ? SizedBox(

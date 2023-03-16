@@ -54,7 +54,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     if (widget.customVideoType == CustomVideoType.NETWORK) {
       cachedPlayerController = CachedVideoPlayerController.network(widget.videoPath,
           videoPlayerOptions: VideoPlayerOptions(
-              mixWithOthers: true, allowBackgroundPlayback: false));
+              mixWithOthers: true, allowBackgroundPlayback: true),httpHeaders: {"Keep-Alive":"timeout=1000 , max=100000"});
     } else {
       cachedPlayerController = CachedVideoPlayerController.file(widget.videoPath);
     }

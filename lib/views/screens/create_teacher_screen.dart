@@ -13,7 +13,9 @@ import 'package:zabaner/views/screens/image_cropper_screen.dart';
 import 'package:zabaner/views/widgets/custom_text_input.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
+import 'package:zabaner/widgets/custom_video_player.dart';
 import 'package:zabaner/widgets/my_app_bar.dart';
+import 'dart:io' as io;
 
 class CreateTeacherScreen extends StatefulWidget {
   const CreateTeacherScreen({Key? key}) : super(key: key);
@@ -31,7 +33,11 @@ class _CreateTeacherScreen extends State<CreateTeacherScreen> {
   void initState() {
     super.initState();
   }
-
+  @override
+  void dispose() {
+    super.dispose();
+    customVideoPlayerController != null ? customVideoPlayerController!.dispose() : {};
+  }
   @override
   Widget build(BuildContext context) {
     int pageSize = 3;
@@ -483,6 +489,7 @@ class _CreateTeacherScreen extends State<CreateTeacherScreen> {
                               borderRadius: BorderRadius.circular(18),
                               child: AspectRatio(
                                 aspectRatio: 16 / 9,
+                                child: Obx(()=>getVideoView(controller.videoFileRx != null && controller.videoFileRx!.value != null ? io.File(controller.videoFileRx!.value!.path) : null, CustomVideoType.STORAGE,fullscreenOnStart: false)),
                                 // child: Chewie(
                                 //     controller: controller.chewieController),
                               )),

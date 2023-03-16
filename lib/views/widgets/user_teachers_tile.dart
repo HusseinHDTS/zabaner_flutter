@@ -18,6 +18,7 @@ import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/user_teachers.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
+import 'package:zabaner/views/screens/create_class_screen.dart';
 import 'package:zabaner/views/screens/submit_class.dart';
 import 'package:zabaner/widgets/colored_button.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -385,6 +386,9 @@ class UserTeachersTile extends StatelessWidget {
                               color: primary.withOpacity(0.3),
                               textColor: Colors.black,
                               textSize: 12,
+                              onTap: (){
+                                Get.to(()=>ShowTeacherTimes(item.freeTimes));
+                              },
                             ),
                           ),
                         )),

@@ -8,15 +8,34 @@ import 'package:get/get.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/views/screens/splash_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
+import 'package:path_provider/path_provider.dart' as path;
 
 FirebaseMessaging? _messaging;
 RemoteMessage? initialMessage;
 String fcmToken = "NaN";
 
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port){
+      debugPrint("dkasjkjdkasjkdjkjasd : " + cert.pem);
+      return true;
+    };
+  }
+  // @override
+  // HttpClient createHttpClient(SecurityContext context){
+  //   return super.createHttpClient(context)
+  //     ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  // }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   String webhook =
       "https://discord.com/api/webhooks/1018449530817101897/IWcngaJIqjUrIsJJ8tHap0xMeLtTnVzyL6esamr7MXdRfhzwUW_-BhvT7029e7HvYhYP";
+  String releaseWebhook =
+      "https://discord.com/api/webhooks/1081867783974952960/gXTUbhuw1xuOr0iG0Y0w83c7K6T79rW4GHIDbqeDNydYT2gMXPUuws9fcQrkCaHQzpE4";
+  var sshotPath = await path.getApplicationDocumentsDirectory();
   CatcherOptions debugOptions = CatcherOptions(
     SilentReportMode(),
     [
@@ -27,20 +46,20 @@ void main() async {
           enableStackTrace: true,
           printLogs: true),
     ],
-    screenshotsPath: "/storage/emulated/0/Android/data/com.ir.zabaner/cache/",
+    screenshotsPath: sshotPath.path,
   );
 
   CatcherOptions releaseOptions = CatcherOptions(
     SilentReportMode(),
     [
-      DiscordHandler(webhook,
+      DiscordHandler(releaseWebhook,
           enableDeviceParameters: true,
           enableApplicationParameters: true,
           enableCustomParameters: true,
           enableStackTrace: true,
           printLogs: true),
     ],
-    screenshotsPath: "/storage/emulated/0/Android/data/com.ir.zabaner/cache/",
+    screenshotsPath: sshotPath.path,
   );
   try{
     HttpOverrides.global = MyHttpOverrides();
@@ -94,14 +113,5 @@ class MyApp extends StatelessWidget {
         home: CatcherScreenshot(
             catcher: Catcher.getInstance(),
             child: const SplashScreen()));
-  }
-}
-
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
   }
 }

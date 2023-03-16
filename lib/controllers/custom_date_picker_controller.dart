@@ -2,14 +2,219 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:zabaner/models/custom_date.dart';
+import 'package:zabaner/models/utils.dart';
+import 'package:zabaner/widgets/colored_snack.dart';
 
 class CustomDatePickerController extends GetxController {
   PageController pageController =
       PageController(keepPage: true, viewportFraction: 1,initialPage: 0);
   RxInt currentPage = 0.obs;
+  RxBool isAddTimeEnable = true.obs;
+  RxBool isRemoveTimeEnable = false.obs;
   RxList<CustomDate> currentSelectedDates = <CustomDate>[].obs;
 
   var jDate = Jalali.fromDateTime(DateTime.now());
+
+  void onTeacherClick({required CustomDate customDate,timeIndex,RxBool? isSelected}) {
+    isSelected ??=false.obs;
+    // customDate.hour =
+    //     getCurrentHourMinDatePicker(
+    //         timeIndex)
+    //         .toString();
+    //   if(isAddTimeEnable.value){
+    //     customDate.isFree = true;
+    //   }else{
+    //     customDate.isFree = false;
+    //   }
+      if(!isSelected.value){
+        getSelectedDates().add(customDate);
+      }else{
+        getSelectedDates()
+            .removeWhere(
+                (element) {
+                if(element.toJson(removeFree: true).toString() == customDate.toJson(removeFree: true).toString()) {
+                  return true;
+                }
+              return false;
+            });
+      }
+    isSelected.toggle();
+  }
+
+  void toggleAddRemoveTime() {
+    isAddTimeEnable.toggle();
+    isRemoveTimeEnable.toggle();
+  }
+
+  void onUserClick({customDate,timeIndex,RxBool? isSelected,maxTimes,nextCustomDate,preCustomDate}){
+    isSelected ??=false.obs;
+
+    customDate.hour =
+        getCurrentHourMinDatePicker(
+            timeIndex)
+            .toString();
+    if (isSelected
+        .value == true) {
+      bool removeNext = customDate
+          .hour.toString()
+          .split(
+          ":")[1] == "00";
+
+      if(removeNext){
+        if(nextCustomDate != null){
+          if(getSelectedDates().contains(nextCustomDate)){
+            removeNext = true;
+          }else{
+            if(preCustomDate != null){
+              if(getSelectedDates().contains(preCustomDate)){
+                removeNext = false;
+              }
+            }
+          }
+        }else{
+          removeNext = false;
+        }
+      }else{
+        if(preCustomDate != null){
+          if(getSelectedDates().contains(preCustomDate)){
+            removeNext = false;
+          }else{
+            if(nextCustomDate != null){
+              if(getSelectedDates().contains(nextCustomDate)) {
+                removeNext = true;
+              }
+            }
+          }
+        }else{
+          removeNext = true;
+        }
+      }
+      if(!removeNextCustomDate(nextCustomDate)){
+        removePreCustomDate(preCustomDate);
+      }
+    }
+    if (getSelectedDates()
+        .length + 1 <
+        maxTimes! &&
+        nextCustomDate !=
+            null &&
+        isSelected
+            .value ==
+            false) {
+      getSelectedDates()
+          .add(
+          nextCustomDate);
+      currentSelectedDates
+          .refresh();
+    }
+    if (getSelectedDates()
+        .length ==
+        maxTimes!) {
+      isSelected.value =
+      false;
+    } else {
+      isSelected.toggle();
+    }
+    if (isSelected
+        .value) {
+      getSelectedDates()
+          .add(
+          customDate);
+    } else {
+      getSelectedDates()
+          .removeWhere(
+              (element) {
+            if (element
+                .year ==
+                customDate
+                    .year &&
+                element
+                    .month ==
+                    customDate
+                        .month &&
+                element
+                    .day ==
+                    customDate
+                        .day &&
+                element
+                    .hour ==
+                    customDate
+                        .hour) {
+              return true;
+            }
+            return false;
+          });
+      if (getSelectedDates()
+          .length ==
+          maxTimes!) {
+        ColoredSnack(
+            title:
+            "تعداد جلسات انتخاب شده تکمیل شده است.",
+            type: SnackType
+                .ERROR);
+      }
+    }
+  }
+
+  bool removeNextCustomDate(CustomDate? nextCustomDate) {
+    if(nextCustomDate == null){
+      return false;
+    }
+    bool isRemoved = false;
+    // if(nextCustomDate.hour.toString().split(":")[1] != "00"){
+    getSelectedDates().removeWhere((element) {
+      if (element.year ==
+          nextCustomDate
+              .year &&
+          element.month ==
+              nextCustomDate
+                  .month &&
+          element.day ==
+              nextCustomDate
+                  .day &&
+          element.hour ==
+              nextCustomDate
+                  .hour) {
+        isRemoved = true;
+        return true;
+      } else {
+        return false;
+      }
+    });
+    currentSelectedDates.refresh();
+    return isRemoved;
+    // }
+  }
+
+  bool removePreCustomDate(CustomDate? preCustomDate) {
+    if(preCustomDate == null){
+      return false;
+    }
+    bool isRemoved = false;
+    // if(preCustomDate.hour.toString().split(":")[1] == "00"){
+    getSelectedDates().removeWhere((element) {
+      if (element.year ==
+          preCustomDate
+              .year &&
+          element.month ==
+              preCustomDate
+                  .month &&
+          element.day ==
+              preCustomDate
+                  .day &&
+          element.hour ==
+              preCustomDate
+                  .hour) {
+        isRemoved = true;
+        return true;
+      } else {
+        return false;
+      }
+    });
+    currentSelectedDates.refresh();
+    return isRemoved;
+    // }
+  }
 
   void setCurrentPage(int page) {
     currentPage.value = page;
@@ -65,7 +270,7 @@ class CustomDatePickerController extends GetxController {
         year: currentYear,
         month: currentMonth,
         day: cDay.toString(),
-        hour: result);
+        hour: result,isFree: true);
 
     return [result+showingMonth, date];
   }
@@ -99,4 +304,6 @@ class CustomDatePickerController extends GetxController {
       }
     }
   }
+
+
 }

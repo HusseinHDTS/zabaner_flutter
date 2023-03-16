@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
@@ -17,7 +18,9 @@ class CustomDatePicker extends StatelessWidget {
   int? maxTimes;
   bool? isTeacher;
   bool? autoSelectNext;
+  bool? viewMode;
   List<CustomDate>? deActiveDates;
+  EdgeInsets? headerPadding;
   double? headerTextSize;
   Color? headerColor;
   Color? headerTextColor;
@@ -28,15 +31,20 @@ class CustomDatePicker extends StatelessWidget {
     this.headerColor,
     this.isTeacher,
     this.autoSelectNext,
+    this.viewMode,
     this.deActiveDates,
+    this.headerPadding,
     this.headerTextSize,
     this.headerTextColor,
     Key? key})
       : super(key: key) {
     controller.currentPage = 0.obs;
     weeks ??= 4;
+    isTeacher ??= false;
+    viewMode ??= false;
+    headerPadding ??= EdgeInsets.zero;
     deActiveDates ??= [];
-    maxTimes ??= 9999999999999;
+    maxTimes ??= 999999999999999;
     autoSelectNext ??= false;
     headerTextSize ??= 12;
     headerColor ??= primary;
@@ -55,6 +63,22 @@ class CustomDatePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     int weekDay = controller.jDate.weekDay;
     int cDay = controller.jDate.day;
+    var titles = List.generate(7, (i) {
+      return controller.getCurrentPageToShow(
+          index: i,
+          weekDay: weekDay,
+          currentDay: cDay,
+          currentPage: controller.currentPage.value,
+          showMonth: true)[0];
+    });
+    var mainTimes = List.generate(7, (i) {
+      return controller.getCurrentPageToShow(
+        index: i,
+        weekDay: weekDay,
+        currentDay: cDay,
+        currentPage: controller.currentPage.value,
+      )[1];
+    });
     final pages = List.generate(
         weeks!,
             (pageIndex) =>
@@ -71,6 +95,7 @@ class CustomDatePicker extends StatelessWidget {
                           flex: 0,
                           child: Container(
                             height: 45,
+                            padding: headerPadding,
                             decoration: BoxDecoration(color: headerColor),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
@@ -84,35 +109,24 @@ class CustomDatePicker extends StatelessWidget {
                                             padding:
                                             EdgeInsets.symmetric(
                                                 horizontal: 1.5),
-                                            child: Obx(() =>
-                                                ColoredText(
-                                                  "${controller
+                                            child: ColoredText(
+                                              titles[weekIndex],
+                                              overflow: TextOverflow.ellipsis,
+                                              textColor: weekDay ==
+                                                  weekIndex + 1 &&
+                                                  controller
                                                       .getCurrentPageToShow(
                                                       index: weekIndex,
                                                       weekDay: weekDay,
                                                       currentDay: cDay,
                                                       currentPage: controller
-                                                          .currentPage.value,
-                                                      showMonth: true)[0]}",
-                                                  overflow: TextOverflow
-                                                      .ellipsis,
-                                                  textColor: weekDay ==
-                                                      weekIndex + 1 &&
-                                                      controller
-                                                          .getCurrentPageToShow(
-                                                          index: weekIndex,
-                                                          weekDay: weekDay,
-                                                          currentDay: cDay,
-                                                          currentPage:
-                                                          controller
-                                                              .currentPage
-                                                              .value)[0] ==
-                                                          cDay.toString()
-                                                      ? primaryDate
-                                                      : headerTextColor,
-                                                  textSize: headerTextSize! -
-                                                      1.8,
-                                                )),
+                                                          .currentPage
+                                                          .value)[0] ==
+                                                      cDay.toString()
+                                                  ? primaryDate
+                                                  : headerTextColor,
+                                              textSize: headerTextSize! - 1.8,
+                                            ),
                                           ),
                                           Container(
                                             padding:
@@ -200,15 +214,13 @@ class CustomDatePicker extends StatelessWidget {
                                               Column(
                                                 children:
                                                 List.generate(31, (timeIndex) {
-                                                  CustomDate customDate =
-                                                  controller
-                                                      .getCurrentPageToShow(
-                                                      index: weekIndex,
-                                                      weekDay: weekDay,
-                                                      currentDay: cDay,
-                                                      currentPage: controller
-                                                          .currentPage
-                                                          .value)[1];
+                                                  CustomDate mainDate =controller.getCurrentPageToShow(
+                                                    index: weekIndex,
+                                                    weekDay: weekDay,
+                                                    currentDay: cDay,
+                                                    currentPage: controller.currentPage.value,
+                                                  )[1];
+                                                  CustomDate customDate = mainDate;
                                                   customDate.hour =
                                                       getCurrentHourMinDatePicker(
                                                           timeIndex)
@@ -216,28 +228,14 @@ class CustomDatePicker extends StatelessWidget {
                                                   CustomDate? nextCustomDate;
                                                   CustomDate? preCustomDate;
                                                   if (timeIndex + 1 < 31) {
-                                                    nextCustomDate = controller
-                                                        .getCurrentPageToShow(
-                                                        index: weekIndex,
-                                                        weekDay: weekDay,
-                                                        currentDay: cDay,
-                                                        currentPage: controller
-                                                            .currentPage
-                                                            .value)[1];
+                                                    nextCustomDate = mainDate;
                                                     nextCustomDate!.hour =
                                                         getCurrentHourMinDatePicker(
                                                             timeIndex + 1)
                                                             .toString();
                                                   }
                                                   if (timeIndex - 1 >= 0) {
-                                                    preCustomDate = controller
-                                                        .getCurrentPageToShow(
-                                                        index: weekIndex,
-                                                        weekDay: weekDay,
-                                                        currentDay: cDay,
-                                                        currentPage: controller
-                                                            .currentPage
-                                                            .value)[1];
+                                                    preCustomDate = mainDate;
                                                     preCustomDate!.hour =
                                                         getCurrentHourMinDatePicker(
                                                             timeIndex - 1)
@@ -250,155 +248,136 @@ class CustomDatePicker extends StatelessWidget {
                                                     deActiveDates!.add(
                                                         customDate);
                                                   }
-                                                  bool isActive = !deActiveDates!
-                                                      .contains(customDate);
+
+                                                  var hasD = deActiveDates!
+                                                      .firstWhereOrNull((
+                                                      element) {
+                                                    if (element
+                                                        .toJson(
+                                                        removeFree: true)
+                                                        .toString() ==
+                                                        customDate
+                                                            .toJson(
+                                                            removeFree: true)
+                                                            .toString()) {
+                                                      return true;
+                                                    }
+                                                    return false;
+                                                  });
+
+                                                  bool isActive = hasD == null;
 
                                                   RxBool isSelected;
+                                                  RxBool isFree = controller
+                                                      .isAddTimeEnable.value
+                                                      .obs;
                                                   if (controller
                                                       .getSelectedDates()
                                                       .isNotEmpty) {
                                                     if (controller
                                                         .getSelectedDates()
-                                                        .length > maxTimes!) {
+                                                        .length >
+                                                        maxTimes!) {
                                                       controller
                                                           .getSelectedDates()
                                                           .clear();
                                                       isSelected = false.obs;
                                                     } else {
-                                                      isSelected = (controller
+                                                      CustomDate? itemContains =
+                                                      controller
                                                           .getSelectedDates()
-                                                          .firstWhereOrNull((
-                                                          element) {
-                                                        if (element.toJson()
-                                                            .toString() ==
-                                                            customDate.toJson()
-                                                                .toString()) {
-                                                          return true;
-                                                        } else {
-                                                          return false;
-                                                        }
-                                                      }) != null).obs;
+                                                          .firstWhereOrNull(
+                                                              (element) {
+                                                            if (element
+                                                                .toJson(
+                                                                removeFree: true)
+                                                                .toString() ==
+                                                                customDate
+                                                                    .toJson(
+                                                                    removeFree: true)
+                                                                    .toString()) {
+                                                              return true;
+                                                            } else {
+                                                              return false;
+                                                            }
+                                                          });
+                                                      isSelected =
+                                                          (itemContains != null)
+                                                              .obs;
+                                                      if (itemContains !=
+                                                          null) {
+                                                        isFree.value =
+                                                        (itemContains.isFree ??
+                                                            true);
+                                                      }
                                                     }
                                                   } else {
                                                     isSelected = false.obs;
+                                                  }
+                                                  var selectedColors;
+                                                  if (isTeacher ?? false) {
+                                                    if (isFree.value) {
+                                                      selectedColors = [
+                                                        Colors.green.shade400,
+                                                        Colors.green.shade600,
+                                                      ];
+                                                    } else {
+                                                      selectedColors = [
+                                                        Colors.red.shade400,
+                                                        Colors.red.shade600,
+                                                      ];
+                                                    }
+                                                  } else {
+                                                    selectedColors = [
+                                                      primary,
+                                                      primaryDark,
+                                                    ];
                                                   }
                                                   return Obx(() =>
                                                       InkWell(
                                                         onTap: !isActive
                                                             ? null
                                                             : () {
-                                                          customDate.hour =
-                                                              getCurrentHourMinDatePicker(
-                                                                  timeIndex)
-                                                                  .toString();
-                                                          if (isSelected
-                                                              .value == true) {
-                                                            bool removeNext = customDate
-                                                                .hour.toString()
-                                                                .split(
-                                                                ":")[1] == "00";
+                                                          if (viewMode!) {
+                                                            return;
+                                                          }
+                                                          customDate.isFree =
+                                                              controller
+                                                                  .isAddTimeEnable
+                                                                  .value;
 
-                                                            if(removeNext){
-                                                              if(nextCustomDate != null){
-                                                                if(controller.getSelectedDates().contains(nextCustomDate)){
-                                                                  removeNext = true;
-                                                                }else{
-                                                                  if(preCustomDate != null){
-                                                                    if(controller.getSelectedDates().contains(preCustomDate)){
-                                                                      removeNext = false;
-                                                                    }
-                                                                  }
-                                                                }
-                                                              }else{
-                                                                removeNext = false;
-                                                              }
-                                                            }else{
-                                                              if(preCustomDate != null){
-                                                                if(controller.getSelectedDates().contains(preCustomDate)){
-                                                                  removeNext = false;
-                                                                }else{
-                                                                  if(nextCustomDate != null){
-                                                                      if(controller.getSelectedDates().contains(nextCustomDate)) {
-                                                                        removeNext = true;
-                                                                      }
-                                                                  }
-                                                                }
-                                                              }else{
-                                                                removeNext = true;
-                                                              }
-                                                            }
-                                                            if(!removeNextCustomDate(nextCustomDate)){
-                                                              removePreCustomDate(preCustomDate);
-                                                            }
-                                                          }
-                                                          if (controller
-                                                              .getSelectedDates()
-                                                              .length + 1 <
-                                                              maxTimes! &&
-                                                              nextCustomDate !=
-                                                                  null &&
-                                                              isSelected
-                                                                  .value ==
-                                                                  false) {
+                                                          if (isTeacher!) {
                                                             controller
-                                                                .getSelectedDates()
-                                                                .add(
-                                                                nextCustomDate);
-                                                            controller
-                                                                .currentSelectedDates
-                                                                .refresh();
-                                                          }
-                                                          if (controller
-                                                              .getSelectedDates()
-                                                              .length ==
-                                                              maxTimes!) {
-                                                            isSelected.value =
-                                                            false;
-                                                          } else {
-                                                            isSelected.toggle();
-                                                          }
-                                                          if (isSelected
-                                                              .value) {
-                                                            controller
-                                                                .getSelectedDates()
-                                                                .add(
-                                                                customDate);
+                                                                .onTeacherClick(
+                                                                customDate:
+                                                                customDate,
+                                                                timeIndex:
+                                                                timeIndex,
+                                                                isSelected:
+                                                                isSelected);
                                                           } else {
                                                             controller
-                                                                .getSelectedDates()
-                                                                .removeWhere(
-                                                                    (element) {
-                                                                  if (element
-                                                                      .year ==
-                                                                      customDate
-                                                                          .year &&
-                                                                      element
-                                                                          .month ==
-                                                                          customDate
-                                                                              .month &&
-                                                                      element
-                                                                          .day ==
-                                                                          customDate
-                                                                              .day &&
-                                                                      element
-                                                                          .hour ==
-                                                                          customDate
-                                                                              .hour) {
-                                                                    return true;
-                                                                  }
-                                                                  return false;
-                                                                });
-                                                            if (controller
-                                                                .getSelectedDates()
-                                                                .length ==
-                                                                maxTimes!) {
-                                                              ColoredSnack(
-                                                                  title:
-                                                                  "تعداد جلسات انتخاب شده تکمیل شده است.",
-                                                                  type: SnackType
-                                                                      .ERROR);
-                                                            }
+                                                                .onUserClick(
+                                                                customDate:
+                                                                customDate,
+                                                                isSelected:
+                                                                isSelected,
+                                                                maxTimes:
+                                                                maxTimes,
+                                                                nextCustomDate:
+                                                                nextCustomDate,
+                                                                preCustomDate:
+                                                                preCustomDate,
+                                                                timeIndex:
+                                                                timeIndex);
                                                           }
+                                                          // if (controller
+                                                          //     .isAddTimeEnable
+                                                          //     .isFalse) {
+                                                          //   isFree.value = false;
+                                                          // } else {
+                                                          //   isFree.value = true;
+                                                          // }
                                                         },
                                                         child: Container(
                                                           decoration: isSelected
@@ -407,12 +386,9 @@ class CustomDatePicker extends StatelessWidget {
                                                               borderRadius:
                                                               BorderRadius
                                                                   .circular(5),
-                                                              gradient:
-                                                              LinearGradient(
-                                                                  colors: [
-                                                                    primary,
-                                                                    primaryDark,
-                                                                  ]))
+                                                              gradient: LinearGradient(
+                                                                  colors:
+                                                                  selectedColors))
                                                               : BoxDecoration(
                                                               color: !isActive
                                                                   ? Colors.grey
@@ -532,15 +508,79 @@ class CustomDatePicker extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Stack(
           children: [
-            PageView.builder(
-                controller: controller.pageController,
-                itemCount: weeks!,
-                onPageChanged: (cp) {
-                  controller.setCurrentPage(cp);
-                },
-                itemBuilder: (context, index) {
-                  return pages[index % pages.length];
-                }),
+            Column(
+              children: [
+                !viewMode! && isTeacher!
+                    ? Expanded(
+                  flex: 0,
+                  child: Container(
+                    height: 40,
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    width: double.infinity,
+                    decoration: BoxDecoration(color: primary),
+                    child: Row(
+                      children: [
+                        Flexible(
+                          flex: 0,
+                          child: Container(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Obx(() =>
+                                  checkBox("افزودن",
+                                      controller.isAddTimeEnable,
+                                          (value) {
+                                        if (controller
+                                            .isAddTimeEnable.isFalse) {
+                                          controller.toggleAddRemoveTime();
+                                        }
+                                      },
+                                      textColor: Colors.white,
+                                      boxColor: Colors.white,
+                                      activeColor: Colors.white,
+                                      checkColor: Colors.green)),
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 0,
+                          child: Container(
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Obx(() =>
+                                  checkBox("حذف",
+                                      controller.isRemoveTimeEnable,
+                                          (value) {
+                                        if (controller
+                                            .isRemoveTimeEnable.isFalse) {
+                                          controller.toggleAddRemoveTime();
+                                        }
+                                      },
+                                      textColor: Colors.white,
+                                      boxColor: Colors.white,
+                                      activeColor: Colors.white,
+                                      checkColor: Colors.red)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                    : Container(),
+                Expanded(
+                    flex: 1,
+                    child: PageView.builder(
+                        controller: controller.pageController,
+                        itemCount: weeks!,
+                        onPageChanged: (cp) {
+                          controller.setCurrentPage(cp);
+                        },
+                        itemBuilder: (context, index) {
+                          return pages[index % pages.length];
+                        }))
+              ],
+            ),
             Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
@@ -562,65 +602,5 @@ class CustomDatePicker extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  bool removeNextCustomDate(CustomDate? nextCustomDate) {
-    if(nextCustomDate == null){
-      return false;
-    }
-    bool isRemoved = false;
-    // if(nextCustomDate.hour.toString().split(":")[1] != "00"){
-    controller.getSelectedDates().removeWhere((element) {
-      if (element.year ==
-          nextCustomDate
-              .year &&
-          element.month ==
-              nextCustomDate
-                  .month &&
-          element.day ==
-              nextCustomDate
-                  .day &&
-          element.hour ==
-              nextCustomDate
-                  .hour) {
-        isRemoved = true;
-        return true;
-      } else {
-        return false;
-      }
-    });
-    controller.currentSelectedDates.refresh();
-    return isRemoved;
-    // }
-  }
-
-  bool removePreCustomDate(CustomDate? preCustomDate) {
-    if(preCustomDate == null){
-      return false;
-    }
-    bool isRemoved = false;
-    // if(preCustomDate.hour.toString().split(":")[1] == "00"){
-    controller.getSelectedDates().removeWhere((element) {
-      if (element.year ==
-          preCustomDate
-              .year &&
-          element.month ==
-              preCustomDate
-                  .month &&
-          element.day ==
-              preCustomDate
-                  .day &&
-          element.hour ==
-              preCustomDate
-                  .hour) {
-        isRemoved = true;
-        return true;
-      } else {
-        return false;
-      }
-    });
-    controller.currentSelectedDates.refresh();
-    return isRemoved;
-    // }
   }
 }

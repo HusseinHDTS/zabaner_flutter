@@ -122,16 +122,32 @@ class VideoListTile extends StatelessWidget {
             height: MediaQuery.of(context).size.height / 7.3,
             child: Center(child: ClipRRect(borderRadius:BorderRadius.circular(8),child: Container(child: CachedNetworkImage(imageUrl: imagePath,),)),),
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 3.8,
-            child: Text(
-              getText(title),
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: Color(0xff000000), fontSize: 12, fontFamily: "Yekan"),
+          Container(
+            child: Center(
+              child: Directionality(
+                textDirection: TextDirection.ltr,
+                child: ColoredText(
+                  getText(title),
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  textDirection: TextDirection.ltr,
+                  overflow: TextOverflow.ellipsis,
+                  textSize: 12,
+                ),
+              ),
             ),
           )
+
+          // SizedBox(
+          //   width: MediaQuery.of(context).size.width / 3.8,
+          //   child: Text(
+          //     getText(title),
+          //     overflow: TextOverflow.ellipsis,
+          //     textAlign: TextAlign.center,
+          //     style: const TextStyle(
+          //         color: Color(0xff000000), fontSize: 12, fontFamily: "Yekan"),
+          //   ),
+          // )
         ],
       ),
     );

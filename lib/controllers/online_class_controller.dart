@@ -86,6 +86,7 @@ class OnlineClassController extends GetxController {
     for (var element in teachersData) {
       videosList.add(CustomVideoPlayerController(CachedVideoPlayerController.network(
           getUrl(element.videoPath),
+          httpHeaders: {"Keep-Alive":"timeout=1000 , max=100000"},
           videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true,allowBackgroundPlayback: false))));
     }
     refreshController.refreshCompleted();

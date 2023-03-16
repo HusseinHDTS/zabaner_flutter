@@ -12,8 +12,8 @@ import 'package:zabaner/widgets/my_app_bar.dart';
 
 class TabbarSubCategoryScreen extends StatefulWidget {
   var filter,items;
-
-  TabbarSubCategoryScreen({required this.filter,required this.items});
+  var submitTitle;
+  TabbarSubCategoryScreen({required this.filter,required this.items,required this.submitTitle});
 
   @override
   State<StatefulWidget> createState() {
@@ -43,7 +43,7 @@ class _TabbarSubCategoryScreen extends State<TabbarSubCategoryScreen> {
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
-                          Get.to(() => SubTabbarItemScreen(filter: controller.data[index]["id"], items: widget.items));
+                          Get.to(() => SubTabbarItemScreen(filter: controller.data[index]["id"], items: widget.items,submitTitle:widget.submitTitle));
                         },
                         child: Container(
                           width: Get.width,

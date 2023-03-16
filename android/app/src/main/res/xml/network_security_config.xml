@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true" />
     <domain-config>
         <domain includeSubdomains="true">zabaner.ir</domain>
         <trust-anchors>
-            <certificates src="@raw/cert" />
+            <certificates src="@raw/cert"/>
+            <certificates src="@raw/cert1"/>
+            <certificates src="@raw/cert2"/>
+            <certificates src="@raw/cert3"/>
+            <certificates src="system"/>
+            <certificates src="user"/>
         </trust-anchors>
     </domain-config>
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="@raw/cert"/>
+            <certificates src="@raw/cert1"/>
+            <certificates src="@raw/cert2"/>
+            <certificates src="@raw/cert3"/>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+    </debug-overrides>
+
 </network-security-config>

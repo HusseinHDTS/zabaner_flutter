@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import 'package:cached_video_preview/cached_video_preview.dart';
 import 'package:cached_video_preview/src/models/video_preview_data.dart';
-import 'package:cached_video_preview/src/helper/cache_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:zabaner/widgets/cahced_video_preview_helper.dart';
 
 /// Remote Image Builder typedef
 typedef RemoteImageBuilder = Widget Function(BuildContext, String);
@@ -66,7 +66,7 @@ class _CachedVideoPreviewWidgetState extends State<CustomCachedVideoPreviewWidge
       vsync: this,
       duration: widget.fadeDuration,
     );
-    _subs = CachedVideoPreviewHelper.instance
+    _subs = CustomCachedVideoPreviewHelper.instance
         .load(
       widget.path,
       widget.type,

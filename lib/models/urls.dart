@@ -14,6 +14,7 @@ const createOnlineClass = "$baseUrl/api/v1/online-class/create";
 const updateUserTeacher = "$baseUrl/api/v1/user-teachers/updateInfo";
 const updateTeacherProfileImage = "$baseUrl/api/v1/user-teachers/image";
 const createBankUserTeacher = "$baseUrl/api/v1/user-teachers/bank";
+const updateTeacherFreeTimes = "$baseUrl/api/v1/user-teachers/freeTimes";
 const getCurrentTeacherUser = "$baseUrl/api/v1/user-teachers";
 const getAllUserTeachers = "$baseUrl/api/v1/user-teachers";
 const getAllTeacherClass = "$baseUrl/api/v1/online-class";
@@ -88,6 +89,7 @@ String getTime(time) {
       result += ":";
     }
   }
+  debugPrint("sakdjakjdwkjkjdscjkjsa : "+result);
   return result;
 }
 
@@ -166,6 +168,7 @@ String getUrl(path) {
   } else {
     imagePath = _imagePath;
   }
+
   bool validImageLink = checkForValidImageLink(imagePath);
   if (imagePath.contains("/") &&
           imagePath.substring(imagePath.lastIndexOf("/")).replaceAll("/", "") ==

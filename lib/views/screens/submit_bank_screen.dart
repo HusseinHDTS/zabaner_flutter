@@ -813,7 +813,7 @@ class _SubmitBankScreen extends State<SubmitBankScreen> {
                                 gradientBorder: true,
                                 textColor: Colors.green,
                                 onTap: () {
-                                  // Get.to(() => CreateClassTimingScreen());
+                                  Get.to(() => CreateClassTimingScreen(controller.data['freeTimes']));
                                 },
                               ),
                             ),

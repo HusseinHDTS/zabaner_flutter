@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/controllers/create_class_controller.dart';
+import 'package:zabaner/controllers/create_class_timing_controller.dart';
 import 'package:zabaner/controllers/custom_date_picker_controller.dart';
+import 'package:zabaner/models/custom_date.dart';
 import 'package:zabaner/models/money_input_formatter.dart';
 import 'package:zabaner/models/price_seperator.dart';
 import 'package:zabaner/models/utils.dart';
@@ -193,7 +197,7 @@ class _CreateClassScreen extends State<CreateClassScreen> {
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                       child: Obx(() => infoBox(
-                          "جلسه آزمایشی   -   ${formatPrice(controller.testClassPriceString.value,count: 1)}")),
+                          "جلسه آزمایشی   -   ${formatPrice(controller.testClassPriceString.value, count: 1)}")),
                     ),
                   ),
                   SizedBox(
@@ -210,13 +214,16 @@ class _CreateClassScreen extends State<CreateClassScreen> {
                       ],
                       textDirection: TextDirection.ltr,
                       onChange: (value) {
-                        controller.onNormalPriceChange(value,1);
+                        controller.onNormalPriceChange(value, 1);
                       },
                       priceUnit: "تومان",
                     ),
                   ),
-                  Obx(() => Container(margin: EdgeInsets.symmetric(horizontal: 18),child: infoBox(
-                      "1 جلسه یک ساعتی  -  ${formatPrice(controller.normal1ClassPriceString.value.replaceAll(",", ""),count: 1)}"),)),
+                  Obx(() => Container(
+                        margin: EdgeInsets.symmetric(horizontal: 18),
+                        child: infoBox(
+                            "1 جلسه یک ساعتی  -  ${formatPrice(controller.normal1ClassPriceString.value.replaceAll(",", ""), count: 1)}"),
+                      )),
                   SizedBox(
                     height: 8,
                   ),
@@ -231,13 +238,16 @@ class _CreateClassScreen extends State<CreateClassScreen> {
                       ],
                       textDirection: TextDirection.ltr,
                       onChange: (value) {
-                        controller.onNormalPriceChange(value,3);
+                        controller.onNormalPriceChange(value, 3);
                       },
                       priceUnit: "تومان",
                     ),
                   ),
-                  Obx(() => Container(margin: EdgeInsets.symmetric(horizontal: 18),child: infoBox(
-                      "3 جلسه یک ساعتی  -  ${formatPrice(controller.normal3ClassPriceString.value.replaceAll(",", ""),count: 3)}"),)),
+                  Obx(() => Container(
+                        margin: EdgeInsets.symmetric(horizontal: 18),
+                        child: infoBox(
+                            "3 جلسه یک ساعتی  -  ${formatPrice(controller.normal3ClassPriceString.value.replaceAll(",", ""), count: 3)}"),
+                      )),
                   SizedBox(
                     height: 8,
                   ),
@@ -252,13 +262,16 @@ class _CreateClassScreen extends State<CreateClassScreen> {
                       ],
                       textDirection: TextDirection.ltr,
                       onChange: (value) {
-                        controller.onNormalPriceChange(value,5);
+                        controller.onNormalPriceChange(value, 5);
                       },
                       priceUnit: "تومان",
                     ),
                   ),
-                  Obx(() => Container(margin: EdgeInsets.symmetric(horizontal: 18),child: infoBox(
-                      "5 جلسه یک ساعتی  -  ${formatPrice(controller.normal5ClassPriceString.value.replaceAll(",", ""),count: 5)}"),)),
+                  Obx(() => Container(
+                        margin: EdgeInsets.symmetric(horizontal: 18),
+                        child: infoBox(
+                            "5 جلسه یک ساعتی  -  ${formatPrice(controller.normal5ClassPriceString.value.replaceAll(",", ""), count: 5)}"),
+                      )),
                   SizedBox(
                     height: 8,
                   ),
@@ -273,13 +286,16 @@ class _CreateClassScreen extends State<CreateClassScreen> {
                       ],
                       textDirection: TextDirection.ltr,
                       onChange: (value) {
-                        controller.onNormalPriceChange(value,10);
+                        controller.onNormalPriceChange(value, 10);
                       },
                       priceUnit: "تومان",
                     ),
                   ),
-                  Obx(() => Container(margin: EdgeInsets.symmetric(horizontal: 18),child: infoBox(
-                      "10 جلسه یک ساعتی  -  ${formatPrice(controller.normal10ClassPriceString.value.replaceAll(",", "") , count: 10)}"),)),
+                  Obx(() => Container(
+                        margin: EdgeInsets.symmetric(horizontal: 18),
+                        child: infoBox(
+                            "10 جلسه یک ساعتی  -  ${formatPrice(controller.normal10ClassPriceString.value.replaceAll(",", ""), count: 10)}"),
+                      )),
                   SizedBox(
                     height: 8,
                   ),
@@ -316,14 +332,108 @@ class _CreateClassScreen extends State<CreateClassScreen> {
 }
 
 class CreateClassTimingScreen extends StatelessWidget {
-  CustomDatePickerController dateController = Get.put(CustomDatePickerController());
+  String freeTimes;
+
+  CreateClassTimingScreen(this.freeTimes);
+
+  CustomDatePickerController dateController = Get.find();
+
+  CreateClassTimingController timingController =
+      Get.put(CreateClassTimingController());
+
   @override
   Widget build(BuildContext context) {
+    try {
+      dateController.getSelectedDates().clear();
+      List<CustomDate> customDates =
+          customDateListModelFromJson(freeTimes);
+      dateController.getSelectedDates().addAll(customDates);
+    } catch (e) {
+      e.printError();
+    }
     return Scaffold(
       appBar: ColoredAppBar(),
       body: Column(
         children: [
-          Expanded(flex:1,child: CustomDatePicker(controller: dateController),),
+          Expanded(
+            flex: 1,
+            child: CustomDatePicker(
+              controller: dateController,
+              weeks: 14,
+              headerPadding: EdgeInsets.symmetric(horizontal: 4),
+              autoSelectNext: false,
+              isTeacher: true,
+            ),
+          ),
+          Expanded(
+            flex: 0,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: ColoredButton(
+                "ثبت زمان های انتخاب شده",
+                onTap: () {
+                  debugPrint("qwekxjckjaskdjas : " +
+                      dateController
+                          .getSelectedDates()
+                          .toList()
+                          .length
+                          .toString());
+                  timingController.sendData(
+                      jsonEncode(dateController.getSelectedDates().toList()));
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ShowTeacherTimes extends StatefulWidget {
+  String freeTimes;
+
+  ShowTeacherTimes(this.freeTimes);
+
+  @override
+  State<ShowTeacherTimes> createState() => _ShowTeacherTimesState();
+}
+
+class _ShowTeacherTimesState extends State<ShowTeacherTimes> {
+  CustomDatePickerController dateController = Get.find();
+
+  @override
+  void dispose() {
+    super.dispose();
+    dateController.getSelectedDates().clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      dateController.getSelectedDates().clear();
+      List<CustomDate> customDates =
+          customDateListModelFromJson(widget.freeTimes);
+      dateController.getSelectedDates().addAll(customDates);
+    } catch (e) {
+      e.printError();
+    }
+
+    return Scaffold(
+      appBar: ColoredAppBar(),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: CustomDatePicker(
+              controller: dateController,
+              weeks: 14,
+              headerPadding: EdgeInsets.symmetric(horizontal: 4),
+              viewMode: true,
+              autoSelectNext: false,
+              isTeacher: true,
+            ),
+          ),
         ],
       ),
     );

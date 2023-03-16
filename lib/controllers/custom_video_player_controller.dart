@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fullscreen/fullscreen.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -88,7 +91,7 @@ class CustomVideoPlayerController {
   void fullscreenModeOn(){
     enterFullScreenMode();
     isFullscreen.value = true;
-    Get.to(()=> FullScreenPage(fixedLandscape: true,));
+    Get.to(()=> FullScreenPage(fixedLandscape: true,),fullscreenDialog: true,);
   }
 
   void fullscreenModeOff(){
@@ -143,7 +146,7 @@ class CustomVideoPlayerController {
       pause();
     }
     customVideoPlayerTag.value = "null";
-    // videoPlayerController.dispose();
+    videoPlayerController.dispose();
   }
 
 

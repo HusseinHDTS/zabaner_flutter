@@ -19,6 +19,7 @@ class UserTeachers {
     required  this.name,
     required  this.family,
     required  this.description,
+    required  this.freeTimes,
     required  this.videoPath,
     required  this.educationLevel,
     required  this.educationIn,
@@ -46,6 +47,7 @@ class UserTeachers {
   final String educationIn;
   final String ageRating;
   final String expertise;
+  final String freeTimes;
   final String expertiseString;
   final String rating;
   final String ratingCount;
@@ -67,6 +69,7 @@ class UserTeachers {
       description: json["description"] ?? "",
       videoPath: json["videoPath"] ?? "",
       educationLevel: json["educationLevel"] ?? "" ,
+      freeTimes: json["freeTimes"] ?? "" ,
       educationIn: json["educationIn"] ?? "" ,
       ageRating: json["ageRating"] ?? "" ,
       expertise: json["expertise"] ?? "" ,
@@ -93,6 +96,7 @@ class UserTeachers {
     "educationLevel": educationLevel,
     "educationIn": educationIn,
     "ageRating": ageRating,
+    "freeTimes": freeTimes,
     "expertise": expertise,
     "rating": rating,
     "ratingCount": ratingCount,

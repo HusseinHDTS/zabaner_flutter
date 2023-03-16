@@ -32,6 +32,7 @@ class CustomVideoController extends GetxController {
     if (videoType == CustomVideoType.NETWORK) {
       videoPlayerController = CustomVideoPlayerController(
           CachedVideoPlayerController.network(path,
+              httpHeaders: {"Keep-Alive":"timeout=1000 , max=100000"},
               videoPlayerOptions: VideoPlayerOptions(
                   mixWithOthers: true, allowBackgroundPlayback: false)),autoInit: autoInit);
     } else if (videoType == CustomVideoType.STORAGE) {

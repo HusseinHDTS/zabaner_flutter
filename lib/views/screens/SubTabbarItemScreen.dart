@@ -12,10 +12,11 @@ import 'package:zabaner/widgets/my_app_bar.dart';
 
 class SubTabbarItemScreen extends StatefulWidget {
   String? filter;
+  String? submitTitle;
   List<TabbarItem> items;
   List<TabbarItem> cItems = [];
 
-  SubTabbarItemScreen({this.filter, required this.items});
+  SubTabbarItemScreen({this.filter, required this.items,this.submitTitle});
 
   @override
   State<StatefulWidget> createState() {
@@ -68,7 +69,7 @@ class _SubTabbarItemScreen extends State<SubTabbarItemScreen> {
                           child: Column(children: [
                             Align(alignment:Alignment.topRight,child: ColoredText(items[index].title,textColor: Colors.black,)),
                             SizedBox(height: 8,),
-                            Align(alignment:Alignment.centerRight,child: Container(margin:EdgeInsets.only(right: 8),child: ColoredText("سطح ${items[index].category}",textColor: Colors.black,textAlign: TextAlign.right,))),
+                            Align(alignment:Alignment.centerRight,child: Container(margin:EdgeInsets.only(right: 8),child: ColoredText(widget.submitTitle.toString(),textColor: Colors.black,textAlign: TextAlign.right,))),
                           ],),
                         ),
                       )),

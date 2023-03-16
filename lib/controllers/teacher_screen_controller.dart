@@ -20,6 +20,7 @@ class TeacherScreenController extends GetxController{
   Rx<Uint8List?> image = Uint8List(0).obs;
   XFile? imageFile;
   XFile? videoFile;
+  Rx<XFile?>? videoFileRx;
   TextEditingController nameController = TextEditingController();
   TextEditingController familyController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -95,7 +96,6 @@ class TeacherScreenController extends GetxController{
     // english04.value = false;
     // english05.value = false;
   }
-
 
 
   submitTeacher()async{
@@ -289,6 +289,8 @@ class TeacherScreenController extends GetxController{
     XFile? _image = await _picker.pickVideo(source: ImageSource.gallery);
     if(_image != null){
       videoFile = _image;
+      videoFileRx ??= videoFile.obs;
+      videoFileRx!.value = videoFile;
       _videoController = VideoPlayerController.file(io.File(_image.path));
       chewieController = ChewieController(
         videoPlayerController: _videoController,
