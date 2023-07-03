@@ -6,6 +6,7 @@ import 'package:zabaner/views/screens/profile_screen.dart';
 import 'package:zabaner/views/widgets/bar_chart_widget.dart';
 import 'package:zabaner/widgets/my_app_bar.dart';
 import '../../models/level.dart';
+import 'package:zabaner/views/colors.dart';
 
 class StaticsScreen extends StatelessWidget {
   StaticsScreen({Key? key}) : super(key: key);
@@ -85,7 +86,7 @@ class StaticsScreen extends StatelessWidget {
                   width: Get.width / 4.3,
                   height: Get.height / 27,
                   decoration: BoxDecoration(
-                      color: const Color(0xffFFC200),
+                      color: primary,
                       borderRadius: BorderRadius.circular(10)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +99,7 @@ class StaticsScreen extends StatelessWidget {
                       SizedBox(
                           width: Get.width / 19,
                           height: Get.height / 35,
-                          child: Image.asset("assets/images/CHART.png"))
+                          child: Image.asset("assets/images/CHART.png",color: Colors.white,))
                     ],
                   ),
                 )),
@@ -283,7 +284,7 @@ class StaticsScreen extends StatelessWidget {
                                                     .duration
                                                     .inSeconds /
                                                 _controller.sumDuration),
-                                        color: const Color(0xffFFE14D),
+                                        color: primaryDark,
                                         topText: _controller
                                                 .summaryTime
                                                 .lastDaysStats[index]

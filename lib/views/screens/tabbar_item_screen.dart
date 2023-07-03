@@ -72,6 +72,7 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
                       textDirection: TextDirection.rtl,
                       child: BottomPlayer(
                           isVideo: true,
+                          isSingleSetting: true,
                           forward: () {
                             // var data = getPlayerIndex(
                             //     controller

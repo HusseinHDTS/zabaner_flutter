@@ -205,7 +205,7 @@ class _CreateTeacherScreen extends State<CreateTeacherScreen> {
                   child: SmoothPageIndicator(
                     controller: pageController,
                     count: pages.length,
-                    effect: const WormEffect(
+                    effect: WormEffect(
                       dotHeight: 7,
                       dotWidth: 13,
                       spacing: 9,
@@ -322,6 +322,18 @@ class _CreateTeacherScreen extends State<CreateTeacherScreen> {
                 ),
               ),
             )),
+        Container(
+          margin: EdgeInsets.only(right: 18,left: 18,bottom: 18),
+          child: genderSelector(isFemale: controller.isFemale,hasError: controller.genderError,isMale: controller.isMale,onItemTap: (value){
+            if(value == "male"){
+              controller.isFemale.value = false;
+              controller.isMale.value = true;
+            }else{
+              controller.isMale.value = false;
+              controller.isFemale.value = true;
+            }
+          }),
+        ),
         inputText("آدرس ایمیل", controller.emailController,
             error: controller.emailError,
             keyboardType: TextInputType.emailAddress),

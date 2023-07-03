@@ -1,17 +1,61 @@
-
 import 'dart:async';
 import 'dart:typed_data';
-
+import 'dart:io' as io;
 import 'package:cached_video_preview/cached_video_preview.dart';
 import 'package:cached_video_preview/src/models/video_preview_data.dart';
 import 'package:flutter/material.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:zabaner/widgets/cahced_video_preview_helper.dart';
+import 'package:path_provider/path_provider.dart' as pPath;
 
 /// Remote Image Builder typedef
 typedef RemoteImageBuilder = Widget Function(BuildContext, String);
 
 /// File Image Builder typedef
 typedef FileImageBuilder = Widget Function(BuildContext, Uint8List);
+
+class CustomCachedVideoPreviewWidget2 extends StatelessWidget {
+  late io.Directory appDoc;
+  String path;
+  SourceType type;
+  RemoteImageBuilder? remoteImageBuilder;
+  FileImageBuilder? fileImageBuilder;
+  Widget? placeHolder;
+  Duration fadeDuration;
+  Map<String, String>? httpHeaders;
+
+  CustomCachedVideoPreviewWidget2({
+    Key? key,
+    required this.path,
+    this.type = SourceType.local,
+    this.remoteImageBuilder,
+    this.fileImageBuilder,
+    this.placeHolder,
+    this.fadeDuration = const Duration(milliseconds: 500),
+    this.httpHeaders,
+  }) {
+    getImage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
+  void getImage() async {
+    appDoc = await pPath.getTemporaryDirectory();
+    VideoThumbnail.thumbnailData(video: path,imageFormat: ImageFormat.PNG)
+      ..onError((error, stackTrace){
+        debugPrint("daskjdkasjdkjaskjdksajdkasj : On Error : " + error.toString() + stackTrace.toString());
+      })
+      ..whenComplete((){
+        debugPrint("daskjdkasjdkjaskjdksajdkasj : When Complete ");
+      })
+      ..then((value) {
+        debugPrint("daskjdkasjdkjaskjdksajdkasj : Then");
+      });
+  }
+}
 
 class CustomCachedVideoPreviewWidget extends StatefulWidget {
   const CustomCachedVideoPreviewWidget({
@@ -53,7 +97,8 @@ class CustomCachedVideoPreviewWidget extends StatefulWidget {
       _CachedVideoPreviewWidgetState();
 }
 
-class _CachedVideoPreviewWidgetState extends State<CustomCachedVideoPreviewWidget>
+class _CachedVideoPreviewWidgetState
+    extends State<CustomCachedVideoPreviewWidget>
     with SingleTickerProviderStateMixin {
   late final StreamController<VideoPreviewData> _previewController;
   late final AnimationController _animation;
@@ -73,7 +118,7 @@ class _CachedVideoPreviewWidgetState extends State<CustomCachedVideoPreviewWidge
       widget.httpHeaders,
     )
         .listen(
-          (VideoPreviewData data) {
+      (VideoPreviewData data) {
         _previewController.add(data);
         _animation.forward();
       },
@@ -94,11 +139,11 @@ class _CachedVideoPreviewWidgetState extends State<CustomCachedVideoPreviewWidge
         }
         final Widget child = snapshot.requireData.file != null
             ? widget.fileImageBuilder
-            ?.call(context, snapshot.requireData.file!) ??
-            Image.memory(snapshot.requireData.file!)
+                    ?.call(context, snapshot.requireData.file!) ??
+                Image.memory(snapshot.requireData.file!)
             : widget.remoteImageBuilder
-            ?.call(context, snapshot.requireData.url) ??
-            Image.network(snapshot.requireData.url);
+                    ?.call(context, snapshot.requireData.url) ??
+                Image.network(snapshot.requireData.url);
         return FadeTransition(
           opacity: _animation,
           child: child,

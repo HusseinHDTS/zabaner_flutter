@@ -15,6 +15,55 @@ class CustomDatePickerController extends GetxController {
 
   var jDate = Jalali.fromDateTime(DateTime.now());
 
+
+  Jalali getDateFromNumber(int fromNow){
+    DateTime date = DateTime.now();
+    Jalali jDateNow = Jalali.fromDateTime(date);
+    date = date.add(Duration(days: fromNow));
+    // debugPrint("dsakdjaksjdksjakdjaskjds : " + (jDateNow.weekDay).toString() +"  "+ (Jalali.fromDateTime(date).weekDay).toString());
+    date = date.subtract(Duration(days: (jDateNow.weekDay - 1)));
+    return Jalali.fromDateTime(date);
+  }
+  bool isDaySelected(int dayIndex,int selectedDay){
+    if(dayIndex == selectedDay){
+      return true;
+    }
+    return false;
+  }
+
+
+  String getCurrentMinTimeText(int currentMinTime,{int startHour = 14}) {
+    String res = "00:00";
+    int baseInt = startHour + currentMinTime;
+    double mainInt = baseInt / 2;
+    var mainStrings = mainInt.toString().split(".");
+    int hour = int.parse(mainStrings[0]);
+    int minutes = int.parse(mainStrings[1]);
+    if (hour < 10) {
+      res = "0$hour";
+    } else {
+      res = "$hour";
+    }
+    res += ":";
+    if (minutes > 0) {
+      res += "30";
+    } else {
+      res += "00";
+    }
+    return res;
+  }
+
+  String makeNumberTwoDigit(number){
+    String result = "";
+    String cNum = number.toString();
+    int num = int.tryParse(cNum) ?? 0;
+    if(num < 10){
+      result = "0";
+    }
+    result += num.toString();
+    return result;
+  }
+
   void onTeacherClick({required CustomDate customDate,timeIndex,RxBool? isSelected}) {
     isSelected ??=false.obs;
     // customDate.hour =
@@ -40,7 +89,9 @@ class CustomDatePickerController extends GetxController {
       }
     isSelected.toggle();
   }
-
+  bool isAddTimeEnabled(){
+    return isAddTimeEnable.isTrue;
+  }
   void toggleAddRemoveTime() {
     isAddTimeEnable.toggle();
     isRemoveTimeEnable.toggle();
@@ -304,6 +355,27 @@ class CustomDatePickerController extends GetxController {
       }
     }
   }
+
+  String getDay(int index) {
+    if(index == 0){
+      return "شنبه";
+    }else if(index == 1){
+      return "یک شنبه";
+    }else if(index == 2){
+      return "دو شنبه";
+    }else if(index == 3){
+      return "سه شنبه";
+    }else if(index == 4){
+      return "چهار شنبه";
+    }else if(index == 5){
+      return "پنج شنبه";
+    }else if(index == 6){
+      return "جمعه";
+    }else{
+      return "نا شنبه";
+    }
+  }
+
 
 
 }

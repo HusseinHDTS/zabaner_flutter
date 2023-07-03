@@ -33,12 +33,12 @@ class _SubmitClass extends State<SubmitClass> {
     List<CustomDate>? customDates;
     try{
       customDates = customDateListModelFromJson(widget.item.freeTimes);
-      customDates.removeWhere((element){
-        if(element.isFree.toString() == "true"){
-          return true;
-        }
-        return false;
-      });
+      // customDates.removeWhere((element){
+      //   if(element.isFree.toString() == "false"){
+      //     return true;
+      //   }
+      //   return false;
+      // });
     }catch(e){e.printError();}
     return Scaffold(
       appBar: ColoredAppBar(),
@@ -48,63 +48,6 @@ class _SubmitClass extends State<SubmitClass> {
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 18),
           child: Column(
             children: [
-              // Expanded(
-              //   flex: 1,
-              //   child: Container(
-              //     height: double.infinity,
-              //     margin: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-              //     decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(18),
-              //         color: Colors.white,
-              //         border: Border.all(color: primaryDark, width: 2)),
-              //     child: ClipRRect(
-              //       borderRadius: BorderRadius.circular(15),
-              //       child: SfDateRangePicker(
-              //         view: DateRangePickerView.month,
-              //         allowViewNavigation: false,
-              //         controller: controller.dateController,
-              //         onViewChanged: (item){
-              //
-              //         },
-              //         selectionColor: primary,
-              //         todayHighlightColor: Colors.blueAccent,
-              //         monthViewSettings:  DateRangePickerMonthViewSettings(
-              //           firstDayOfWeek: 6,
-              //           specialDates: [],
-              //           viewHeaderStyle: DateRangePickerViewHeaderStyle(backgroundColor: primary,textStyle: TextStyle(color: Colors.white)),
-              //           dayFormat: "E",
-              //         ),
-              //         headerHeight: 50,
-              //         enableMultiView: false,
-              //         monthFormat: "MM /",
-              //         selectionMode: DateRangePickerSelectionMode.multiple,
-              //         onSelectionChanged: (args){
-              //           // DateRangePickerCellDetails item = args.value;
-              //           // var items = controller.dateController.selectedDates!;
-              //           if(args.value.length > widget.selectedPos){
-              //             controller.dateController.selectedDates!.clear();
-              //             controller.dateController.selectedDates!.addAll(controller.selectedDates);
-              //             controller.dateController.notifyPropertyChangedListeners("selectedDates");
-              //             ColoredSnack(title: "نمیتوانید بیشتر از ${widget.selectedPos} روز رزرو کنید! ",type: SnackType.ERROR);
-              //             // debugPrint("asdkjkawjdkjskjckxjzkcjkjxz : " + controller.selectedDates.toString());
-              //             return;
-              //           }
-              //           controller.selectedDates = args.value;
-              //           // debugPrint("daskdjkjsakdjksjakjdkjkjwww : " + controller.dateController.selectedDates!.toList().toString());
-              //           // debugPrint("daskdjkjsakdjksjakjdkjkjwww : " + args.value.toString());
-              //         },
-              //         selectableDayPredicate: (dateTime){
-              //           return true;
-              //         },
-              //         headerStyle: const DateRangePickerHeaderStyle(
-              //           backgroundColor: primaryDark,
-              //           textAlign: TextAlign.center,
-              //           textStyle: TextStyle(color: Colors.white),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
               Expanded(
                 flex: 1,
                 child: Container(
@@ -127,7 +70,7 @@ class _SubmitClass extends State<SubmitClass> {
                     child: CustomDatePicker(
                       controller: Get.find(),
                       autoSelectNext: widget.selectedPos != 0,
-                      deActiveDates: customDates,
+                      activeDates: customDates,
                       maxTimes:
                           widget.selectedPos == 0 ? 1 : widget.selectedPos,
                     ),

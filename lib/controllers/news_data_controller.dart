@@ -120,7 +120,7 @@ class NewsSearchController extends GetConnect {
   RefreshController refreshController1 = RefreshController();
   RefreshController refreshController2 = RefreshController();
   RefreshController refreshController3 = RefreshController();
-  RefreshController refreshController4 = RefreshController();
+  // RefreshController refreshController4 = RefreshController();
   var dataError = false.obs;
 
   var _dataLoaded = false.obs;
@@ -144,11 +144,14 @@ class NewsSearchController extends GetConnect {
   var allChildTabCategories  = [];
   var allAdultTabCategories = [];
   var allNationalTabCategories = [];
+  var adultTabbarItemModel = [];
+  var nationalTabbarItemModel = [];
+  var validatedSubs;
 
   late List<SubCategoryItem> subCategoryModel;
   late List<TabbarItem> childTabbarItemModel;
-  late List<TabbarItem> adultTabbarItemModel;
-  late List<TabbarItem> nationalTabbarItemModel;
+  // late List<TabbarItem> adultTabbarItemModel;
+  // late List<TabbarItem> nationalTabbarItemModel;
   late ProfileInformation profileInformation;
   final GetStorage _getStorage = GetStorage();
 
@@ -159,8 +162,12 @@ class NewsSearchController extends GetConnect {
     final _request = await _getConnect.get(getTabbarCategory);
     final _request1 = await _getConnect.get(getChildTabbarCategory);
     final _request2 = await _getConnect.get(getChildTabbarItems);
-    final _request3 = await _getConnect.get(getAdultTabbarItems);
-    final _request4 = await _getConnect.get(getNationalTabbarItems);
+    final _request3 = await _getConnect.get(getAdultTabbarCategoryItems);
+    final _request4 = await _getConnect.get(getNationalTabbarCategoryItems);
+    final _request44 = await _getConnect.get(getAvailableSubs,headers: {
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${_getStorage.read('token')}'
+    });
     final _requestProfile = await _getConnect.get(profileInformationUrl, headers: {
       'accept': 'application/json',
       'Authorization': 'Bearer ${_getStorage.read('token')}'
@@ -174,14 +181,15 @@ class NewsSearchController extends GetConnect {
         && _request4.statusCode == 200 && _request5.statusCode == 200 && _request6.statusCode == 200 && _request7.statusCode == 200 && _requestProfile.statusCode == 200) {
       subCategoryModel = subCategoryListModelFromJson(_request1.bodyString ??"");
       childTabbarItemModel = tabbarItemListModelFromJson(_request2.bodyString ??"");
-      adultTabbarItemModel = tabbarItemListModelFromJson(_request3.bodyString ??"");
-      nationalTabbarItemModel = tabbarItemListModelFromJson(_request4.bodyString ??"");
+      adultTabbarItemModel = jsonDecode(_request6.bodyString ??"");
+      nationalTabbarItemModel = jsonDecode(_request7.bodyString ??"");
 
       profileInformation = profileInformationFromJson(_requestProfile.bodyString ?? "");
 
+      validatedSubs = jsonDecode(_request44.bodyString ?? "");
       allChildTabCategories = jsonDecode(_request5.bodyString ?? "");
-      allAdultTabCategories = jsonDecode(_request6.bodyString ?? "");
-      allNationalTabCategories = jsonDecode(_request7.bodyString ?? "");
+      allAdultTabCategories = jsonDecode(_request3.bodyString ?? "");
+      allNationalTabCategories = jsonDecode(_request4.bodyString ?? "");
 
       var datas = jsonDecode(_request.bodyString??"");
       int size = datas.length;
@@ -198,7 +206,7 @@ class NewsSearchController extends GetConnect {
       refreshController1.refreshCompleted();
       refreshController2.refreshCompleted();
       refreshController3.refreshCompleted();
-      refreshController4.refreshCompleted();
+      // refreshController4.refreshCompleted();
       setDataLoaded(true);
     }
     else{

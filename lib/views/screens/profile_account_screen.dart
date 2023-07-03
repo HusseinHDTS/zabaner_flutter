@@ -31,104 +31,233 @@ class ProfileAccount extends StatelessWidget {
       return SingleChildScrollView(
         child: Column(
           children: [
-            // text
-            SizedBox(
-              width: Get.width / 1.2,
-              child: const Text(
-                "اشتراک های حساب کاربری",
-                style: TextStyle(
-                    color: Color(0xff686868), fontFamily: "Yekan", fontSize: 12),
-              ),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-
-            Obx(()=>_controller.isDataLoaded.isTrue ? Card(
-              color: const Color(0xffF9F9F9),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(4),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: Get.width / 6.5,
-                      backgroundImage:
-                      const AssetImage("assets/images/subscribe.png"),
+            Obx(() => _controller.isDataLoaded.isTrue
+                ? Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey.withOpacity(0.18),width: 2),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              offset: Offset(1, 4),
+                              spreadRadius: 2,
+                              blurRadius: 18)
+                        ]
                     ),
-                    SizedBox(
-                      height: 10,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: Get.width / 6.5,
+                          backgroundImage:
+                              const AssetImage("assets/images/subscribe.png"),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: Get.width / 1.2,
+                          child: const Text(
+                            "اشتراک های حساب کاربری :",
+                            style: TextStyle(
+                                color: Color(0xff686868),
+                                fontFamily: "Yekan",
+                                fontSize: 12),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 18,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ColoredText("اشتراک های موجود : "),
+                              ColoredText(_controller
+                                          .profileInformation.subscribes
+                                          .toString() ==
+                                      ""
+                                  ? "بدون اشتراک"
+                                  : _controller.profileInformation.subscribes
+                                      .toString()),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _controller.profileInformation.jalaliChildSubscribeStart
+                                .toString()
+                                .trim()
+                                .isEmpty
+                            ? Container()
+                            : Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ColoredText("شروع اشتراک کودکان : "),
+                                        ColoredText(_controller
+                                            .profileInformation
+                                            .jalaliChildSubscribeStart
+                                            .toString()),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ColoredText("پایان اشتراک کودکان : "),
+                                        ColoredText(_controller
+                                            .profileInformation
+                                            .jalaliChildSubscribeEnd
+                                            .toString()),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _controller.profileInformation.jalaliAdultSubscribeStart
+                                .toString()
+                                .trim()
+                                .isEmpty
+                            ? Container()
+                            : Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ColoredText("شروع اشتراک بزرگسالان : "),
+                                        ColoredText(_controller
+                                            .profileInformation
+                                            .jalaliAdultSubscribeStart
+                                            .toString()),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ColoredText(
+                                            "پایان اشتراک بزرگسالان : "),
+                                        ColoredText(_controller
+                                            .profileInformation
+                                            .jalaliAdultSubscribeEnd
+                                            .toString()),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _controller
+                                .profileInformation.jalaliNationalSubscribeStart
+                                .toString()
+                                .trim()
+                                .isEmpty
+                            ? Container()
+                            : Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ColoredText("شروع اشتراک آزمون ها : "),
+                                        ColoredText(_controller
+                                            .profileInformation
+                                            .jalaliNationalSubscribeStart
+                                            .toString()),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ColoredText("پایان اشتراک آزمون ها : "),
+                                        ColoredText(_controller
+                                            .profileInformation
+                                            .jalaliNationalSubscribeEnd
+                                            .toString()),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ColoredText("اشتراک های موجود : "),
-                          ColoredText(_controller.profileInformation.subscribes
-                              .toString() ==
-                              ""
-                              ? "بدون اشتراک"
-                              : _controller.profileInformation.subscribes
-                              .toString()),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ColoredText("تاریخ شروع اشتراک : "),
-                          ColoredText(_controller
-                              .profileInformation.startSubJalali
-                              .toString()),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ColoredText("تاریخ پایان اشتراک : "),
-                          ColoredText(_controller
-                              .profileInformation.endSubJalali
-                              .toString()),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ) : Loading()),
-            Obx(()=>ListView.builder(
+                  )
+                : Loading()),
+            Obx(() => ListView.builder(
                 itemCount: _controller.userSubModel.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   UserSubModel model = _controller.userSubModel[index];
                   String paymentStatus = "";
-                  if(model.status.toLowerCase() == "OK".toLowerCase()){
+                  if (model.status.toLowerCase() == "OK".toLowerCase()) {
                     paymentStatus = "پرداخت موفق";
-                  }else{
+                  } else {
                     paymentStatus = "پرداخت ناموفق";
                   }
                   return Container(
-                    child: Column(children: [
-                      ColoredText(model.title,textColor: Colors.white,),
-                      SizedBox(height: 28,),
-                      Align(alignment:Alignment.bottomLeft,child: ColoredText(paymentStatus,textColor: Colors.white60,)),
-                    ],),
+                    child: Column(
+                      children: [
+                        ColoredText(
+                          model.title,
+                          textColor: Colors.white,
+                        ),
+                        SizedBox(
+                          height: 28,
+                        ),
+                        Align(
+                            alignment: Alignment.bottomLeft,
+                            child: ColoredText(
+                              paymentStatus,
+                              textColor: Colors.white60,
+                            )),
+                      ],
+                    ),
                     width: double.infinity,
                     padding: EdgeInsets.all(18),
                     margin: EdgeInsets.all(18),
@@ -153,133 +282,145 @@ class ProfileAccount extends StatelessWidget {
               child: const Text(
                 "تنظیمات حساب کاربری",
                 style: TextStyle(
-                    color: Color(0xff686868), fontFamily: "Yekan", fontSize: 12),
+                    color: Color(0xff686868),
+                    fontFamily: "Yekan",
+                    fontSize: 12),
               ),
             ),
 
-            Obx((){
+            Obx(() {
               List information = [
                 _controller.profileInformation.firstName,
                 _controller.profileInformation.lastName,
                 _controller.profileInformation.bDay.toString()
               ];
-              return _controller.isDataLoaded.isTrue ? Card(
-                color: const Color(0xffF9F9F9),
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                child: SizedBox(
-                  height: Get.height / 1.7,
-                  width: Get.width / 1.1,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(
-                        horizontal: Get.width / 8, vertical: Get.height / 50),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Profile Image
-                        InkWell(
-                          onTap: () => isGuest ? {} : _controller.getImage(),
-                          child: CircleAvatar(
-                            radius: Get.width / 6.5,
-                            backgroundImage: NetworkImage(_getStorage
-                                .read('profile_image') ??
-                                "https://htmlcolorcodes.com/assets/images/colors/bright-blue-color-solid-background-1920x1080.png"),
+              return _controller.isDataLoaded.isTrue
+                  ? Card(
+                      color: const Color(0xffF9F9F9),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                      child: SizedBox(
+                        height: Get.height / 1.7,
+                        width: Get.width / 1.1,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: Get.width / 8,
+                              vertical: Get.height / 50),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Profile Image
+                              InkWell(
+                                onTap: () =>
+                                    isGuest ? {} : _controller.getImage(),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.blue)),
+                              ),
+                              const Text(
+                                "تصویر پروفایل",
+                                style: TextStyle(
+                                    fontFamily: "Yekan", fontSize: 10),
+                              ),
+
+                              // name text input
+                              SizedBox(
+                                  height: Get.height / 23,
+                                  width: Get.width / 1.5,
+                                  // color: Colors.green,
+                                  child: CustomTextInputProfile(
+                                    hintText: _controller
+                                        .profileInformation.firstName,
+                                    iconPath: "username.png",
+                                    isEnabled: !isGuest,
+                                    onChanged: (text) => information[0] = text,
+                                  )),
+
+                              // last name text input
+                              SizedBox(
+                                  height: Get.height / 23,
+                                  width: Get.width / 1.5,
+                                  // color: Colors.green,
+                                  child: CustomTextInputProfile(
+                                    hintText:
+                                        _controller.profileInformation.lastName,
+                                    iconPath: "username.png",
+                                    isEnabled: !isGuest,
+                                    onChanged: (text) => information[1] = text,
+                                  )),
+
+                              // birthday date text input
+                              SizedBox(
+                                  height: Get.height / 23,
+                                  width: Get.width / 1.5,
+                                  // color: Colors.green,
+                                  child: CustomTextInputProfile(
+                                      hintText: _controller
+                                          .profileInformation.bDay.year
+                                          .toString(),
+                                      iconPath: "birthday.png",
+                                      isEnabled: !isGuest,
+                                      onChanged: (text) => information[2] =
+                                          DateTime(int.parse(text))
+                                              .toString())),
+
+                              // email text input
+                              SizedBox(
+                                  height: Get.height / 23,
+                                  width: Get.width / 1.5,
+                                  child: CustomTextInputProfile(
+                                    hintText:
+                                        _controller.profileInformation.email,
+                                    isEnabled: false,
+                                    iconPath: "email.png",
+                                  )),
+
+                              // mobile text input
+                              SizedBox(
+                                  height: Get.height / 23,
+                                  width: Get.width / 1.5,
+                                  child: CustomTextInputProfile(
+                                    hintText:
+                                        _controller.profileInformation.mobile,
+                                    isEnabled: false,
+                                    iconPath: "mobile.png",
+                                  )),
+
+                              // save changes button
+                              SizedBox(
+                                  height: Get.height / 23,
+                                  width: Get.width / 1.5,
+                                  child: ElevatedButton(
+                                    child: const Text(
+                                      "ذخیره تغییرات",
+                                      style: TextStyle(
+                                          fontFamily: "Yekan", fontSize: 12),
+                                    ),
+                                    onPressed: () {
+                                      _controller.updateProfile(
+                                        information[0],
+                                        information[1],
+                                        information[2],
+                                      );
+                                    },
+                                    style: ButtonStyle(
+                                        elevation: MaterialStateProperty.all(0),
+                                        shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10))),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                const Color(0xffFFC200))),
+                                  )),
+                            ],
                           ),
                         ),
-                        const Text(
-                          "تصویر پروفایل",
-                          style: TextStyle(fontFamily: "Yekan", fontSize: 10),
-                        ),
-
-                        // name text input
-                        SizedBox(
-                            height: Get.height / 23,
-                            width: Get.width / 1.5,
-                            // color: Colors.green,
-                            child: CustomTextInputProfile(
-                              hintText: _controller.profileInformation.firstName,
-                              iconPath: "username.png",
-                              isEnabled: !isGuest,
-                              onChanged: (text) => information[0] = text,
-                            )),
-
-                        // last name text input
-                        SizedBox(
-                            height: Get.height / 23,
-                            width: Get.width / 1.5,
-                            // color: Colors.green,
-                            child: CustomTextInputProfile(
-                              hintText: _controller.profileInformation.lastName,
-                              iconPath: "username.png",
-                              isEnabled: !isGuest,
-                              onChanged: (text) => information[1] = text,
-                            )),
-
-                        // birthday date text input
-                        SizedBox(
-                            height: Get.height / 23,
-                            width: Get.width / 1.5,
-                            // color: Colors.green,
-                            child: CustomTextInputProfile(
-                                hintText: _controller.profileInformation.bDay.year
-                                    .toString(),
-                                iconPath: "birthday.png",
-                                isEnabled: !isGuest,
-                                onChanged: (text) => information[2] =
-                                    DateTime(int.parse(text)).toString())),
-
-                        // email text input
-                        SizedBox(
-                            height: Get.height / 23,
-                            width: Get.width / 1.5,
-                            child: CustomTextInputProfile(
-                              hintText: _controller.profileInformation.email,
-                              isEnabled: false,
-                              iconPath: "email.png",
-                            )),
-
-                        // mobile text input
-                        SizedBox(
-                            height: Get.height / 23,
-                            width: Get.width / 1.5,
-                            child: CustomTextInputProfile(
-                              hintText: _controller.profileInformation.mobile,
-                              isEnabled: false,
-                              iconPath: "mobile.png",
-                            )),
-
-                        // save changes button
-                        SizedBox(
-                            height: Get.height / 23,
-                            width: Get.width / 1.5,
-                            child: ElevatedButton(
-                              child: const Text(
-                                "ذخیره تغییرات",
-                                style:
-                                TextStyle(fontFamily: "Yekan", fontSize: 12),
-                              ),
-                              onPressed: () {
-                                _controller.updateProfile(
-                                  information[0],
-                                  information[1],
-                                  information[2],
-                                );
-                              },
-                              style: ButtonStyle(
-                                  elevation: MaterialStateProperty.all(0),
-                                  shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(10))),
-                                  backgroundColor: MaterialStateProperty.all(
-                                      const Color(0xffFFC200))),
-                            )),
-                      ],
-                    ),
-                  ),
-                ),
-              ) : Loading();
+                      ),
+                    )
+                  : Loading();
             }),
           ],
         ),

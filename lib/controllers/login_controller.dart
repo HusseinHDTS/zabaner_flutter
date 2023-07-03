@@ -65,21 +65,16 @@ class LoginController extends GetConnect {
     loadingDialog("لطفا صبر کنید");
     token = fcmToken;
     var _response = await post(signinUrl, {"username": username, "password": password,"googleAccessToken":token});
+    var getConnect = GetConnect(allowAutoSignedCert: true);
     if (_response.statusCode == 201) {
-      if (rememberMe) {
         try{
-          _getStorage.write('token', _response.body['accessToken'].toString());
+          await _getStorage.write('token', _response.body['accessToken'].toString());
         }catch(e){
           e.printError();
         }
         Get.offAll(() => MainScreen(
               isGuest: false,
             ));
-      } else {
-        Get.offAll(() => MainScreen(
-          isGuest: false,
-        ));
-      }
     }
     if (_response.statusCode == 400) {
       Get.back();

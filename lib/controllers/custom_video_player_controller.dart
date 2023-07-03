@@ -31,6 +31,8 @@ class CustomVideoPlayerController {
 
   Timer? _timer;
   CustomVideoPlayerController(this.videoPlayerController,{Duration? overlayDuration,bool? autoInit,this.fullscreenOnStart}){
+    playerPosition = 0.0.obs;
+    playerDuration = 0.0.obs;
     autoInit??=true;
     fullscreenOnStart??=false;
     this.overlayDuration = overlayDuration??const Duration(seconds: 3);

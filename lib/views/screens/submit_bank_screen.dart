@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,6 +13,7 @@ import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/create_class_screen.dart';
 import 'package:zabaner/views/screens/image_cropper_screen.dart';
+import 'package:zabaner/views/screens/ticket_screen_user_teacher.dart';
 import 'package:zabaner/views/widgets/teachers_classess_tile.dart';
 import 'package:zabaner/widgets/colored_button.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
@@ -49,7 +51,50 @@ class _SubmitBankScreen extends State<SubmitBankScreen> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          appBar: ColoredAppBar(),
+          appBar: ColoredAppBar(
+            actions: [
+              Container(
+                  margin: EdgeInsets.only(left: 18),
+                  child: ColoredButton(
+                    "",
+                    textSize: 12,
+                    content: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ColoredText(
+                          "پشتیبانی",
+                          textColor: Colors.black,
+                          textSize: 12,
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Icon(
+                          Icons.support_agent,
+                          color: Colors.black,
+                          size: 18,
+                        ),
+                      ],
+                    ),
+                    height: 25,
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white70,
+                          Colors.white.withOpacity(0.9),
+                          Colors.white
+                        ]),
+                    textColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    onTap: () {
+                      Get.to(() => TicketScreenUserTeacher(
+                            isFromTeacher: "teacher",
+                          ));
+                    },
+                  ))
+            ],
+          ),
           body: Column(
             children: [
               Expanded(
@@ -279,7 +324,7 @@ class _SubmitBankScreen extends State<SubmitBankScreen> {
               child: SmoothPageIndicator(
                 controller: pageController,
                 count: pages.length,
-                effect: const WormEffect(
+                effect: WormEffect(
                   dotHeight: 7,
                   dotWidth: 13,
                   spacing: 9,
@@ -382,6 +427,18 @@ class _SubmitBankScreen extends State<SubmitBankScreen> {
                 ),
               ),
             )),
+        Container(
+          margin: EdgeInsets.only(right: 18,left: 18,bottom: 18),
+          child: Obx(()=>genderSelector(isFemale: controller.isFemale,hasError:false.obs,isMale: controller.isMale,isEnable: controller.isGenderActive.value,onItemTap: (value){
+            if(value == "male"){
+              controller.isFemale.value = false;
+              controller.isMale.value = true;
+            }else{
+              controller.isMale.value = false;
+              controller.isFemale.value = true;
+            }
+          })),
+        ),
         inputText("آدرس ایمیل", controller.emailController,
             keyboardType: TextInputType.emailAddress, enabled: false),
         inputText("شهر محل سکونت", controller.cityController, enabled: false),
@@ -549,7 +606,8 @@ class _SubmitBankScreen extends State<SubmitBankScreen> {
                                     getUrl(controller.data['videoPath']),
                                     CustomVideoType.NETWORK,
                                     withThumb: true,
-                                    retryImage: customVideoPlayerTag.value == getUrl(controller.data['videoPath']))),
+                                    retryImage: customVideoPlayerTag.value ==
+                                        getUrl(controller.data['videoPath']))),
                               )),
                           Align(
                             alignment: Alignment.topRight,
@@ -680,88 +738,116 @@ class _SubmitBankScreen extends State<SubmitBankScreen> {
             child: Container(
               height: double.infinity,
               child: Obx(() => controller.isDataLoaded.value
-                  ? Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        SizedBox(
-                          height: 18,
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 60,
-                                height: 60,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 8),
-                                child: ProfileImage(ImageWithLoading(
-                                    CachedNetworkImageProvider(getUrl(
-                                        controller.data['showingImagePath'])))),
-                              ),
-                              Flexible(
-                                  flex: 1,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ColoredText(
-                                        "${controller.nameController.text} ${controller.familyController.text}   /   ${controller.data['educationLevel']} ${controller.educationIn.text}",
-                                        textSize: 12.5,
-                                        textColor: Colors.black87,
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Row(
-                                        children: [
-                                          StarRating(
-                                              count: controller
-                                                          .data["ratingCount"]
-                                                          .toString() ==
-                                                      ""
-                                                  ? 0
-                                                  : int.parse(controller
-                                                      .data["ratingCount"]
-                                                      .toString()),
-                                              showText: true,
-                                              startSize: 25.0),
-                                          controller.data['ratingCount']
-                                                          .toString() ==
-                                                      "" ||
-                                                  controller.data['ratingCount']
-                                                          .toString() ==
-                                                      "0"
-                                              ? Container()
-                                              : ColoredText(
-                                                  "(${controller.data['rating']})",
-                                                  textColor: Colors.black54,
+                  ? controller.classData.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: controller.classData.length + 2,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return const SizedBox(
+                                height: 18,
+                              );
+                            } else if (index == 1) {
+                              return Center(
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 8),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(18),
+                                    child: Stack(
+                                      alignment: Alignment.centerLeft,
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          height: 80,
+                                          foregroundDecoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                  colors: [
+                                                Colors.black.withOpacity(0.6),
+                                                Colors.black.withOpacity(0.5),
+                                                Colors.black.withOpacity(0.4),
+                                              ],
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight)),
+                                          child: CachedNetworkImage(
+                                            imageUrl: getUrl(controller
+                                                .data['showingImagePath']),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 8),
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 6,
                                                 ),
-                                        ],
-                                      )
-                                    ],
-                                  ))
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            height: double.infinity,
-                            child: controller.classData.isNotEmpty
-                                ? ListView.builder(
-                                    itemCount: controller.classData.length,
-                                    itemBuilder: (context, index) {
-                                      return TeachersClassTile(
-                                          controller.classData[index]);
-                                    },
-                                  )
-                                : NoData(),
-                          ),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  color: Colors.black38,
+                                                ),
+                                                child: ColoredText(
+                                                  "${controller.nameController.text} ${controller.familyController.text}   /   ${controller.data['educationLevel']} ${controller.educationIn.text}",
+                                                  textSize: 12.5,
+                                                  textColor: Colors.white,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 8,
+                                              ),
+                                              customRating(
+                                                  preview: true,
+                                                  // mainAxisAlignment: MainAxisAlignment.center,
+                                                  // crossAxisAlignment: CrossAxisAlignment.center,
+                                                  count: controller.data[
+                                                                  "ratingCount"]
+                                                              .toString() ==
+                                                          ""
+                                                      ? 0
+                                                      : int.parse(controller
+                                                          .data["ratingCount"]
+                                                          .toString()),
+                                                  current: controller
+                                                              .data["rating"]
+                                                              .toString() ==
+                                                          ""
+                                                      ? 0
+                                                      : int.parse(controller
+                                                          .data["rating"]
+                                                          .toString()),
+                                                  showText: true,
+                                                  startSize: 25.0),
+                                            ],
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Container(
+                                            width: 60,
+                                            height: 60,
+                                            margin: EdgeInsets.symmetric(horizontal: 12),
+                                            child: ProfileImage(ImageWithLoading(
+                                                CachedNetworkImageProvider(
+                                                    getUrl(widget.profileData[
+                                                    'showingImagePath'])))),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            return TeachersClassTile(
+                                controller.classData[index-2]);
+                          },
                         )
-                      ],
-                    )
+                      : NoData()
                   : Loading()),
             ),
           ),
@@ -813,7 +899,8 @@ class _SubmitBankScreen extends State<SubmitBankScreen> {
                                 gradientBorder: true,
                                 textColor: Colors.green,
                                 onTap: () {
-                                  Get.to(() => CreateClassTimingScreen(controller.data['freeTimes']));
+                                  Get.to(() => CreateClassTimingScreen(
+                                      controller.data['freeTimes']));
                                 },
                               ),
                             ),

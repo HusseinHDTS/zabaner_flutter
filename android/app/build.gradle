@@ -47,6 +47,10 @@ android {
         ndkVersion '22.1.7171670'
     }
 
+    dexOptions {
+        javaMaxHeapSize "4G"
+    }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }

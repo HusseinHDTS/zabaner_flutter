@@ -43,6 +43,7 @@ class ProfileScreen extends StatelessWidget {
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: tab.value == 0 ? selectedSettingsColor : deSelectedSettingsColor),
                           child: ProfileTab(
                             image: "subscribe_icon.png",
+                            imageColor: tab.value == 0 ? Colors.white : null,
                             imageMargin: EdgeInsets.all(4),
                             title: "اشتراک",
                             onTap: () => _pageController.jumpToPage(0)),
@@ -60,6 +61,7 @@ class ProfileScreen extends StatelessWidget {
                           child: ProfileTab(
                             image:  "account_enable2.png",
                             title: "حساب",
+                            imageColor: tab.value == 1 ? Colors.white : null,
                             onTap: () => _pageController.jumpToPage(1),
                           ),
                         ),
@@ -75,6 +77,7 @@ class ProfileScreen extends StatelessWidget {
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: tab.value == 2 ? selectedSettingsColor : deSelectedSettingsColor),
                             child: ProfileTab(
                               image: "support_enable2.png",
+                              imageColor: tab.value == 2 ? Colors.white : null,
                               title: "پشتیبانی",
                               onTap: () => _pageController.jumpToPage(2),
                             ),
@@ -91,6 +94,7 @@ class ProfileScreen extends StatelessWidget {
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: tab.value == 3 ? selectedSettingsColor : deSelectedSettingsColor),
                             child: ProfileTab(
                               image: "setting_enable2.png",
+                              imageColor: tab.value == 3 ? Colors.white : null,
                               title: "تنظیمات",
                               onTap: () => _pageController.jumpToPage(3),
                             ),
@@ -108,6 +112,7 @@ class ProfileScreen extends StatelessWidget {
                             child: ProfileTab(
                               image: "exit.png",
                               title: "خروج",
+                              textColor: Color(0xff5A5A5A),
                               imageColor: redExitColor,
                               onTap: () async {
                                 await GetStorage.init();

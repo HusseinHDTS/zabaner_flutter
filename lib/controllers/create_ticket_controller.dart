@@ -36,11 +36,12 @@ class CreateTicketController extends GetxController with StateMixin{
   }
 
 
-  submitTicket()async{
+  submitTicket({String? type,onDone})async{
     loadingDialog("درحال ثبت پیام");
     var bodyRequest = {
       "mobile": SupportController.mobile.toString(),
       "title": titleController.text,
+      "type": type,
     };
     var titleResult = await _getConnect.post(sendSupportTitle, bodyRequest);
     var titleId = titleResult.bodyString ?? "";
@@ -78,6 +79,7 @@ class CreateTicketController extends GetxController with StateMixin{
     }
     _sController.getTickets();
     Get.back();
+    onDone != null ? onDone() : {};
     Get.off(()=>ConversationScreen(title: titleId, id: "null"));
   }
 

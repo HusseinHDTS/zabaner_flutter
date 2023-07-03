@@ -15,6 +15,7 @@ class BookListModel {
       required  this.id,
       required  this.podcastTime,
       required  this.wordsCount,
+      required  this.customText,
       required  this.faTitle,
       required  this.title,
       required  this.category,
@@ -26,6 +27,7 @@ class BookListModel {
     final int wordsCount;
     final String faTitle;
     final String title;
+    final String customText;
     final String category;
     final String imagePath;
 
@@ -35,6 +37,7 @@ class BookListModel {
         id: json["_id"],
         podcastTime: json["podcastTime"],
         wordsCount: json["wordsCount"],
+        customText: json["customText"] ?? "",
         faTitle: json["faTitle"],
         title: json["title"],
         category: json["category"],
@@ -46,6 +49,7 @@ class BookListModel {
         "_id": id,
         "podcastTime": podcastTime,
         "wordsCount": wordsCount,
+        "customText": customText,
         "faTitle": faTitle,
         "title": title,
         "category": category,

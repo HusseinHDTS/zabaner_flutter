@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:zabaner/models/urls.dart';
 
 List<UserTeachers> userTeachersListModelFromJson(String str) => List<UserTeachers>.from(json.decode(str).map((x) => UserTeachers.fromJson(x)));
@@ -14,6 +15,8 @@ class UserTeachers {
   UserTeachers({
     required  this.id,
     required  this.teacherId,
+    required  this.totalCTime,
+    required  this.userId,
     required  this.showProfile,
     required  this.imagePath,
     required  this.name,
@@ -23,6 +26,7 @@ class UserTeachers {
     required  this.videoPath,
     required  this.educationLevel,
     required  this.educationIn,
+    required  this.videoImagePath,
     required  this.ageRating,
     required  this.expertise,
     required  this.rating,
@@ -37,12 +41,15 @@ class UserTeachers {
 
   final String id;
   final String teacherId;
+  final String totalCTime;
+  final String userId;
   final bool showProfile;
   final String imagePath;
   final String name;
   final String family;
   final String description;
   final String videoPath;
+  final String videoImagePath;
   final String educationLevel;
   final String educationIn;
   final String ageRating;
@@ -63,18 +70,21 @@ class UserTeachers {
       id: json["_id"],
       showProfile: json["showProfile"] == "true",
       teacherId: json["title"] ?? "",
+      userId: json["userId"] ?? "",
+      totalCTime: json["totalCTime"] ?? "0",
       imagePath: imagePath,
       name: json["name"] ?? "",
       family: json["family"] ?? "",
       description: json["description"] ?? "",
       videoPath: json["videoPath"] ?? "",
+      videoImagePath: json["videoImagePath"] ?? "",
       educationLevel: json["educationLevel"] ?? "" ,
       freeTimes: json["freeTimes"] ?? "" ,
       educationIn: json["educationIn"] ?? "" ,
       ageRating: json["ageRating"] ?? "" ,
       expertise: json["expertise"] ?? "" ,
-      rating: json["rating"] ?? "" ,
-      ratingCount: json["ratingCount"] ?? "" ,
+      rating: (json["rating"] ?? "0").toString().replaceAll("NaN", "") ,
+      ratingCount: (json["ratingCount"] ?? "0").toString().replaceAll("NaN", ""),
       expertiseString: json["expertiseString"] ?? "" ,
       testClassPrice: json["testClassPrice"] ?? "0" ,
       normal1ClassPrice: json["normal1ClassPrice"] ?? "0" ,
@@ -88,9 +98,12 @@ class UserTeachers {
     "_id": id,
     "showProfile": showProfile == true ? "true" : "false",
     "imagePath": imagePath,
+    "totalCTime": totalCTime,
+    "userId": userId,
     "title": teacherId,
     "name": name,
     "family": family,
+    "videoImagePath": videoImagePath,
     "description": description,
     "videoPath": videoPath,
     "educationLevel": educationLevel,

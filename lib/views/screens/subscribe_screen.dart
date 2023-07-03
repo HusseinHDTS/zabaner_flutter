@@ -3,6 +3,7 @@ import 'package:flutter_poolakey/flutter_poolakey.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:zabaner/controllers/subscribe_controller.dart';
+import 'package:zabaner/controllers/web_view_controller.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/colors.dart';
@@ -116,7 +117,8 @@ class _SubscribeScreen extends State<SubscribeScreen> {
                           child: InkWell(
                             onTap: () async {
                               if (BUILD_MODE == "BAZAAR") {
-                                var bazaarRes = await _controller.bazaarPay(typeForBuy);
+                                var bazaarRes =
+                                    await _controller.bazaarPay(typeForBuy);
                                 String status = "NOK";
                                 if (bazaarRes != null) {
                                   status = "OK";
@@ -131,46 +133,107 @@ class _SubscribeScreen extends State<SubscribeScreen> {
                                 });
                                 var res = await _getConnect.get(
                                     "$paymentResultSubmit?type=$typeOfBuyForShow&timeOfSub=${_controller.getCurrentSelectedMonthInt(_controller.getCurrentPos())}&cmFrom=flutter&amount=1&Status=$status&description=${_controller.getDescription(title)}&user_id=${result.bodyString.toString().replaceAll("\"", "")}");
+                                String type = typeOfBuyForShow;
+                                String timeOfSub = _controller.getCurrentPos().toString();
                                 String subscribe = "";
-                                if (typeForBuy == TabbarTypes.CHILD) {
-                                  subscribe = "hasChildSub";
-                                } else if (typeForBuy == TabbarTypes.ADULT) {
-                                  subscribe = "hasAdultSub";
-                                } else if (typeForBuy == TabbarTypes.NATIONAL) {
-                                  subscribe = "hasNationalSub";
+                                if (type == "کودکان") {
+                                  subscribe = "child";
+                                } else if (type == "بزرگسالان") {
+                                  subscribe = "adult";
+                                } else if (type == "آزمون ها") {
+                                  subscribe = "national";
+                                }
+                                String finalSubTime = "1";
+                                if (timeOfSub == "0") {
+                                  finalSubTime = "1";
+                                } else if (timeOfSub == "1") {
+                                  finalSubTime = "3";
+                                } else if (timeOfSub == "2") {
+                                  finalSubTime = "12";
                                 }
                                 var bodyRequest1 = {
-                                  subscribe: "on",
-                                  "lastSeenAt": "",
-                                  "timeOfSub": _controller.getCurrentSelectedMonthInt(_controller.getCurrentPos()).toString(),
+                                  "subscribe": subscribe,
+                                  "timeOfSub": finalSubTime,
                                 };
-                                if(status == "OK"){
-                                var _res = await _getConnect.post(
-                                    updateSubscribeProfile, bodyRequest1,
-                                    headers: {
-                                      'accept': 'application/json',
-                                      'Authorization':
-                                      'Bearer ${_getStorage.read('token')}'
-                                    });
+                                if (status == "OK") {
+                                  var _res = await _getConnect.post(
+                                      updateSubscribeProfile, bodyRequest1,
+                                      headers: {
+                                        'accept': 'application/json',
+                                        'Authorization':
+                                            'Bearer ${_getStorage.read('token')}'
+                                      });
                                 }
                                 Get.back();
-                                if(status == "OK"){
-                                  ColoredSnack(title: "پرداخت انجام شد!",type: SnackType.SUCCESS);
+                                if (status == "OK") {
+                                  ColoredSnack(
+                                      title: "پرداخت انجام شد!",
+                                      type: SnackType.SUCCESS);
                                   Get.offAll(() => LoginScreen());
-                                }else{
-                                  ColoredSnack(title: "پرداخت انجام نشد!",type: SnackType.ERROR);
+                                } else {
+                                  ColoredSnack(
+                                      title: "پرداخت انجام نشد!",
+                                      type: SnackType.ERROR);
                                 }
                               } else {
                                 Get.to(() => WebViewScreen(
-                                    paymentCheck,
-                                    "",
-                                    "",
-                                    _controller.getDescription(title),
-                                    _controller.getCurrentSelectedPrice(
-                                        _controller.getCurrentPos(),
-                                        isHezarToman: true),
-                                    typeOfBuyForShow,
-                                    _controller.getCurrentPos().toString()));
+                                      paymentCheck,
+                                      bodyRequest: {
+                                        "amount": "${_controller.getCurrentSelectedPrice(
+                                            _controller.getCurrentPos(),
+                                            isHezarToman: true)}0",
+                                        "description": _controller.getDescription(title),
+                                        "phone": "0",
+                                        "email": "husseindts@gmail.com",
+                                        "type": _controller.getCurrentPos().toString(),
+                                        "timeOfSub": typeOfBuyForShow,
+                                      },
+                                      onPaymentCallBack: (WebViewController _ctrl,url) async {
+                                        String type = typeOfBuyForShow;
+                                        String timeOfSub = _controller.getCurrentPos().toString();
+                                        String subscribe = "";
+                                        if (type == "کودکان") {
+                                          subscribe = "child";
+                                        } else if (type == "بزرگسالان") {
+                                          subscribe = "adult";
+                                        } else if (type == "آزمون ها") {
+                                          subscribe = "national";
+                                        }
+                                        String finalSubTime = "1";
+                                        if (timeOfSub == "0") {
+                                          finalSubTime = "1";
+                                        } else if (timeOfSub == "1") {
+                                          finalSubTime = "3";
+                                        } else if (timeOfSub == "2") {
+                                          finalSubTime = "12";
+                                        }
+                                        _ctrl.setResultReceived(true);
+                                        loadingDialog("درحال ثبت پرداخت ...");
+                                        if (url.queryParameters['status']
+                                                .toString()
+                                                .toLowerCase() !=
+                                            "OK".toLowerCase()) {
+                                          Get.back();
+                                          return;
+                                        }
+                                        var bodyRequest = {
+                                          "subscribe": subscribe,
+                                          "timeOfSub": finalSubTime,
+                                        };
+                                        await _getConnect.post(
+                                            updateSubscribeProfile, bodyRequest,
+                                            headers: {
+                                              'accept': 'application/json',
+                                              'Authorization':
+                                                  'Bearer ${_getStorage.read('token')}'
+                                            });
+                                        Get.back();
+                                        ColoredSnack(
+                                            title: "پرداخت موفقیت آمیز بود",
+                                            type: SnackType.SUCCESS);
+                                        reloadApp();
+                                      },
+                                    ));
                               }
 
                               // _controller.setupSubscribe(typeForBuy);

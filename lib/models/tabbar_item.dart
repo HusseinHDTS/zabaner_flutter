@@ -15,6 +15,7 @@ class TabbarItem {
       required  this.id,
       required  this.image,
       required  this.title,
+      required  this.mTitle,
       required  this.subCategory,
       required  this.category,
       required  this.video,
@@ -24,6 +25,7 @@ class TabbarItem {
     final String id;
     final String image;
     final String title;
+    final String mTitle;
     final String subCategory;
     final String category;
     final String video;
@@ -37,6 +39,7 @@ class TabbarItem {
         id: json["_id"],
         image: imagePath,
         title: json["title"] ?? "",
+        mTitle: json["mTitle"] ?? "",
         subCategory: json["subCategory"] ?? "",
         category: (json["category"] ?? "" ).toString() == "null" ? "" : (json["category"] ?? "" ).toString(),
         video: filePath,
@@ -48,6 +51,7 @@ class TabbarItem {
         "_id": id,
         "image": image,
         "title": title,
+        "mTitle": mTitle,
         "subCategory": subCategory,
         "category": category,
         "video": video,

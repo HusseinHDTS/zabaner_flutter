@@ -21,15 +21,20 @@ class ChildTab extends StatelessWidget{
         Expanded(flex:0,child: ColoredText(controller.getTitle(0))),
         Expanded(
           flex: 1,
-          child: SmartRefresher(
-            controller: controller.refreshController1,
-            onRefresh: (){
-              controller.getData();
-            },
-            header: const MaterialClassicHeader(),
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: ListView.builder(shrinkWrap:false,itemCount:controller.allChildTabCategories.length,itemBuilder: (_context,index){
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: SmartRefresher(
+              controller: controller.refreshController1,
+              onRefresh: (){
+                controller.getData();
+              },
+              header: const MaterialClassicHeader(),
+              child: ListView.builder(shrinkWrap:true,itemCount:controller.allChildTabCategories.length+1,itemBuilder: (_context,index){
+                if(index == controller.allChildTabCategories.length){
+                  return SizedBox(
+                    height: 100,
+                  );
+                }
                 return ListModel(index: index,hasSubCategory: true,controller: controller,currentType: TabbarTypes.CHILD,);
               }),
             ),

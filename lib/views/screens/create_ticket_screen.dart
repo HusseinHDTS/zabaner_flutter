@@ -8,7 +8,9 @@ import 'package:zabaner/widgets/colored_text.dart';
 import 'package:zabaner/widgets/my_app_bar.dart';
 
 class CreateTicketScreen extends StatefulWidget {
-  const CreateTicketScreen({Key? key}) : super(key: key);
+  String? type;
+  var onDone;
+  CreateTicketScreen({this.type,this.onDone,Key? key}) : super(key: key);
 
   @override
   State<CreateTicketScreen> createState() => _CreateTicketScreen();
@@ -75,7 +77,7 @@ class _CreateTicketScreen extends State<CreateTicketScreen> {
                     child: Obx(()=>_controller.hasError.isTrue ? Container(): _controller.image == null
                         ? Column(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.cloud_upload_outlined,
                                 size: 80,
                                 color: primaryDark,
@@ -112,7 +114,9 @@ class _CreateTicketScreen extends State<CreateTicketScreen> {
                   flex: 0,
                   child: InkWell(
                     onTap: () {
-                      _controller.submitTicket();
+                      if(_controller.titleController.text.trim().length > 5 && _controller.descriptionController.text.trim().length > 10) {
+                        _controller.submitTicket(type: widget.type, onDone: widget.onDone);
+                      }
                     },
                     child: Container(
                       width: double.infinity,
@@ -129,7 +133,7 @@ class _CreateTicketScreen extends State<CreateTicketScreen> {
                       ),
                     ),
                   )),
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
             ],

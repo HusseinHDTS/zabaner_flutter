@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class PlayButton extends StatefulWidget {
   RxBool? initialIsPlaying;
-  final Icon playIcon;
+  final Widget playIcon;
   final Icon pauseIcon;
   // final VoidCallback onPressed;
   final WillPopCallback onPressed;

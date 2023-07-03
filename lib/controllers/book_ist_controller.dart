@@ -7,7 +7,7 @@ import 'package:zabaner/models/urls.dart';
 
 class BookListController extends GetxController {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
-  late final BookChapterModel bookModel;
+  BookChapterModel? bookModel;
   RefreshController refreshController = RefreshController();
   var errorData = false.obs;
   var isDataLoaded = false.obs;
@@ -25,16 +25,17 @@ class BookListController extends GetxController {
     if (_request.statusCode == 200) {
       bookModel = bookChapterModelFromJson(_request.bodyString ?? "");
     }
-    int size = bookModel.items.length;
+    int size = bookModel!.items.length;
     int fullTime = 0;
     for(int i = 0 ; i < size ; i ++){
-      var item = bookModel.items[i];
-      fullTime+=item.podcastTime;
+      var item = bookModel!.items[i];
+      fullTime+=int.tryParse(item.podcastTime.toString()) ?? 0;
     }
 
     return fullTime.toString();
   }
-  late final List<BookListModel> model;
+  List<BookListModel>? model;
+  var modelTimes = <String>[].obs;
   Future<void> getData() async {
     isDataLoaded.value = false;
     errorData.value = false;
@@ -42,10 +43,13 @@ class BookListController extends GetxController {
     if (_request.statusCode == 200) {
       refreshController.refreshCompleted();
       model = bookListModelFromJson(_request.bodyString ?? "").reversed.toList();
-      model.removeWhere(((element) {
+      model!.removeWhere(((element) {
         filter ??= "";
         return element.category.trim().toString() != filter!.trim().toString();
       }));
+      for (var element in model!) {
+          modelTimes.add(await calculateTime(element.id));
+      }
       isDataLoaded.value = true;
     } else {
       errorData.value = true;

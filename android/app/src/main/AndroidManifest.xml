@@ -22,8 +22,9 @@
             android:showWhenLocked="true"
             android:theme="@style/LaunchTheme"
             android:turnScreenOn="true"
-            android:resizeableActivity="true">
-            android:windowSoftInputMode="adjustResize">
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize"
+            >
 
             <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK" />

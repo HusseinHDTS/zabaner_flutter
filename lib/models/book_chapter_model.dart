@@ -6,89 +6,103 @@ import 'dart:convert';
 
 import 'package:zabaner/models/urls.dart';
 
-BookChapterModel bookChapterModelFromJson(String str) => BookChapterModel.fromJson(json.decode(str));
+BookChapterModel bookChapterModelFromJson(String str) =>
+    BookChapterModel.fromJson(json.decode(str));
 
-String bookChapterModelToJson(BookChapterModel data) => json.encode(data.toJson());
+String bookChapterModelToJson(BookChapterModel data) =>
+    json.encode(data.toJson());
 
 class BookChapterModel {
-    BookChapterModel({
-      required  this.id,
-      required  this.podcastTime,
-      required  this.wordsCount,
-      required  this.faTitle,
-      required  this.title,
-      required  this.type,
-      required  this.items,
-      required  this.imagePath,
-    });
+  BookChapterModel({
+    required this.id,
+    required this.podcastTime,
+    required this.wordsCount,
+    required this.customText,
+    required this.accent,
+    required this.faTitle,
+    required this.title,
+    required this.type,
+    required this.items,
+    required this.imagePath,
+  });
 
-    final String id;
-    final int podcastTime;
-    final int wordsCount;
-    final String faTitle;
-    final String title;
-    final String type;
-    final List<Item> items;
-    final String imagePath;
+  final String id;
+  final int podcastTime;
+  final int wordsCount;
+  final String customText;
+  final String faTitle;
+  final String accent;
+  final String title;
+  final String type;
+  final List<Item> items;
+  final String imagePath;
 
-    factory BookChapterModel.fromJson(Map<String, dynamic> json) {
-      String imagePath = getUrl(json["imagePath"]);
-      return BookChapterModel(
-        id: json["_id"],
-        podcastTime: json["podcastTime"],
-        wordsCount: json["wordsCount"],
-        faTitle: json["faTitle"],
-        title: json["title"],
-        type: json["type"],
-        items: List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
-        imagePath: imagePath,
-      );
-    }
+  factory BookChapterModel.fromJson(Map<String, dynamic> json) {
+    String imagePath = getUrl(json["imagePath"]);
+    return BookChapterModel(
+      id: json["_id"],
+      podcastTime: json["podcastTime"],
+      customText: (json["customText"] ?? ""),
+      accent: (json["accent"] ?? ""),
+      wordsCount: json["wordsCount"],
+      faTitle: json["faTitle"],
+      title: json["title"],
+      type: json["type"],
+      items: List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
+      imagePath: imagePath,
+    );
+  }
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "_id": id,
         "podcastTime": podcastTime,
         "wordsCount": wordsCount,
+        "customText": customText,
+        "accent": accent,
         "faTitle": faTitle,
         "title": title,
         "type": type,
         "items": List<dynamic>.from(items.map((x) => x.toJson())),
         "imagePath": imagePath,
-    };
+      };
 }
 
 class Item {
-    Item({
-      required  this.podcastTime,
-      required  this.wordsCount,
-      required  this.faTitle,
-      required  this.title,
-      required  this.id,
-      required  this.podcastPath,
-    });
+  Item({
+    required this.podcastTime,
+    required this.wordsCount,
+    required this.customText,
+    required this.faTitle,
+    required this.title,
+    required this.id,
+    required this.podcastPath,
+  });
 
-    final int podcastTime;
-    final int wordsCount;
-    final String faTitle;
-    final String title;
-    final String id;
-    final String podcastPath;
+  final int podcastTime;
+  final int wordsCount;
+  final String customText;
+  final String faTitle;
+  final String title;
+  final String id;
+  final String podcastPath;
 
-    factory Item.fromJson(Map<String, dynamic> json) => Item(
+  factory Item.fromJson(Map<String, dynamic> json) => Item(
         podcastTime: json["podcastTime"],
         wordsCount: json["wordsCount"],
+        customText: (json["customText"] ?? ""),
         faTitle: json["faTitle"],
         title: json["title"],
         id: json["_id"],
         podcastPath: json["podcastPath"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "podcastTime": podcastTime,
         "wordsCount": wordsCount,
+        "customText": customText,
         "faTitle": faTitle,
         "title": title,
         "_id": id,
         "podcastPath": podcastPath,
-    };
+      };
 }

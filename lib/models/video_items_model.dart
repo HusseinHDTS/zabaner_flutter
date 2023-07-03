@@ -36,14 +36,14 @@ class VideoItemsModel {
   final String type;
 
   factory VideoItemsModel.fromJson(Map<String, dynamic> json) {
-    String imagePath = getUrl(json["imagePath"]);
-    String videoPath = getUrl(json["videoPath"]);
+    String imagePath = getUrl(json["imagePath"]  ?? "");
+    String videoPath = getUrl(json["videoPath"] ?? "");
     return VideoItemsModel(
       paragraphs: List<Paragraph>.from(
-          json["paragraphs"].map((x) => Paragraph.fromJson(x))),
+          (json["paragraphs"] ?? jsonDecode("[]")).map((x) => Paragraph.fromJson(x))),
       id: json["_id"],
-      title: json["title"],
-      faTitle: json["faTitle"],
+      title: (json["title"] ?? json["mTitle"]) ?? "",
+      faTitle: (json["faTitle"] ?? json["mTitleFa"]) ?? "",
       subtitleFa: json["subtitleStringFa"] ?? "",
       subtitle: json["subtitleString"] ?? "",
       imagePath: imagePath,

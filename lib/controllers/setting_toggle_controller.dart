@@ -11,6 +11,7 @@ class SettingToggle extends GetxController {
   final GetConnect _getConnect = GetConnect();
   RxBool autoDownload = false.obs;
   RxBool saveStorage = false.obs;
+  RxBool autoScroll = false.obs;
   RxBool darkTheme = false.obs;
   RxBool autoBackup = false.obs;
   var version = "".obs;
@@ -20,6 +21,7 @@ class SettingToggle extends GetxController {
     await GetStorage.init();
     autoDownload.value = getStorage.read('auto_download') ?? false;
     saveStorage.value = getStorage.read('save_storage') ?? false;
+    autoScroll.value = getStorage.read('auto_scroll') ?? false;
     darkTheme.value = getStorage.read('dark_theme') ?? false;
     autoBackup.value = getStorage.read('auto_backup') ?? true;
     PackageInfo packageInfo = await PackageInfo.fromPlatform();

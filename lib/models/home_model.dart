@@ -89,7 +89,7 @@ class User {
         fullName: json["fullName"],
         avatarPath: json["avatarPath"] != null
             ? baseUrl + json["avatarPath"]
-            : "https://htmlcolorcodes.com/assets/images/colors/bright-blue-color-solid-background-1920x1080.png",
+            : "https://app.zabaner.ir/bright-blue-color-solid-background-1920x1080.png",
         currentLevelProgress:
             double.parse(json["currentLevelProgress"]?.toString() ?? "0.0"),
         level: json["level"] ?? 0,

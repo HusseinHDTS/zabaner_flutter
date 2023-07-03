@@ -110,8 +110,6 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
         navigatorKey: Catcher.navigatorKey,
         debugShowCheckedModeBanner: false,
-        home: CatcherScreenshot(
-            catcher: Catcher.getInstance(),
-            child: const SplashScreen()));
+        home: const SplashScreen());
   }
 }

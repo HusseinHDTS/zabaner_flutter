@@ -50,5 +50,6 @@ class SentenceIndex{
   int time;
   int endTime;
   String? text;
-  SentenceIndex({required this.listIndex , required this.sentenceIndex , required this.time,required this.endTime, this.text});
+  Key? key;
+  SentenceIndex({required this.listIndex , required this.sentenceIndex , required this.time,required this.endTime, this.text,this.key});
 }

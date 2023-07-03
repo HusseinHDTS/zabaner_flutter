@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart' as dateHelper;
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:zabaner/controllers/home_data_controller.dart';
 import 'package:zabaner/controllers/main_screen_controller.dart';
@@ -17,9 +18,11 @@ import 'package:zabaner/views/screens/client_statics_screen.dart';
 import 'package:zabaner/views/screens/podcast_play_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:zabaner/views/screens/test_lyrics_page.dart';
 import 'package:zabaner/views/screens/video_detailt_screen.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 import 'package:zabaner/widgets/cuostm_showcase.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({Key? key, required this.isGuest}) : super(key: key);
@@ -32,16 +35,63 @@ class HomeScreen extends StatelessWidget {
         Get.find<MainScreenController>();
     _controller.getData(isGuest);
     isGuest ? {} : _controller.sendStatics();
-    return SafeArea(
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: const Color(0xffffffff),
-          body: SmartRefresher(
-            controller: _controller.refreshController,
-            onRefresh: () {
-              _controller.getData(isGuest);
+    // Get.to(()=>TestLyricsPage());
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: const Color(0xffffffff),
+        appBar: ColoredAppBar(
+          titleWidget: CustomShowcase(
+            nextButtonText: "رد کردن",
+            onNextButtonTap: () {
+              ShowCaseWidget.of(context).dismiss();
             },
-            header: const MaterialClassicHeader(),
+            disableDefaultTargetGestures: true,
+            targetPadding: const EdgeInsets.all(5),
+            key: _mainController.keyFive,
+            description: _mainController.intros[4],
+            child: Obx(() => _controller.isDataLoaded.value
+                ? SizedBox(
+                    width: Get.width / 1.22,
+                    child: Text(
+                      "${_controller.homeModel.statistics.durationSum.split(":")[0]}D:${_controller.homeModel.statistics.durationSum.split(":")[1]}H:${_controller.homeModel.statistics.durationSum.split(":")[2]}M",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                      textAlign: TextAlign.end,
+                    ),
+                  )
+                : Container()),
+          ),
+          backIcon: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14),
+            child: InkWell(
+              onTap: () {
+                Get.to(() => ProfileScreen(isGuest: isGuest));
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Icon(
+                    Icons.menu,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: SmartRefresher(
+          controller: _controller.refreshController,
+          onRefresh: () {
+            _controller.getData(isGuest);
+          },
+          header: const MaterialClassicHeader(),
+          child: SafeArea(
             child: Obx(() => _controller.isDataLoaded.isFalse
                 ? Column(
                     children: [
@@ -62,302 +112,323 @@ class HomeScreen extends StatelessWidget {
                       )
                     : Column(
                         children: [
-                          // Top of screen
-                          Container(
-                            height: Get.height / 7,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: Get.width / 40),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // profile image
-                                InkWell(
-                                    // onTap: () => Navigator.pushNamed(context, '/profile'),
-                                    onTap: () => Get.to(
-                                        () => ProfileScreen(isGuest: isGuest)),
-                                    child:
-                                        Icon(Icons.menu, size: Get.width / 8)),
-                              ],
-                            ),
+                          SizedBox(
+                            height: 20,
                           ),
-
-                          // sum of duration
-                          CustomShowcase(
-                            nextButtonText: "رد کردن",
-                            onNextButtonTap: () {
-                              ShowCaseWidget.of(context).dismiss();
-                            },
-                            disableDefaultTargetGestures: true,
-                            targetPadding: const EdgeInsets.all(5),
-                            key: _mainController.keyFive,
-                            description: _mainController.intros[4],
-                            child: SizedBox(
-                              width: Get.width / 1.22,
-                              child: Text(
-                                "${_controller.homeModel.statistics.durationSum.split(":")[0]}D:${_controller.homeModel.statistics.durationSum.split(":")[1]}H:${_controller.homeModel.statistics.durationSum.split(":")[2]}M",
-                                style: const TextStyle(
-                                  color: Color(0xff5A5A5A),
-                                  fontSize: 18,
-                                ),
-                                textAlign: TextAlign.end,
-                              ),
-                            ),
-                          ),
-
-                          // charts in middle of screen
                           Expanded(
                             flex: 7,
                             child: SizedBox(
                               width: Get.width,
-                              child: Card(
-                                margin: EdgeInsets.all(Get.width / 20),
-                                color: const Color(0xffF9F9F9),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(37)),
-                                child: InkWell(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      // Circle Level
-                                      Expanded(
-                                        flex: 0,
-                                        child: CustomShowcase(
-                                          nextButtonText: "رد کردن",
-                                          onNextButtonTap: () {
-                                            ShowCaseWidget.of(context)
-                                                .dismiss();
-                                          },
-                                          disableDefaultTargetGestures: true,
-                                          targetPadding:
-                                              const EdgeInsets.all(5),
-                                          key: _mainController.keySix,
-                                          description:
-                                              _mainController.intros[5],
-                                          child: SizedBox(
-                                              width: Get.width / 2,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  // Level text
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        top: 8,
-                                                        bottom:
-                                                            Get.height / 100),
-                                                    child: Text(
-                                                      _controller.totallSecond
-                                                          .level(),
-                                                      style: const TextStyle(
-                                                          fontFamily: "Aria",
-                                                          fontSize: 18,
-                                                          color: Color(
-                                                              0xff707070)),
-                                                    ),
-                                                  ),
-
-                                                  SizedBox(
-                                                    height: Get.height / 3.8,
-                                                    width: Get.width / 2,
-                                                    child:
-                                                        CircularPercentIndicator(
-                                                      radius:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width /
-                                                              4,
-                                                      percent: _controller
-                                                          .totallSecond
-                                                          .levelPercent(),
-                                                      animation: true,
-                                                      progressColor: primary,
-                                                      animationDuration: 1000,
-                                                      lineWidth: 6,
-                                                      center: Text(
+                              child: Container(
+                                margin: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.grey.withOpacity(0.4),
+                                          spreadRadius: 5,
+                                          blurRadius: 7,
+                                          offset: const Offset(0, 3))
+                                    ],
+                                    borderRadius: BorderRadius.circular(18)),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(18),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.bottomRight,
+                                          end: Alignment.topLeft,
+                                          colors: [
+                                            primaryDark.withOpacity(0.2),
+                                            primaryDark.withOpacity(0.1),
+                                            primaryDark.withOpacity(0.05),
+                                            primaryDark.withOpacity(0.0),
+                                            Colors.transparent,
+                                            Colors.transparent,
+                                            Colors.transparent
+                                          ])),
+                                  child: InkWell(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // Circle Level
+                                        Expanded(
+                                          flex: 0,
+                                          child: CustomShowcase(
+                                            nextButtonText: "رد کردن",
+                                            previousButtonText: "بعدی",
+                                            onPreviousButtonTap: () {
+                                              ShowCaseWidget.of(context).next();
+                                            },
+                                            onNextButtonTap: () {
+                                              ShowCaseWidget.of(context)
+                                                  .dismiss();
+                                            },
+                                            disableDefaultTargetGestures: true,
+                                            targetPadding:
+                                                const EdgeInsets.all(5),
+                                            key: _mainController.keySix,
+                                            description:
+                                                _mainController.intros[5],
+                                            child: SizedBox(
+                                                width: Get.width / 2,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    // Level text
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          top: 8,
+                                                          bottom:
+                                                              Get.height / 100),
+                                                      child: Text(
                                                         _controller.totallSecond
-                                                            .showCurrent(),
+                                                            .level(),
                                                         style: const TextStyle(
-                                                            fontFamily: "Arial",
-                                                            fontSize: 15,
+                                                            fontFamily: "Aria",
+                                                            fontSize: 18,
                                                             color: Color(
                                                                 0xff707070)),
                                                       ),
                                                     ),
-                                                  )
-                                                ],
-                                              )),
-                                        ),
-                                      ),
 
-                                      Expanded(
-                                        flex: 1,
-                                        child: Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 0,
-                                                    child: InkWell(
-                                                      child: Container(
-                                                        width: Get.width / 7.3,
-                                                        height: Get.height / 13,
-                                                        margin: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 18),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                                color: const Color(
-                                                                    0xffffffff),
-                                                                boxShadow: [
-                                                                  BoxShadow(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .withOpacity(
-                                                                            0.4),
-                                                                    spreadRadius:
-                                                                        5,
-                                                                    blurRadius:
-                                                                        7,
-                                                                    offset: Offset(
-                                                                        0,
-                                                                        3), // changes position of shadow
-                                                                  ),
-                                                                ],
-                                                                shape: BoxShape
-                                                                    .circle),
-                                                        child: Image.asset(
-                                                          "assets/images/CHART2.png",
-                                                          fit: BoxFit.contain,
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          right: 8),
+                                                      child:
+                                                          CircularPercentIndicator(
+                                                        radius: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width /
+                                                            4.2,
+                                                        percent: (_controller
+                                                                    .totallSecond
+                                                                    .levelPercent() >
+                                                                1)
+                                                            ? 1
+                                                            : _controller
+                                                                .totallSecond
+                                                                .levelPercent(),
+                                                        animation: true,
+                                                        progressColor: primary,
+                                                        animationDuration: 1000,
+                                                        lineWidth: 6,
+                                                        center: Text(
+                                                          _controller
+                                                              .totallSecond
+                                                              .showCurrent(),
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  "Arial",
+                                                              fontSize: 15,
+                                                              color: Color(
+                                                                  0xff707070)),
                                                         ),
                                                       ),
-                                                      onTap: () => Get.to(() =>
-                                                          StaticsScreen()),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Container(
-                                                      height: double.infinity,
-                                                      width: double.infinity,
-                                                      margin:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 8),
-                                                      child: CustomShowcase(
-                                                        nextButtonText:
-                                                            "رد کردن",
-                                                        onNextButtonTap: () {
-                                                          ShowCaseWidget.of(
-                                                                  context)
-                                                              .dismiss();
-                                                        },
-                                                        disableDefaultTargetGestures:
-                                                            true,
-                                                        key: _mainController
-                                                            .keyFour,
-                                                        description:
-                                                            _mainController
-                                                                .intros[3],
-                                                        child: Container(
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  bottom: 18),
-                                                          child: Column(
-                                                            children:
-                                                                List.generate(
-                                                              4,
-                                                              (index) {
-                                                                String _time =
-                                                                    "null";
-                                                                String _date = "";
-                                                                String _duration = "";
+                                                    )
+                                                  ],
+                                                )),
+                                          ),
+                                        ),
 
-                                                                try {
-                                                                  var cDate = Jalali.fromDateTime(DateTime.parse(_controller
-                                                                      .homeModel
-                                                                      .statistics
-                                                                      .last4Days[index]['date']));
-                                                                  var duration = getTime(_controller
-                                                                      .homeModel
-                                                                      .statistics
-                                                                      .last4Days[index]['duration']);
-                                                                  _date = getCurrentDayDatePicker(cDate.weekDay - 1, allText: true);
-                                                                  _duration = duration;
-                                                                  _time =
-                                                                      "${getCurrentDayDatePicker(cDate.weekDay - 1, allText: true)} :    $duration";
-                                                                } catch (e) {
-                                                                  e.printError();
-                                                                }
-                                                                if (_time ==
-                                                                    "null") {
-                                                                  var cDate =
-                                                                      Jalali
-                                                                          .now();
-                                                                  int dayNum =
-                                                                      cDate
-                                                                          .weekDay;
-                                                                  dayNum =dayNum - (3 - index);
-                                                                  if(dayNum == 0){
-                                                                    dayNum = 7;
-                                                                  }else if(dayNum < 0){
-                                                                    dayNum = 7 - dayNum;
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 0,
+                                                      child: InkWell(
+                                                        child: Container(
+                                                          width:
+                                                              Get.width / 7.3,
+                                                          height:
+                                                              Get.height / 13,
+                                                          margin: EdgeInsets
+                                                              .symmetric(
+                                                                  vertical: 18),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                  color: const Color(
+                                                                      0xffffffff),
+                                                                  boxShadow: [
+                                                                    BoxShadow(
+                                                                      color: Colors
+                                                                          .grey
+                                                                          .withOpacity(
+                                                                              0.4),
+                                                                      spreadRadius:
+                                                                          5,
+                                                                      blurRadius:
+                                                                          7,
+                                                                      offset: Offset(
+                                                                          0,
+                                                                          3), // changes position of shadow
+                                                                    ),
+                                                                  ],
+                                                                  shape: BoxShape
+                                                                      .circle),
+                                                          child: Image.asset(
+                                                            "assets/images/CHART2.png",
+                                                            fit: BoxFit.contain,
+                                                          ),
+                                                        ),
+                                                        onTap: () => Get.to(() =>
+                                                            StaticsScreen()),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Container(
+                                                        height: double.infinity,
+                                                        width: double.infinity,
+                                                        margin: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 8),
+                                                        child: CustomShowcase(
+                                                          nextButtonText:
+                                                              "رد کردن",
+                                                          previousButtonText:
+                                                              "بعدی",
+                                                          onPreviousButtonTap:
+                                                              () {
+                                                            ShowCaseWidget.of(
+                                                                    context)
+                                                                .next();
+                                                          },
+                                                          onNextButtonTap: () {
+                                                            ShowCaseWidget.of(
+                                                                    context)
+                                                                .dismiss();
+                                                          },
+                                                          disableDefaultTargetGestures:
+                                                              true,
+                                                          key: _mainController
+                                                              .keyFour,
+                                                          description:
+                                                              _mainController
+                                                                  .intros[3],
+                                                          child: Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    bottom: 18),
+                                                            child: Column(
+                                                              children:
+                                                                  List.generate(
+                                                                4,
+                                                                (index) {
+                                                                  String _time =
+                                                                      "null";
+                                                                  String _date =
+                                                                      "";
+                                                                  String
+                                                                      _duration =
+                                                                      "";
+
+                                                                  try {
+                                                                    var cDate = Jalali.fromDateTime(DateTime.parse(_controller
+                                                                        .homeModel
+                                                                        .statistics
+                                                                        .last4Days[index]['date']));
+                                                                    var duration = getTime(_controller
+                                                                        .homeModel
+                                                                        .statistics
+                                                                        .last4Days[index]['duration']);
+                                                                    _date = getCurrentDayDatePicker(
+                                                                        cDate.weekDay -
+                                                                            1,
+                                                                        allText:
+                                                                            true);
+                                                                    _duration =
+                                                                        duration;
+                                                                    _time =
+                                                                        "${getCurrentDayDatePicker(cDate.weekDay - 1, allText: true)} :    $duration";
+                                                                  } catch (e) {
+                                                                    e.printError();
                                                                   }
-                                                                  _date = getCurrentDayDatePicker(dayNum -1, allText: true);
-                                                                  _duration = "00:00:00";
-                                                                  _time =
-                                                                      "${getCurrentDayDatePicker(dayNum -1, allText: true)} :    00:00:00";
-                                                                }
-                                                                return Expanded(
-                                                                  flex: 1,
-                                                                  child:
-                                                                      Container(
-                                                                    width: double
-                                                                        .infinity,
-                                                                    height: double
-                                                                        .infinity,
+                                                                  if (_time ==
+                                                                      "null") {
+                                                                    var cDate =
+                                                                        Jalali
+                                                                            .now();
+                                                                    int dayNum =
+                                                                        cDate
+                                                                            .weekDay;
+                                                                    dayNum =
+                                                                        dayNum -
+                                                                            (3 -
+                                                                                index);
+                                                                    if (dayNum ==
+                                                                        0) {
+                                                                      dayNum =
+                                                                          7;
+                                                                    } else if (dayNum <
+                                                                        0) {
+                                                                      dayNum = 7 -
+                                                                          dayNum;
+                                                                    }
+                                                                    _date = getCurrentDayDatePicker(
+                                                                        dayNum -
+                                                                            1,
+                                                                        allText:
+                                                                            true);
+                                                                    _duration =
+                                                                        "00:00:00";
+                                                                    _time =
+                                                                        "${getCurrentDayDatePicker(dayNum - 1, allText: true)} :    00:00:00";
+                                                                  }
+                                                                  return Expanded(
+                                                                    flex: 1,
                                                                     child:
-                                                                        Align(
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .bottomCenter,
+                                                                        Container(
+                                                                      width: double
+                                                                          .infinity,
+                                                                      height: double
+                                                                          .infinity,
                                                                       child:
-                                                                          Container(
-                                                                        width: double
-                                                                            .infinity,
-                                                                        margin:EdgeInsets.only(left: 10),
+                                                                          Align(
+                                                                        alignment:
+                                                                            Alignment.bottomCenter,
                                                                         child:
-                                                                            Align(
-                                                                          alignment:
-                                                                              Alignment.centerLeft,
+                                                                            Container(
+                                                                          width:
+                                                                              double.infinity,
+                                                                          margin:
+                                                                              EdgeInsets.only(left: 10),
                                                                           child:
-                                                                              ColoredText(
-                                                                            "$_date :    $_duration",
-                                                                            textColor:
-                                                                                Color(0xff9F9F9F),
-                                                                            textSize:
-                                                                                12,
-                                                                            fontFamily:
-                                                                                "Arial",
+                                                                              Align(
+                                                                            alignment:
+                                                                                Alignment.centerLeft,
+                                                                            child:
+                                                                                ColoredText(
+                                                                              "$_date :    $_duration",
+                                                                              textColor: Color(0xff9F9F9F),
+                                                                              textSize: 12,
+                                                                              fontFamily: "Arial",
+                                                                            ),
                                                                           ),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                );
-                                                              },
+                                                                  );
+                                                                },
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ])),
-                                      )
-                                    ],
+                                                  ])),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -391,19 +462,10 @@ class HomeScreen extends StatelessWidget {
                                           if (_controller.homeModel
                                                   .histories[index].type ==
                                               "news") {
-                                            // Navigator.pushNamed(context, '/newsDetail',
-                                            //     arguments:
-                                            //         _controller.homeModel.histories[index].id);
-                                            // Get.to(NewsDetailScreen(isGuest: isGuest),
-                                            //     arguments:
-                                            //         _controller.homeModel.histories[index].id);
                                           }
                                           if (_controller.homeModel
                                                   .histories[index].type ==
                                               "podcasts") {
-                                            // Navigator.pushNamed(context, '/podcast',
-                                            //     arguments:
-                                            //         _controller.homeModel.histories[index].id);
                                             Get.to(PodcastPlay(
                                                 isGuest: isGuest,
                                                 id: _controller.homeModel
@@ -412,9 +474,6 @@ class HomeScreen extends StatelessWidget {
                                           if (_controller.homeModel
                                                   .histories[index].type ==
                                               "books") {
-                                            // Navigator.pushNamed(context, '/bookScreen',
-                                            //     arguments:
-                                            //         _controller.homeModel.histories[index].id);
                                             Get.to(() => ChapterListScreen(
                                                   id: _controller.homeModel
                                                       .histories[index].id,
@@ -432,40 +491,100 @@ class HomeScreen extends StatelessWidget {
                                             //     arguments:
                                             //         _controller.homeModel.histories[index].id);
                                             Get.to(VideoDetailScreen(
-                                                isGuest: isGuest,
-                                                id: _controller.homeModel
-                                                    .histories[index].id));
+                                              isGuest: isGuest,
+                                              id: _controller.homeModel
+                                                  .histories[index].id,
+                                              itemType: "video",
+                                            ));
                                           }
                                         },
                                         child: Center(
                                             child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 12),
-                                          decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.4),
-                                                  spreadRadius: 5,
-                                                  blurRadius: 7,
-                                                  offset: Offset(4,
-                                                      3), // changes position of shadow
-                                                ),
-                                              ],
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
                                           width: Get.width / 2.6,
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(18),
-                                              child: Container(
-                                                  margin: EdgeInsets.all(2),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: _controller
-                                                        .homeModel
-                                                        .histories[index]
-                                                        .imagePath,
-                                                  ))),
+                                          child: Container(
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.grey
+                                                          .withOpacity(0.4),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 7,
+                                                      offset: Offset(0,
+                                                          3), // changes position of shadow
+                                                    )
+                                                  ]),
+                                              margin: EdgeInsets.all(8),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Align(
+                                                    alignment:
+                                                    Alignment.topCenter,
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                      BorderRadius
+                                                          .vertical(
+                                                        top: Radius.circular(
+                                                            8),
+                                                      ),
+                                                      child: Stack(
+                                                        children: [
+                                                          CachedNetworkImage(
+                                                            imageUrl:
+                                                            _controller
+                                                                .homeModel
+                                                                .histories[
+                                                            index]
+                                                                .imagePath,
+                                                          ),
+                                                          Container(
+                                                              width: 20,
+                                                              height: 20,
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                  top: 8,
+                                                                  right:
+                                                                  8),
+                                                              child: getIcon(
+                                                                  _controller
+                                                                      .homeModel
+                                                                      .histories[
+                                                                  index]
+                                                                      .type,
+                                                                  context))
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    height: 8,
+                                                    decoration: BoxDecoration(
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color: primary
+                                                                .withOpacity(
+                                                                0.4),
+                                                            // spreadRadius: 5,
+                                                            blurRadius: 15,
+                                                            offset: Offset(0.0,
+                                                                0.55), // changes position of shadow
+                                                          )
+                                                        ]),
+                                                  ),
+                                                  ColoredText(
+                                                    _controller.homeModel
+                                                        .histories[index].title,
+                                                    textSize: 12,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                ],
+                                              )),
                                         )),
                                       );
                                     },
@@ -475,71 +594,74 @@ class HomeScreen extends StatelessWidget {
                           SizedBox(
                             height: 10,
                           ),
-                          // Expanded(
-                          //   flex: 5,
-                          //   child: Container(
-                          //     height: MediaQuery.of(context).size.height / 7.3,
-                          //     margin: EdgeInsets.symmetric(vertical: Get.height / 48),
-                          //     child: ListView.builder(
-                          //       scrollDirection: Axis.horizontal,
-                          //       itemCount: _controller.homeModel.histories.length,
-                          //       reverse: true,
-                          //       shrinkWrap: false,
-                          //       padding: EdgeInsets.symmetric(horizontal: Get.width / 30),
-                          //       itemBuilder: (context, index) => InkWell(
-                          //         onTap: () {
-                          //           if (_controller.homeModel.histories[index].type ==
-                          //               "news") {
-                          //             // Navigator.pushNamed(context, '/newsDetail',
-                          //             //     arguments:
-                          //             //         _controller.homeModel.histories[index].id);
-                          //             // Get.to(NewsDetailScreen(isGuest: isGuest),
-                          //             //     arguments:
-                          //             //         _controller.homeModel.histories[index].id);
-                          //           }
-                          //           if (_controller.homeModel.histories[index].type ==
-                          //               "podcasts") {
-                          //             // Navigator.pushNamed(context, '/podcast',
-                          //             //     arguments:
-                          //             //         _controller.homeModel.histories[index].id);
-                          //             Get.to(PodcastPlay(
-                          //                 isGuest: isGuest,
-                          //                 id: _controller.homeModel.histories[index].id));
-                          //           }
-                          //           if (_controller.homeModel.histories[index].type ==
-                          //               "books") {
-                          //             // Navigator.pushNamed(context, '/bookScreen',
-                          //             //     arguments:
-                          //             //         _controller.homeModel.histories[index].id);
-                          //             Get.to(() => ChapterListScreen(
-                          //                   id: _controller.homeModel.histories[index].id,
-                          //                   imageLink: _controller
-                          //                       .homeModel.histories[index].imagePath,
-                          //                   type: "book",
-                          //                 ));
-                          //           }
-                          //           if (_controller.homeModel.histories[index].type ==
-                          //               "videos") {
-                          //             // Navigator.pushNamed(context, '/video',
-                          //             //     arguments:
-                          //             //         _controller.homeModel.histories[index].id);
-                          //             Get.to(VideoDetailScreen(
-                          //                 isGuest: isGuest,
-                          //                 id: _controller.homeModel.histories[index].id));
-                          //           }
-                          //         },
-                          //         child: Container(
-                          //           height: index * 10,
-                          //           margin: const EdgeInsets.all(12),
-                          //           child: Container(decoration:BoxDecoration(color: Colors.blue),child: CachedNetworkImage(imageUrl: _controller.homeModel.histories[index].imagePath,width: Get.width / 2.6,) ,),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
+                          SizedBox(
+                            height: 70,
+                          )
                         ],
                       )),
-          )),
-    );
+          ),
+        ));
+  }
+
+  Widget getIcon(String type, BuildContext context) {
+    Widget result = Container();
+    if (type == "podcasts") {
+      result = Align(
+        alignment: Alignment.topRight,
+        child: Stack(
+          children: [
+            Image.asset(
+              "assets/images/podcast.png",
+              fit: BoxFit.fill,
+              color: Colors.white,
+            ),
+            Image.asset(
+              "assets/images/podcast.png",
+              fit: BoxFit.fill,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      );
+    }
+    if (type == "books") {
+      result = Align(
+        alignment: Alignment.topRight,
+        child: Stack(
+          children: [
+            Image.asset(
+              "assets/images/bookr.png",
+              fit: BoxFit.fill,
+              color: Colors.white,
+            ),
+            Image.asset(
+              "assets/images/bookr.png",
+              fit: BoxFit.fill,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      );
+    }
+    if (type == "videos") {
+      result = Align(
+        alignment: Alignment.topRight,
+        child: Stack(
+          children: [
+            Image.asset(
+              "assets/images/video.png",
+              fit: BoxFit.fill,
+              color: Colors.white,
+            ),
+            Image.asset(
+              "assets/images/video.png",
+              fit: BoxFit.fill,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      );
+    }
+    return result;
   }
 }

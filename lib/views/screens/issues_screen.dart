@@ -56,7 +56,7 @@ class _IssuesScreen extends State<IssuesScreen> {
                                 decoration: BoxDecoration(
                                     border: Border.all(
                                       width: 3,
-                                      color: orangeMessage,
+                                      color: supportMessageColor,
                                     ),
                                     borderRadius: BorderRadius.circular(8)),
                                 child: Container(

@@ -4,12 +4,14 @@ class ProfileTab extends StatelessWidget {
   final String image, title;
   final EdgeInsets? imageMargin;
   final Color? imageColor;
+  Color? textColor;
   final void Function()? onTap;
-  const ProfileTab(
-      {Key? key, required this.image, this.onTap,this.imageMargin,this.imageColor, required this.title})
+  ProfileTab(
+      {Key? key, required this.image, this.onTap, this.textColor,this.imageMargin,this.imageColor, required this.title})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
+    textColor ??= imageColor;
     return Column(
       children: [
         // Tab Icon
@@ -33,8 +35,8 @@ class ProfileTab extends StatelessWidget {
         // Tab text
         Text(
           title,
-          style: const TextStyle(
-              fontFamily: "Yekan", fontSize: 10, color: Color(0xff5A5A5A)),
+          style: TextStyle(
+              fontFamily: "Yekan", fontSize: 10, color: textColor),
         )
       ],
     );

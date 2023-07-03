@@ -18,6 +18,8 @@ import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'dart:io' as io;
 
+import 'package:zabaner/widgets/custom_lyric/christian_lyrics.dart';
+
 class VideoController extends GetxController {
   // late VideoModel videoModel;
   late VideoPlayerController _videoController;
@@ -34,6 +36,7 @@ class VideoController extends GetxController {
   var isDataLoaded = false.obs;
   var fa = true.obs;
   var en = true.obs;
+  var enDisable = false.obs, faDisable = false.obs;
   var repeat = false.obs;
   var duration = const Duration().obs;
   bool? forcedScreen;
@@ -72,6 +75,9 @@ class VideoController extends GetxController {
   RxBool autoScroll = true.obs;
   late ScrollController scrollController;
   var bookmark = false.obs;
+  var faRawSub = "", enRawSub = "";
+  var lsFaRawSub = "", lsEnRawSub = "";
+  final christianLyrics = ChristianLyrics();
 
   @override
   void onInit() async {
@@ -95,7 +101,24 @@ class VideoController extends GetxController {
     return audioFile.existsSync();
   }
 
-  void customeInit(id, isGuest) async {
+  void changeSubAsLang() {
+    String cFa = "", cEn = "";
+    if (fa.value) {
+      cFa = faRawSub;
+    }
+    if (en.value) {
+      cEn = enRawSub;
+    }
+    if (cFa == lsFaRawSub && cEn == lsEnRawSub) {
+      return;
+    }
+    lsEnRawSub = cEn;
+    lsFaRawSub = cFa;
+    christianLyrics.setLyricContent(cEn, faLyrics: cFa);
+    christianLyrics.resetLyric();
+  }
+
+  void customeInit(id, isGuest, {String itemType = "video"}) async {
     forcedScreen = await isScreenForced();
     _dateTime = DateTime.now();
     isPlaying = false.obs;
@@ -109,13 +132,22 @@ class VideoController extends GetxController {
     playingText = "".obs;
     duration = const Duration(milliseconds: 0).obs;
     playerPosition = const Duration(milliseconds: 0).obs;
-    getVideoItemData(id, isGuest).then((value) {
+    getVideoItemData(id, isGuest, itemType).then((value) {
       if (!value) {
         errorData.value = true;
       }
+      if (videoItems.value.videoPath.isEmpty ||
+          videoItems.value.videoPath.contains("/undefined") ||
+          videoItems.value.videoPath.trim().toLowerCase() ==
+              "podcastPath".trim().toLowerCase()) {
+        Get.back();
+        ColoredSnack(
+            title: "ویدئویی برای نمایش وجود ندارد", type: SnackType.ERROR);
+        return;
+      }
       isVideoExists.value = fileExists(getUrlFileName(
           appDoc.path, videoItems.value.id, videoItems.value.videoPath));
-      initSubtitle(id);
+      initSubtitle(id, itemType);
     });
   }
 
@@ -163,7 +195,7 @@ class VideoController extends GetxController {
         : {};
   }
 
-  var currentSavedTime = 0.obs;
+  var currentSavedTime = (-1).obs;
   var nextTime = 0;
   var preTime = 0;
   var isInEndTime = false.obs;
@@ -172,6 +204,9 @@ class VideoController extends GetxController {
 
   Future<List<InlineSpan>> getCurrentText(int index, bool _fa) async {
     List<InlineSpan> texts = [];
+    if (index >= getParAsLang(_fa).length) {
+      return texts;
+    }
     SentenceModel model = getParAsLang(_fa)[index];
 
     for (int i = 0; i < model.sentencesList.length; i++) {
@@ -218,172 +253,6 @@ class VideoController extends GetxController {
     }
   }
 
-  // https://dl2.languagecentre.ir/zabaner-short-stories/Frozen.2013.Bluray.720p.MkvCage.srt
-
-  Future<void> checkForTime2() async {
-    for (int i = 0; i < videoItems.value.paragraphs.length; i++) {
-      if (customVideoPlayerController!
-                      .videoPlayerController.value.position.inMilliseconds >
-                  videoItems.value.paragraphs[i].pst &&
-              videoItems.value.paragraphs[i].pst > currentSavedTime.value ||
-          customVideoPlayerController!
-                      .videoPlayerController.value.position.inMilliseconds <
-                  videoItems.value.paragraphs[i].pst &&
-              videoItems.value.paragraphs[i].pst < currentSavedTime.value) {
-        isInEndTime.value = false;
-        try {
-          if ((i + 1) >= videoItems.value.paragraphs.length - 1) {
-            nextTime = videoItems
-                .value.paragraphs[videoItems.value.paragraphs.length - 1].pst;
-            preTime = videoItems.value.paragraphs[i - 1].pst;
-          } else if (i == 0) {
-            nextTime = videoItems.value.paragraphs[i + 1].pst;
-            preTime = videoItems.value.paragraphs[0].pst;
-          } else {
-            nextTime = videoItems.value.paragraphs[i + 1].pst;
-            preTime = videoItems.value.paragraphs[i - 1].pst;
-          }
-        } catch (e) {
-          e.printError();
-        }
-        currentSavedTime.value = videoItems.value.paragraphs[i].pst;
-        playingText.value = videoItems.value.paragraphs[i].en;
-        playingTextFa.value = videoItems.value.paragraphs[i].fa;
-        playIndex = i;
-      }
-      if (customVideoPlayerController!
-                  .videoPlayerController.value.position.inMilliseconds >
-              videoItems.value.paragraphs[i].pstEnd &&
-          videoItems.value.paragraphs[i].pstEnd > currentSavedTime.value) {
-        isInEndTime.value = true;
-      }
-    }
-
-    if (autoScroll.value &&
-        isPlaying.value == true &&
-        ckey != null &&
-        isInEndTime.value != true) {
-      if (ckey!.currentContext != null) {
-        RenderBox box = ckey!.currentContext!.findRenderObject() as RenderBox;
-        Offset position =
-            box.localToGlobal(Offset.zero); //this is global position
-        double y = position.dy;
-        // scrollController.jumpTo(y+40);
-
-        scrollController.animateTo(y - 400 + (scrollController.offset),
-            duration: Duration(milliseconds: 2000), curve: Curves.linear);
-        // scrollController.jumpTo(y - 400 + (scrollController.offset));
-      }
-    }
-  }
-
-  Future<void> checkForTime() async {
-    List<SentenceModel> a = getParAsLang(false);
-    int currentIndx = 0;
-    for (int i = 0; i < a.length; i++) {
-      var ab = a[i].sentencesList;
-      for (int o = 0; o < ab.length; o++) {
-        var b = ab[o];
-        if (currentSavedTime.value == b.time) {
-          playIndexList = i;
-          playIndexInList = o;
-        }
-        if (customVideoPlayerController!
-                        .videoPlayerController.value.position.inMilliseconds >
-                    b.time &&
-                b.time > currentSavedTime.value ||
-            customVideoPlayerController!
-                        .videoPlayerController.value.position.inMilliseconds <
-                    b.time &&
-                b.time < currentSavedTime.value) {
-          if (currentSavedTime.value == b.time) {
-            return;
-          }
-          isInEndTime.value = false;
-          if (b.time == currentSavedTime.value) {
-            return;
-          }
-
-          currentSavedTime.value = b.time;
-
-          if (playingText.value != b.text.toString()) {
-            playingText.value = b.text.toString();
-          }
-          if (playingTextFa.value != b.text.toString()) {
-            playingTextFa.value = b.text.toString();
-          }
-        }
-        if (customVideoPlayerController!
-                    .videoPlayerController.value.position.inMilliseconds >
-                b.endTime &&
-            b.endTime > currentSavedTime.value) {
-          // if(isInEndTime.isFalse){
-          isInEndTime.value = true;
-          // }
-        }
-        currentIndx++;
-      }
-    }
-    if (autoScroll.value &&
-        isPlaying.value == true &&
-        ckey != null &&
-        isInEndTime.value != true) {
-      if (ckey!.currentContext != null) {
-        RenderBox box = ckey!.currentContext!.findRenderObject() as RenderBox;
-        Offset position =
-            box.localToGlobal(Offset.zero); //this is global position
-        double y = position.dy - 480;
-        // scrollController.jumpTo(y+40);
-
-        scrollController.animateTo(y + (scrollController.offset),
-            duration: Duration(milliseconds: 2000), curve: Curves.linear);
-        // scrollController.jumpTo(y - 400 + (scrollController.offset));
-      }
-    }
-  }
-
-  Future<void> checkForTime3() async {
-    // if (subTimes.isNotEmpty) {
-    //   for (var b in subTimes) {
-    //     if (chewieController
-    //                     .videoPlayerController.value.position.inMilliseconds >
-    //                 b.start &&
-    //             b.start > currentSavedTime.value ||
-    //         chewieController
-    //                     .videoPlayerController.value.position.inMilliseconds <
-    //                 b.start &&
-    //             b.start < currentSavedTime.value) {
-    //       isInEndTime.value = false;
-    //       currentSavedTime.value = b.start;
-    //       playingText.value = b.text.toString();
-    //       playingTextFa.value = b.text.toString();
-    //     }
-    //     if (chewieController
-    //                 .videoPlayerController.value.position.inMilliseconds >
-    //             b.end &&
-    //         b.end > currentSavedTime.value) {
-    //       isInEndTime.value = true;
-    //     }
-    //   }
-    // }
-
-    if (autoScroll.value &&
-        isPlaying.value == true &&
-        ckey != null &&
-        isInEndTime.value != true) {
-      if (ckey!.currentContext != null) {
-        RenderBox box = ckey!.currentContext!.findRenderObject() as RenderBox;
-        Offset position =
-            box.localToGlobal(Offset.zero); //this is global position
-        double y = position.dy;
-
-        scrollController.animateTo(y - 300 + (scrollController.offset),
-            duration: Duration(milliseconds: 2000), curve: Curves.linear);
-        // scrollController.jumpTo(y - 400 + (scrollController.offset));
-      }
-    }
-  }
-
   void play() async {
     if (customVideoPlayerController!.isPlaying.value) {
       isPlaying.value = true;
@@ -395,7 +264,12 @@ class VideoController extends GetxController {
         forcedScreen = true;
         keepScreenOn();
       }
-      checkForTime();
+      christianLyrics.resetLyric();
+      var event = customVideoPlayerController!.videoPlayerController.value;
+      christianLyrics.setPositionWithOffset(
+          position: event.position.inMilliseconds,
+          duration: event.duration.inMilliseconds);
+      // checkForTime(customVideoPlayerController!.videoPlayerController.value);
     } else {
       if (forcedScreen!) {
         forcedScreen = false;
@@ -405,13 +279,58 @@ class VideoController extends GetxController {
     }
   }
 
-  initSubtitle(id) async {
+  initSubtitle(id, String itemType) async {
+    dynamic itemSettings = getItemSettings("$itemType/$id");
+    if(itemSettings['autoScrollItem'] == "null"){
+      if(itemSettings['autoScroll'] == "on"){
+        autoScroll.value = true;
+      }else{
+        autoScroll.value = false;
+      }
+    }else{
+      if(itemSettings['autoScrollItem'] == "on"){
+        autoScroll.value = true;
+      }else{
+        autoScroll.value = false;
+      }
+    }
+    if (itemSettings['faTitle'] == "on") {
+      fa.value = true;
+    } else {
+      fa.value = false;
+    }
+    if (itemSettings['enTitle'] == "on") {
+      en.value = true;
+    } else {
+      en.value = false;
+    }
+    if (itemSettings['repeat'] == "on") {
+      repeat.value = true;
+    } else {
+      repeat.value = false;
+    }
     var shouldR = false;
     isSubtitleLoaded.value = false;
     var faLink = videoItems.value.subtitleFa.toString();
     var enLink = videoItems.value.subtitle.toString();
     var resEn = await getSrtSubTitle("en", id, enLink);
     var resFa = await getSrtSubTitle("fa", id, faLink);
+    var rawEn = await getRawSrtSubTitle("en", id, enLink);
+    var rawFa = await getRawSrtSubTitle("fa", id, faLink);
+    faRawSub = rawFa.replaceAll("/l", "");
+    enRawSub = rawEn.replaceAll("/l", "");
+    if(enLink.trim().isEmpty){
+      en.value = false;
+      enDisable.value = true;
+    }
+    if(faLink.trim().isEmpty){
+      fa.value = false;
+      faDisable.value = true;
+    }
+    lsFaRawSub = faRawSub;
+    lsEnRawSub = enRawSub;
+    christianLyrics.setLyricContent(enRawSub, faLyrics: faRawSub);
+
     if (resEn != null) {
       enParagraph.value = resEn;
       shouldR = true;
@@ -452,13 +371,22 @@ class VideoController extends GetxController {
     }
   }
 
-  Future<bool> getVideoItemData(String podcastId, bool isGuest) async {
+  Future<bool> getVideoItemData(
+      String podcastId, bool isGuest, String itemType) async {
     isDataLoaded.value = false;
     _getConnect.allowAutoSignedCert = true;
+    String link = "";
+    if (itemType == "video") {
+      link = getVideoDataUrl;
+    } else if (itemType == "ielts") {
+      link = getIeltsData;
+    }else if(itemType == "ielts-general"){
+      link = getIeltsGeneralData;
+    }
     var _request = isGuest
-        ? await _getConnect.get(getVideoDataUrl + podcastId)
+        ? await _getConnect.get(link + podcastId)
         : await _getConnect.get(
-            getVideoDataUrl + podcastId,
+            link + podcastId,
             headers: {
               'accept': 'application/json',
               'Authorization': 'Bearer ${_getStorage.read('token')}'
@@ -525,8 +453,6 @@ class VideoController extends GetxController {
     //   showOptions: false,
     //   autoInitialize: true,
     // );
-    _videoController.addListener(play);
-    videoInitialized.value = true;
   }
 
   Future<void> download(String urlPath, String id, String title) async {
@@ -548,7 +474,7 @@ class VideoController extends GetxController {
               onReceiveProgress: (recive, total) {
         downloadingState.value = "downloading";
         downloadingPercent.value = recive / total;
-      },deleteOnError: true,cancelToken: cancelToken);
+      }, deleteOnError: true, cancelToken: cancelToken);
       Get.closeAllSnackbars();
       Get.back();
 

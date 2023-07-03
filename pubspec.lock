@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.16"
+  anim_search_bar:
+    dependency: "direct main"
+    description:
+      name: anim_search_bar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   animated_button_bar:
     dependency: "direct main"
     description:
@@ -15,6 +22,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.2+1"
+  animated_notch_bottom_bar:
+    dependency: "direct main"
+    description:
+      name: animated_notch_bottom_bar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  animated_text_kit:
+    dependency: "direct main"
+    description:
+      name: animated_text_kit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.2.2"
+  another_xlider:
+    dependency: "direct main"
+    description:
+      name: another_xlider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   archive:
     dependency: transitive
     description:
@@ -36,6 +64,62 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.8.2"
+  audioplayers:
+    dependency: "direct main"
+    description:
+      name: audioplayers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
+  audioplayers_android:
+    dependency: transitive
+    description:
+      name: audioplayers_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
+  audioplayers_darwin:
+    dependency: transitive
+    description:
+      name: audioplayers_darwin
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
+  audioplayers_linux:
+    dependency: transitive
+    description:
+      name: audioplayers_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  audioplayers_platform_interface:
+    dependency: transitive
+    description:
+      name: audioplayers_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  audioplayers_web:
+    dependency: transitive
+    description:
+      name: audioplayers_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  audioplayers_windows:
+    dependency: transitive
+    description:
+      name: audioplayers_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  auto_size_text:
+    dependency: "direct main"
+    description:
+      name: auto_size_text
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   awesome_snackbar_content:
     dependency: "direct main"
     description:
@@ -64,6 +148,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: bottom_sheet
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
   buttons_tabbar:
     dependency: "direct main"
     description:
@@ -134,6 +225,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.1"
+  chart_sparkline:
+    dependency: "direct main"
+    description:
+      name: chart_sparkline
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.13"
   chewie:
     dependency: "direct main"
     description:
@@ -405,6 +503,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
+  flutter_keyboard_visibility:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.4.1"
+  flutter_keyboard_visibility_linux:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  flutter_keyboard_visibility_macos:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  flutter_keyboard_visibility_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  flutter_keyboard_visibility_web:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  flutter_keyboard_visibility_windows:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -433,6 +573,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.0.0"
+  flutter_lyric:
+    dependency: "direct main"
+    description:
+      name: flutter_lyric
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.4+6"
   flutter_mailer:
     dependency: transitive
     description:
@@ -461,6 +608,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  flutter_rating_bar:
+    dependency: "direct main"
+    description:
+      name: flutter_rating_bar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.1"
   flutter_sound_lite:
     dependency: "direct main"
     description:
@@ -549,7 +703,7 @@ packages:
     source: hosted
     version: "2.0.3"
   html:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: html
       url: "https://pub.dartlang.org"
@@ -618,6 +772,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.4"
+  keyboard_attachable:
+    dependency: "direct main"
+    description:
+      name: keyboard_attachable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   lints:
     dependency: transitive
     description:
@@ -625,6 +786,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  liquid_progress_indicator:
+    dependency: "direct main"
+    description:
+      name: liquid_progress_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   logger:
     dependency: transitive
     description:
@@ -905,6 +1073,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.0"
+  roundcheckbox:
+    dependency: "direct main"
+    description:
+      name: roundcheckbox
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
   rxdart:
     dependency: transitive
     description:
@@ -933,6 +1108,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.20.1"
+  shimmer:
+    dependency: "direct main"
+    description:
+      name: shimmer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   showcaseview:
     dependency: "direct main"
     description:
@@ -959,6 +1141,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  smooth_star_rating_nsafe:
+    dependency: "direct main"
+    description:
+      name: smooth_star_rating_nsafe
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+1"
   source_span:
     dependency: transitive
     description:
@@ -1043,6 +1232,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  switcher_button:
+    dependency: "direct main"
+    description:
+      name: switcher_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   synchronized:
     dependency: transitive
     description:
@@ -1064,6 +1260,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.9"
+  time_planner:
+    dependency: "direct main"
+    description:
+      name: time_planner
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   timer_count_down:
     dependency: "direct main"
     description:

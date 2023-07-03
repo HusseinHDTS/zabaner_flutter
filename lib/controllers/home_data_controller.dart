@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:zabaner/controllers/online_class_controller.dart';
 import 'package:zabaner/models/home_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/level.dart';
@@ -76,6 +77,10 @@ class HomeDataController extends GetxController with StateMixin {
     dataError.value = false;
     _getConnect.allowAutoSignedCert = true;
     // connectToBazaar();
+    await getPersonInfo(_getConnect, _getStorage);
+    OnlineClassController occ = Get.find();
+    occ.getData();
+    await getWalletInfo(_getConnect, _getStorage);
     if (!isGuest) {
       var request = await _getConnect.get(homeDataUrl, headers: {
         'accept': 'application/json',
@@ -92,7 +97,7 @@ class HomeDataController extends GetxController with StateMixin {
 
         if (request.body['user']['avatarPath'] == null) {
           _getStorage.write('profile_image',
-              "https://htmlcolorcodes.com/assets/images/colors/bright-blue-color-solid-background-1920x1080.png");
+              "https://app.zabaner.ir/bright-blue-color-solid-background-1920x1080.png");
         } else {
           _getStorage.write('profile_image', homeModel.user.avatarPath);
         }
@@ -133,7 +138,7 @@ class HomeDataController extends GetxController with StateMixin {
               fullName: "Guest",
               level: 0,
               avatarPath:
-                  "https://htmlcolorcodes.com/assets/images/colors/bright-blue-color-solid-background-1920x1080.png"),
+                  "https://app.zabaner.ir/bright-blue-color-solid-background-1920x1080.png"),
           statistics: Statistics(durationSum: "0:0:0", last4Days: []),
           histories: []);
       change(null, status: RxStatus.success());

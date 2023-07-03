@@ -17,6 +17,8 @@ class ResourcesController extends GetxController with StateMixin {
   var categories = [];
   var podcastCategories = [];
   var videoCategories = [];
+  var ieltsCategories = [];
+  var ieltsGeneralCategories = [];
   var anyCatLength = [];
   List<ResourcesData> resourcesList = [];
   TextEditingController textController = TextEditingController();
@@ -44,12 +46,16 @@ class ResourcesController extends GetxController with StateMixin {
     var request1 = await _getConnect.get(subCategoryUrl);
     var request2 = await _getConnect.get(videoCategoryUrl);
     var request3 = await _getConnect.get(podcastCategoryUrl);
+    var request4 = await _getConnect.get(getMagooshCategory);
+    var request5 = await _getConnect.get(getGeneralMagooshCategory);
     refreshController.refreshCompleted();
     if (request.statusCode == 200 && request1.statusCode == 200) {
       resourcesList = (resourcesFromJson(request.bodyString ?? ""));
       categories = (jsonDecode(request1.bodyString ?? ""));
       videoCategories = (jsonDecode(request2.bodyString ?? ""));
       podcastCategories = (jsonDecode(request3.bodyString ?? ""));
+      ieltsCategories = (jsonDecode(request4.bodyString ?? ""));
+      ieltsGeneralCategories = (jsonDecode(request5.bodyString ?? ""));
       isDataLoaded.value = true;
     } else {
       dataError.value = true;

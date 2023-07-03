@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:zabaner/controllers/news_data_controller.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
@@ -20,6 +21,7 @@ class ListModel extends StatelessWidget {
   bool? hasSubCategory = false;
   NewsSearchController controller;
   TabbarTypes currentType;
+  bool differentType = false;
   var mainModel = [];
   String currentTitle = "";
 
@@ -30,6 +32,7 @@ class ListModel extends StatelessWidget {
       required this.controller}) {
     mainModel = [];
     hasSubCategory ??= false;
+    differentType = (currentType == TabbarTypes.ADULT || currentType == TabbarTypes.NATIONAL);
     if (hasSubCategory!) {
       currentTitle =
           controller.allChildTabCategories[index]["title"].toString();
@@ -44,7 +47,7 @@ class ListModel extends StatelessWidget {
         currentTitle =
             controller.allAdultTabCategories[index]["title"].toString();
         controller.adultTabbarItemModel.forEach((element) {
-          if (element.category.toString() ==
+          if (element['category'].toString() ==
               controller.allAdultTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
@@ -62,7 +65,7 @@ class ListModel extends StatelessWidget {
         currentTitle =
             controller.allNationalTabCategories[index]["title"].toString();
         controller.nationalTabbarItemModel.forEach((element) {
-          if (element.category.toString() ==
+          if (element['category'].toString() ==
               controller.allNationalTabCategories[index]["_id"].toString()) {
             mainModel.add(element);
           }
@@ -101,68 +104,40 @@ class ListModel extends StatelessWidget {
                   itemCount: mainModel.length,
                   itemBuilder: (_context, index) {
                     return InkWell(
-                      onTap: () {
-                        if (currentType == TabbarTypes.NATIONAL) {
-                          if (controller.profileInformation.hasNationalSub ==
-                              null) {
-                            Get.defaultDialog(
-                                title: "شما اشتراک بخش آزمون ها را ندارید",
-                                titleStyle: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                                content: SubscribeDialog(currentType));
+                      onTap: ()async {
+                        checkForValidSubsOrBuy(currentType,controller,onContinue: (){
+                          if(differentType){
+                            if(mainModel[index]['startFrom'] == "l1"){
+                              Get.to(()=>TabbarSubMC1CategoryScreen(currentType,mainModel[index],mainModel[index]['id'],"l1") ,preventDuplicates: false);
+                            }else if(mainModel[index]['startFrom'] == "l2"){
+                              Get.to(()=>TabbarSubMC2CategoryScreen(currentType,mainModel[index],mainModel[index]['id'],"l2"),preventDuplicates: false);
+                            }else if(mainModel[index]['startFrom'] == "l3"){
+                              Get.to(()=>TabbarSubMCMScreen(currentType,mainModel[index],categoryLm: true), preventDuplicates: false);
+                            }
                             return;
                           }
-                        } else if (currentType == TabbarTypes.ADULT) {
-                          if (controller.profileInformation.hasAdultSub ==
-                              null) {
-                            Get.defaultDialog(
-                                title: "شما اشتراک بخش بزرگسالان را ندارید",
-                                titleStyle: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                                content: SubscribeDialog(currentType));
-                            return;
+                          if (hasSubCategory!) {
+                            var items = controller.childTabbarItemModel;
+                            // Get.to(() => SubTabbarItemScreen(
+                            //     filter: mainModel[index].id, items: items));
+                            Get.to(() => TabbarSubCategoryScreen(
+                              filter: mainModel[index],
+                              items: items,
+                              submitTitle: differentType ? mainModel[index]['title'] : mainModel[index].title ,
+                            ));
+                          } else {
+                            if (mainModel[index].video.substring(
+                                mainModel[index].video.lastIndexOf("/") +
+                                    1) ==
+                                "undefined") {
+                              ColoredSnack(
+                                  title: "خطا هنگام پیدا کردن ویدیو",
+                                  type: SnackType.ERROR);
+                              return;
+                            }
+                            Get.to(() => TabbarItemScreen(mainModel[index]));
                           }
-                        } else if (currentType == TabbarTypes.CHILD) {
-                          if (controller.profileInformation.hasChildSub ==
-                              null) {
-                            Get.defaultDialog(
-                                title: "شما اشتراک بخش کودکان را ندارید",
-                                titleStyle: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                                content: SubscribeDialog(currentType));
-                            return;
-                          }
-                        }
-                        if (hasSubCategory!) {
-                          var items = controller.childTabbarItemModel;
-                          // Get.to(() => SubTabbarItemScreen(
-                          //     filter: mainModel[index].id, items: items));
-                          Get.to(() => TabbarSubCategoryScreen(
-                                filter: mainModel[index],
-                                items: items,
-                                submitTitle: mainModel[index].title,
-                              ));
-                        } else {
-                          if (mainModel[index].video.substring(
-                                  mainModel[index].video.lastIndexOf("/") +
-                                      1) ==
-                              "undefined") {
-                            ColoredSnack(
-                                title: "خطا هنگام پیدا کردن ویدیو",
-                                type: SnackType.ERROR);
-                            return;
-                          }
-                          Get.to(() => TabbarItemScreen(mainModel[index]));
-                        }
+                        });
                       },
                       child: Container(
                         child: Column(
@@ -181,7 +156,7 @@ class ListModel extends StatelessWidget {
                                       width:
                                           MediaQuery.of(context).size.width / 4,
                                       child: CachedNetworkImage(
-                                        imageUrl: mainModel[index].image,
+                                        imageUrl: differentType ? getUrl(mainModel[index]['imagePath']) : mainModel[index].image,
                                       ),
                                     ),
                                   ),
@@ -195,8 +170,7 @@ class ListModel extends StatelessWidget {
                               flex: 0,
                               child: SizedBox(
                                 width: MediaQuery.of(context).size.width / 3.8,
-                                child: Text(
-                                  mainModel[index].title,
+                                child: Text(differentType ? mainModel[index]['title'] : mainModel[index].title,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(

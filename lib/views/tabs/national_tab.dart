@@ -13,21 +13,25 @@ class NationalTab extends StatelessWidget{
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(flex:0,child: ColoredText(controller.getTitle(1))),
+        Expanded(flex:0,child: ColoredText(controller.getTitle(2))),
         Expanded(
           flex: 1,
-          child: SmartRefresher(
-            controller: controller.refreshController3,
-            onRefresh: (){
-              controller.getData();
-            },
-            header: const MaterialClassicHeader(),
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: ListView.builder(shrinkWrap: false,itemCount:controller.allNationalTabCategories.length,itemBuilder: (_context,index){
-                return ListModel(index: index,controller: controller,currentType: TabbarTypes.NATIONAL);
-              }),
-            ),
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: SmartRefresher(
+                controller: controller.refreshController3,
+                onRefresh: () {
+                  controller.getData();
+                },
+                header: const MaterialClassicHeader(),
+                child: ListView.builder(shrinkWrap: true,itemCount:controller.allNationalTabCategories.length+1,itemBuilder: (_context,index){
+                  if(index == controller.allNationalTabCategories.length){
+                    return SizedBox(
+                      height: 100,
+                    );
+                  }
+                  return ListModel(index: index,controller: controller,currentType: TabbarTypes.NATIONAL);
+                })),
           ),
         ),
 

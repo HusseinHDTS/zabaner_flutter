@@ -46,7 +46,7 @@ InlineSpan? _parseText(Text text, TextStyle style, bool styleChanged) {
   var t = text.data;
   if (t == null || t.isEmpty) return null;
   t = _fixWhitespaceInText(t);
-  return TextSpan(text: t, style: styleChanged ? style : null);
+  return TextSpan(text: t, style: styleChanged ? style : null,);
 }
 
 TextDecoration _combine(TextDecoration? nullable, TextDecoration nonnull) {

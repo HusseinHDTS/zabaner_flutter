@@ -49,9 +49,9 @@ class _FullScreenPageState extends State<FullScreenPage> {
         _systemResetTimer!.cancel();
       }
       _systemResetTimer = Timer.periodic(const Duration(milliseconds: 3000), (timer) {
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent
-        ));
+        // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        //     statusBarColor: Colors.transparent
+        // ));
         SystemChrome.setEnabledSystemUIOverlays([]);
       });
     } else {

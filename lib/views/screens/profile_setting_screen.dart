@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zabaner/controllers/setting_toggle_controller.dart';
 import 'package:zabaner/views/widgets/custom_setting_card.dart';
+import 'package:zabaner/models/utils.dart';
+import 'package:zabaner/views/colors.dart';
 
 class ProfileSetting extends StatelessWidget {
   ProfileSetting({Key? key, required this.isGuest}) : super(key: key);
@@ -47,10 +49,17 @@ class ProfileSetting extends StatelessWidget {
                 //       },
                 //     )),
                 Obx(() => SettingCard(
-                      title: "کارت حافظه محل پیش فرض برای ذخیره اطلاعات باشد",
+                      title: "ذخیره در کارت حافظه",
                       enable: _controller.saveStorage.value,
                       onTap: (value) {
                         _controller.getStorage.write('save_storage', value);
+                      },
+                    )),
+                Obx(() => SettingCard(
+                      title: "اسکرول خودکار زیرنویس ها",
+                      enable: _controller.autoScroll.value,
+                      onTap: (value) {
+                        _controller.getStorage.write('auto_scroll', value ? "on" : "off");
                       },
                     )),
                 // Obx(() => SettingCard(
@@ -148,8 +157,7 @@ class ProfileSetting extends StatelessWidget {
                             style: TextStyle(fontFamily: "Yekan", fontSize: 10),
                           ),
                           style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                  const Color(0xffFFC200)),
+                              backgroundColor: MaterialStateProperty.all(primary),
                               shape: MaterialStateProperty.all(
                                   RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8)))),
@@ -230,7 +238,7 @@ class ProfileSetting extends StatelessWidget {
                             Row(
                               children: [
                                 const Text(
-                                  "http://zabaner.ir  ",
+                                  "https://zabaner.ir  ",
                                   style: TextStyle(
                                       fontFamily: "Yekan",
                                       fontSize: 12,

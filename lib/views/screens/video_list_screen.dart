@@ -64,7 +64,7 @@ class VideoListScreen extends StatelessWidget {
                           return InkWell(
                             onTap: () => Get.to(() => VideoDetailScreen(
                                 isGuest: false,
-                                id: _controller.model[index].id)),
+                                id: _controller.model[index].id,itemType: "video",)),
                             child: Container(
                               width: Get.width,
                               height: Get.height / 5.5,

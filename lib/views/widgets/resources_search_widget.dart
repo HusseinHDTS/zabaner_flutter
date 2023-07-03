@@ -40,6 +40,7 @@ class ResourcesSearchWidget extends StatelessWidget {
         if (type == "videos") {
           Get.to(VideoDetailScreen(
               isGuest: false,
+              itemType: "video",
               id: id));
           // Navigator.pushNamed(context, '/video', arguments: id);
         }

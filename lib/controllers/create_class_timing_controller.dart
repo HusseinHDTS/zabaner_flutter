@@ -17,7 +17,6 @@ class CreateClassTimingController extends GetxController {
 
   sendData(String selectedDates) async {
     debugPrint("daskjdksajdkjaskdjkasjd : " + selectedDates);
-    // return;
     loadingDialog("لطفا صبر کنید");
     var bodyRequest = {"id": userSavedId, "freeTimes": selectedDates};
     var result = await _getConnect.post(updateTeacherFreeTimes, bodyRequest);

@@ -24,6 +24,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:showcaseview/src/enum.dart';
 import 'package:showcaseview/src/get_position.dart';
@@ -125,8 +126,12 @@ class _ToolTipWidgetState extends State<CustomToolTipWidget>
   TooltipPosition findPositionForContent(Offset position) {
     var height = 120.0;
     height = widget.contentHeight ?? height;
-    final bottomPosition =
-        position.dy + ((widget.position?.getHeight() ?? 0) / 2);
+    var bottomPosition = 0.0;
+    try {
+      bottomPosition = position.dy + ((widget.position?.getHeight() ?? 0) / 2);
+    }catch(e){
+      e.printError();
+    }
     final topPosition = position.dy - ((widget.position?.getHeight() ?? 0) / 2);
     final hasSpaceInTop = topPosition >= height;
     final EdgeInsets viewInsets = EdgeInsets.fromWindowPadding(
@@ -331,7 +336,12 @@ class _ToolTipWidgetState extends State<CustomToolTipWidget>
   Widget build(BuildContext context) {
     // TODO: maybe all this calculation doesn't need to run here. Maybe all or some of it can be moved outside?
     position = widget.offset;
-    final contentOrientation = findPositionForContent(position!);
+    var contentOrientation = TooltipPosition.top;
+    try {
+      contentOrientation = findPositionForContent(position!);
+    }catch(e){
+      e.printError();
+    }
     final contentOffsetMultiplier =
         contentOrientation == TooltipPosition.bottom ? 1.0 : -1.0;
     isArrowUp = contentOffsetMultiplier == 1.0;
@@ -548,10 +558,11 @@ class _ToolTipWidgetState extends State<CustomToolTipWidget>
             Flexible(
               flex: 1,
               child: Container(
+                margin: EdgeInsets.only(right: _getLeft() == null ? 28 : 0,left: _getLeft() == null ? 0 : 28),
                 child: widget.previousButtonText != null
                     ? Align(
                     alignment: _getLeft() == null ? Alignment.centerRight : Alignment.centerLeft,
-                    child: ColoredButton(widget.previousButtonText,onTap: widget.onPreviousButtonTap,textSize: 12,height: 30,padding: EdgeInsets.symmetric(horizontal: 5),borderRadius: 4,))
+                    child: ColoredButton(widget.previousButtonText,onTap: widget.onPreviousButtonTap,textSize: 12,height: 30,padding: EdgeInsets.symmetric(horizontal: 5),borderRadius: 4,color: primary.withOpacity(0.8)))
                     : Container(),
               ),
             ),

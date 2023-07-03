@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/widgets/custom_switch.dart';
+import 'package:switcher_button/switcher_button.dart';
+import 'package:zabaner/views/colors.dart';
 
 class SettingCard extends StatelessWidget {
   final String title;
@@ -32,10 +35,12 @@ class SettingCard extends StatelessWidget {
                   title,
                   style: const TextStyle(fontFamily: "Yekan", fontSize: 12),
                 ),
-                CustomSwitch(
-                  enableB: enable,
-                  onTap: onTap,
-                )
+                customSwitch(
+                  value: enable,
+                  onColor: primary,
+                  offColor: Color(0xffe6e6e9),
+                  size: 40,
+                  onChange: onTap,)
               ],
             ),
           )),

@@ -5,6 +5,7 @@ import 'package:zabaner/controllers/news_data_controller.dart';
 import 'package:zabaner/controllers/sub_tabbar_item_controller.dart';
 import 'package:zabaner/models/tabbar_item.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/tabbar_item_screen.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -38,12 +39,13 @@ class _SubTabbarItemScreen extends State<SubTabbarItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
           backgroundColor: const Color(0xffffffff),
           appBar: ColoredAppBar(),
-          body: ListView.builder(
+          body: items.length == 0 ? NoData() : ListView.builder(
               itemCount: items.length,
               itemBuilder: (_context, index) {
                 return InkWell(
@@ -67,7 +69,7 @@ class _SubTabbarItemScreen extends State<SubTabbarItemScreen> {
                         child: Container(
                           margin: EdgeInsets.all(12),
                           child: Column(children: [
-                            Align(alignment:Alignment.topRight,child: ColoredText(items[index].title,textColor: Colors.black,)),
+                            Align(alignment:Alignment.topRight,child: ColoredText(items[index].mTitle == "" ? items[index].title : items[index].mTitle,textColor: Colors.black,)),
                             SizedBox(height: 8,),
                             Align(alignment:Alignment.centerRight,child: Container(margin:EdgeInsets.only(right: 8),child: ColoredText(widget.submitTitle.toString(),textColor: Colors.black,textAlign: TextAlign.right,))),
                           ],),

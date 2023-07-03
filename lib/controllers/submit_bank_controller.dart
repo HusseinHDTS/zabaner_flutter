@@ -29,6 +29,7 @@ class SubmitBankController extends GetxController{
   Rx<Uint8List?> image = Uint8List(0).obs;
   XFile? imageFile;
   XFile? videoFile;
+  RxBool isGenderActive = false.obs,isMale = false.obs, isFemale = false.obs;
   var currentSelectedPos = 1.obs;
   TextEditingController nameController = TextEditingController();
   TextEditingController familyController = TextEditingController();
@@ -121,19 +122,38 @@ class SubmitBankController extends GetxController{
   }
 
   initData(){
-    nameController.text = data['name'];
-    familyController.text = data['family'];
-    emailController.text = data['email'];
-    cityController.text = data['city'];
-    descriptionController.text = data['description'];
-    phoneController.text = data['phone'];
+    nameController.text = data['name'].toString();
+    familyController.text = data['family'].toString();
+    emailController.text = data['email'].toString();
+    cityController.text = data['city'].toString();
+    descriptionController.text = data['description'].toString();
+    phoneController.text = data['phone'].toString();
     teachLanguage.text = "انگلیسی";
-    educationIn.text = data['educationIn'];
-    cardNumber.text = data['cardNumber'];
-    shebaNumber.text = data['shebaNumber'];
-    cardName.text = data['cardName'];
+    educationIn.text = data['educationIn'].toString();
+    cardNumber.text = data['cardNumber'].toString();
+    shebaNumber.text = data['shebaNumber'].toString();
+    cardName.text = data['cardName'].toString();
     defaultAgeRate.value = ageRates[0].toString();
     defaultEducationLevel.value = educationLevels[0].toString();
+    String gender = "";
+    if(data['gender'] != null && data['gender'] != ""){
+      gender = data['gender'];
+    }else{
+      gender = "null";
+    }
+    if(gender == "male"){
+      isMale.value = true;
+      isFemale.value = false;
+      isGenderActive.value = false;
+    }else if(gender == "female"){
+      isMale.value = false;
+      isFemale.value = true;
+      isGenderActive.value = false;
+    }else if(gender == "null"){
+      isGenderActive.value = true;
+      isMale.value = false;
+      isFemale.value = false;
+    }
     if(data['video'] != ""){
       chewieController = ChewieController(
         videoPlayerController: VideoPlayerController.network(getUrl(data['videoPath']),videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true,allowBackgroundPlayback: false)),
@@ -237,6 +257,7 @@ class SubmitBankController extends GetxController{
           Get.back();
           Get.back();
           Get.back();
+          onlineClassController.getData();
           if(jsonDecode(responseString.toString())['statusCode'] == null){
             // onlineClassController.getData();
             ColoredSnack(title: "عکس شما برای بررسی ارسال شد و پس از تایید شدن نمایش داده خواهد شد",type: SnackType.SUCCESS,duration: Duration(seconds: 6));
@@ -281,6 +302,19 @@ class SubmitBankController extends GetxController{
     if(videoFile != null){
       hasChange = true;
     }
+    String cGen = "null";
+    if(isFemale.value){
+      cGen = "female";
+    }
+    if(isMale.value){
+      cGen = "male";
+    }
+    if(data['ageRating'].toString() != cGen){
+      hasChange = true;
+    }
+    if(isFemale.value != null){
+      hasChange = true;
+    }
     if(educationIn.text != data['educationIn']){
       hasChange = true;
     }
@@ -306,6 +340,13 @@ class SubmitBankController extends GetxController{
     if(english05.isTrue){
       abilities.add(english05Content);
     }
+    String cGen = "null";
+    if(isFemale.value){
+      cGen = "female";
+    }
+    if(isMale.value){
+      cGen = "male";
+    }
     var bodyRequest = {
       "userId": userSavedId,
       "title": userSavedId,
@@ -317,6 +358,7 @@ class SubmitBankController extends GetxController{
       "phone": userPhoneNumber,
       "email": emailController.text,
       "city": cityController.text,
+      "gender": cGen,
       "description": descriptionController.text,
       "video": "",
       "educationLevel": selectedEducationLevel.value,

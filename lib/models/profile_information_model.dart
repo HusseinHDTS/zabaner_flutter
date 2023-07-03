@@ -12,6 +12,7 @@ ProfileInformation profileInformationFromJson(String str) =>
 class ProfileInformation {
   ProfileInformation({
     required this.userId,
+
     required this.email,
     required this.mobile,
     required this.firstName,
@@ -20,9 +21,13 @@ class ProfileInformation {
     required this.bDay,
     required this.username,
     required this.registerMethod,
+    required this.jalaliChildSubscribeStart,
+    required this.jalaliChildSubscribeEnd,
+    required this.jalaliAdultSubscribeStart,
+    required this.jalaliAdultSubscribeEnd,
+    required this.jalaliNationalSubscribeStart,
+    required this.jalaliNationalSubscribeEnd,
     required this.subscribes,
-    required this.startSubJalali,
-    required this.endSubJalali,
     required this.timeOfSub,
     required this.hasChildSub,
     required this.hasAdultSub,
@@ -39,8 +44,12 @@ class ProfileInformation {
   final String username;
   final String registerMethod;
   final String subscribes;
-  final String startSubJalali;
-  final String endSubJalali;
+  final String jalaliChildSubscribeStart;
+  final String jalaliChildSubscribeEnd;
+  final String jalaliAdultSubscribeStart;
+  final String jalaliAdultSubscribeEnd;
+  final String jalaliNationalSubscribeStart;
+  final String jalaliNationalSubscribeEnd;
   final String timeOfSub;
   final String? hasChildSub;
   final String? hasAdultSub;
@@ -60,11 +69,15 @@ class ProfileInformation {
         username: json["username"] ?? "",
         registerMethod: json["registerMethod"] ?? "",
         subscribes: json["subscribes"] ?? "",
-        startSubJalali: json["startSubJalali"] ?? "",
-        endSubJalali: json["endSubJalali"] ?? "",
         timeOfSub: json["timeOfSub"] ?? "",
-        hasChildSub: json["hasChildSub"],
-        hasAdultSub: json["hasAdultSub"],
-        hasNationalSub: json["hasNationalSub"],
+        jalaliAdultSubscribeEnd: json["jalaliAdultSubscribeEnd"] ?? "",
+        jalaliAdultSubscribeStart: json["jalaliAdultSubscribeStart"] ?? "",
+        jalaliChildSubscribeEnd: json["jalaliChildSubscribeEnd"] ?? "",
+        jalaliChildSubscribeStart: json["jalaliChildSubscribeStart"] ?? "",
+        jalaliNationalSubscribeEnd: json["jalaliNationalSubscribeEnd"] ?? "",
+        jalaliNationalSubscribeStart: json["jalaliNationalSubscribeStart"] ?? "",
+        hasChildSub: (json["hasChildSub"] ?? ""),
+        hasAdultSub: (json["hasAdultSub"] ?? ""),
+        hasNationalSub: (json["hasNationalSub"] ?? ""),
       );
 }

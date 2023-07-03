@@ -40,7 +40,7 @@ class ProfileSupport extends StatelessWidget {
                               : Container(
                                   padding: EdgeInsets.only(top: 18),
                                   child: ListView.builder(
-                                    shrinkWrap:false,
+                                    shrinkWrap: false,
                                     itemCount: _controller.tickets.length,
                                     itemBuilder: (context, index) {
                                       var item = _controller.tickets[index];
@@ -114,6 +114,8 @@ class ProfileSupport extends StatelessWidget {
                                                                       item.mTitle,
                                                                       textSize:
                                                                           18,
+                                                                      maxLines:
+                                                                          1,
                                                                       textAlign:
                                                                           TextAlign
                                                                               .right,
@@ -185,7 +187,7 @@ class ProfileSupport extends StatelessWidget {
           flex: 0,
           child: InkWell(
             onTap: () {
-              Get.to(() => const CreateTicketScreen());
+              Get.to(() => CreateTicketScreen());
             },
             child: Container(
               width: double.infinity,
@@ -214,7 +216,7 @@ class ProfileSupport extends StatelessWidget {
               height: 50,
               margin: const EdgeInsets.only(right: 18, left: 18, top: 8),
               decoration: BoxDecoration(
-                  color: Colors.blueAccent,
+                  color: secondaryLight,
                   borderRadius: BorderRadius.circular(8)),
               child: Center(
                 child: ColoredText("سوال های متداول",

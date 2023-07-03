@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,7 +13,6 @@ import 'package:zabaner/models/app_versions.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
-import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
 class SplashScreenTimer extends GetxController {
@@ -21,11 +21,19 @@ class SplashScreenTimer extends GetxController {
   SplashScreenTimer(this.context);
 
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
+  final GetStorage _getStorage = GetStorage();
 
   var starting = false.obs;
   var currentAppVersion = "".obs;
   var currentStatus = "".obs;
   var currentLoadPercent = 0.0.obs;
+
+  Future<void> getPersonalInfo() async{
+    await getPersonInfo(_getConnect,_getStorage);
+    await getWalletInfo(_getConnect,_getStorage);
+  }
+
+
   @override
   void onInit() async {
     super.onInit();
@@ -62,6 +70,9 @@ class SplashScreenTimer extends GetxController {
         }
       }
     }
+    currentLoadPercent.value = 0.5;
+    currentStatus.value="درحال دریافت اطلاعات کاربری...";
+    await getPersonalInfo();
     currentLoadPercent.value = 0.6;
     if (!hasUpdate) {
       try {
@@ -311,4 +322,5 @@ class SplashScreenTimer extends GetxController {
       isDismissible: false,
     );
   }
+
 }

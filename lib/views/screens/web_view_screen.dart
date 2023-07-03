@@ -16,24 +16,24 @@ import 'package:zabaner/widgets/colored_text.dart';
 import 'package:zabaner/widgets/my_app_bar.dart';
 
 class WebViewScreen extends StatefulWidget {
-  String url, amount, description, email, phone, type, timeOfSub;
+  String url;
+  var bodyRequest, onPaymentCallBack;
 
-  WebViewScreen(this.url, this.phone, this.email, this.description, this.amount,
-      this.type, this.timeOfSub);
+  WebViewScreen(this.url, {this.onPaymentCallBack, this.bodyRequest});
 
   @override
   State<StatefulWidget> createState() {
-    return _WebViewScreen(
-        url, phone, email, description, amount, type, timeOfSub);
+    return _WebViewScreen(url,
+        bodyRequest: bodyRequest, onPaymentCallBack: onPaymentCallBack);
   }
 }
 
 class _WebViewScreen extends State<WebViewScreen> {
-  String url, amount, description, email, phone, type, timeOfSub;
+  String url;
+  var bodyRequest, onPaymentCallBack;
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
 
-  _WebViewScreen(this.url, this.phone, this.email, this.description,
-      this.amount, this.type, this.timeOfSub);
+  _WebViewScreen(this.url, {this.bodyRequest, this.onPaymentCallBack});
 
   final WebViewController _controller = Get.put(WebViewController());
 
@@ -80,9 +80,7 @@ class _WebViewScreen extends State<WebViewScreen> {
                                 url: Uri.dataFromString(
                                     '<html> <body> <center style="font-size: 60px;margin-top:80px; direction: rtl;">درحال انتقال به درگاه پرداخت ...</center> </body> </html>',
                                     mimeType: 'text/html',
-                                    encoding: Encoding.getByName('utf-8')
-                                )
-                            ),
+                                    encoding: Encoding.getByName('utf-8'))),
                             onProgressChanged: (controller, progress) {
                               _controller.setProgress(
                                   double.parse((progress / 100).toString()));
@@ -102,59 +100,15 @@ class _WebViewScreen extends State<WebViewScreen> {
                               }
                               _controller.setResultReceived(false);
                               if (scheme == "zabanerappresult") {
-                                String subscribe = "";
-                                if (type == "کودکان") {
-                                  subscribe = "hasChildSub";
-                                } else if (type == "بزرگسالان") {
-                                  subscribe = "hasAdultSub";
-                                } else if (type == "آزمون ها") {
-                                  subscribe = "hasNationalSub";
-                                }
-                                String finalSubTime = "1";
-                                if (timeOfSub == "0") {
-                                  finalSubTime = "1";
-                                } else if (timeOfSub == "1") {
-                                  finalSubTime = "3";
-                                } else if (timeOfSub == "2") {
-                                  finalSubTime = "12";
-                                }
-                                _controller.setResultReceived(true);
-                                loadingDialog("درحال ثبت پرداخت ...");
-                                if (url.queryParameters['status']
-                                        .toString()
-                                        .toLowerCase() !=
-                                    "OK".toLowerCase()) {
-                                  Get.back();
-                                  return;
-                                }
-                                var bodyRequest = {
-                                  subscribe: "on",
-                                  "timeOfSub": finalSubTime,
-                                };
-                                await _getConnect.post(
-                                    updateSubscribeProfile, bodyRequest,
-                                    headers: {
-                                      'accept': 'application/json',
-                                      'Authorization':
-                                          'Bearer ${_getStorage.read('token')}'
-                                    });
                                 Get.back();
-                                ColoredSnack(title: "پرداخت موفقیت آمیز بود",type: SnackType.SUCCESS);
-                                Get.offAll(() => LoginScreen());
+                                onPaymentCallBack(_controller, url);
                               }
                             },
                             onLoadError: (controller, url, code, message) {
+                              ColoredSnack(title: "خطا",description: message,type: SnackType.ERROR);
                               Get.back();
                             },
                             onWebViewCreated: ((controller) {
-                              var bodyRequest = {
-                                "amount": amount + "0",
-                                "description": description,
-                                "phone": "0",
-                                "email": "husseindts@gmail.com",
-                                "type": type,
-                                "timeOfSub": timeOfSub,
-                              };
                               _getConnect.post(userPaymentCheck, bodyRequest,
                                   headers: {
                                     'accept': 'application/json',
@@ -166,7 +120,6 @@ class _WebViewScreen extends State<WebViewScreen> {
                                         url: Uri.parse(
                                             value.bodyString.toString())));
                               });
-
                             }),
                           ),
                         ),

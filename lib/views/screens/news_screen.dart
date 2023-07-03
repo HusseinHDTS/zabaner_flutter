@@ -68,20 +68,6 @@ class NewsScreen extends StatelessWidget {
               ),
               bottom: TabBar(
                 controller: tabController,
-
-                // indicator: BoxDecoration(
-                //     gradient: LinearGradient(
-                //       begin: Alignment.topCenter,
-                //         end: Alignment.bottomCenter,
-                //         colors: [orangeDark.withOpacity(0.1), orangeDark.withOpacity(0.4), orangeDark]),
-                //     borderRadius: BorderRadius.vertical(top: Radius.circular(18),bottom: Radius.circular(8)),
-                //     boxShadow: [
-                //       BoxShadow(
-                //           color: orangeDark.withOpacity(0.5),
-                //           offset: Offset(0, 18),
-                //           blurRadius: 3,
-                //           spreadRadius: -10),
-                //     ]),
                 tabs: [
                   Tab(
                     child: Container(
@@ -119,25 +105,18 @@ class NewsScreen extends StatelessWidget {
             body: Directionality(
               textDirection: TextDirection.ltr,
               child: Container(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-                child: Obx(() => SmartRefresher(
-                    controller: _searchController.refreshController4,
-                    onRefresh: () {
-                      _searchController.getData();
-                    },
-                    header: const MaterialClassicHeader(),
-                    child: _searchController.dataError.isTrue
-                        ? ErrorLoading()
-                        : _searchController.isDataLoaded()
-                            ? TabBarView(children: [
-                                ChildTab(controller: _searchController),
-                                AdultTab(controller: _searchController),
-                                NationalTab(controller: _searchController),
-                              ])
-                            : Center(
-                                child: Loading(),
-                              ))),
+                margin: const EdgeInsets.only(top: 18, right: 12, left: 12),
+                child: Obx(() => _searchController.dataError.isTrue
+                    ? ErrorLoading()
+                    : _searchController.isDataLoaded()
+                        ? TabBarView(children: [
+                            ChildTab(controller: _searchController),
+                            AdultTab(controller: _searchController),
+                            NationalTab(controller: _searchController),
+                          ])
+                        : Center(
+                            child: Loading(),
+                          )),
               ),
             ));
       }),

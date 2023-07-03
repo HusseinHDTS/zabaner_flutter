@@ -20,9 +20,14 @@ import 'package:zabaner/widgets/my_app_bar.dart';
 import 'dart:io' as io;
 
 class VideoDetailScreen extends StatefulWidget {
-  VideoDetailScreen({Key? key, required this.isGuest, required this.id})
+  VideoDetailScreen(
+      {Key? key,
+      required this.isGuest,
+      required this.id,
+      required this.itemType})
       : super(key: key);
   final bool isGuest;
+  String itemType;
   final String id;
 
   @override
@@ -35,7 +40,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   @override
   void initState() {
     super.initState();
-    controller.customeInit(widget.id, widget.isGuest);
+    controller.customeInit(widget.id, widget.isGuest,
+        itemType: widget.itemType);
   }
 
   @override
@@ -48,7 +54,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-            appBar: ColoredAppBar(),
+            appBar: ColoredAppBar(titleWidget: Obx(()=>controller.isDataLoaded.value ? ColoredText(controller.videoItems.value.faTitle,textColor: Colors.white,textSize: 18,): Container()),),
             body: Directionality(
               textDirection: TextDirection.ltr,
               child: Obx(() => controller.isDataLoaded.isTrue
@@ -59,79 +65,63 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                 horizontal: Get.width / 50, vertical: 5),
                             child: AspectRatio(
                               aspectRatio: 16 / 9,
-                              child: ClipRRect(borderRadius: BorderRadius.circular(18),child: Obx(() => getVideoView(io.File(getUrlFileName(controller.appDoc.path,  controller.videoItems.value.id,
-                                  controller.videoItems.value.videoPath)),
-                                  CustomVideoType.STORAGE,
-                                  withThumb: true,
-                                  retryImage: customVideoPlayerTag.value == getUrlFileName(controller.appDoc.path, controller.videoItems.value.id,
-                                      controller.videoItems.value.videoPath),showPreviewOverlay: false)),),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(18),
+                                child: Obx(() => getVideoView(
+                                    io.File(getUrlFileName(
+                                        controller.appDoc.path,
+                                        controller.videoItems.value.id,
+                                        controller.videoItems.value.videoPath)),
+                                    CustomVideoType.STORAGE,
+                                    withThumb: true,
+                                    retryImage: customVideoPlayerTag.value ==
+                                        getUrlFileName(
+                                            controller.appDoc.path,
+                                            controller.videoItems.value.id,
+                                            controller
+                                                .videoItems.value.videoPath),
+                                    showPreviewOverlay: false)),
+                              ),
                             )),
-
-                        // Icons
-                        SizedBox(
-                          width: Get.width / 1.1,
-                          height: Get.height / 20,
-                          child:
-                              Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                Row(
-                                  children: [
-                                    // bookmark icon
-                                    Row(
-                                      children: [
-                                        const Text("   انگلیسی:",
-                                            style: TextStyle(
-                                                fontFamily: "Yekan",
-                                                fontSize: 16)),
-                                        Obx(() => Switch(
-                                              value: controller.en.value,
-                                              onChanged: (value) {
-                                                controller.en.value = value;
-                                              },
-                                            ))
-                                      ],
-                                    ),
-
-                                    Row(
-                                      children: [
-                                        const Text(" فارسی:",
-                                            style: TextStyle(
-                                                fontFamily: "Yekan",
-                                                fontSize: 16)),
-                                        Obx(() => Switch(
-                                              value: controller.fa.value,
-                                              onChanged: (value) {
-                                                controller.fa.value = value;
-                                              },
-                                            ))
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                InkWell(
-                                  onTap: () => controller.autoScroll.toggle(),
-                                  child: Obx(() => Container(
-                                        margin: EdgeInsets.symmetric(
-                                            vertical: Get.height / 100),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            color: controller.autoScroll.value
-                                                ? Colors.blue
-                                                : Colors.red),
-                                        child: Row(children: const [
-                                          Icon(Icons.arrow_drop_down_sharp,
-                                              color: Colors.black),
-                                          Icon(Icons.arrow_drop_up_sharp,
-                                              color: Colors.black),
-                                        ]),
-                                      )),
-                                ),
-                              ]),
+                        SizedBox(height: 8,),
+                        Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 8),
+                            child: Row(
+                             mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Builder(builder: (context) {
+                                  var itemSettings = getItemSettings(
+                                      "${widget.itemType}/${widget.id}");
+                                  controller.fa.value =
+                                      itemSettings['faTitle'] == "on";
+                                  controller.en.value =
+                                      itemSettings['enTitle'] == "on";
+                                  return Obx(() => langChange(
+                                      fa: itemSettings['faTitle'] == "on",
+                                      en: itemSettings['enTitle'] == "on",
+                                      enDisable: controller.enDisable.value,
+                                      faDisable: controller.faDisable.value,
+                                      onEnChange: (value) {
+                                        controller.en.value = value;
+                                        writeSetting(
+                                            "${widget.itemType}/${widget.id}/enTitle",
+                                            value == true ? "on" : "off");
+                                        // controller.christianLyrics.resetLyric(faEnable: controller.fa.value , enEnable: controller.en.value);
+                                      },
+                                      onFaChange: (value) {
+                                        controller.fa.value = value;
+                                        writeSetting(
+                                            "${widget.itemType}/${widget.id}/faTitle",
+                                            value == true ? "on" : "off");
+                                        // controller.christianLyrics.resetLyric(faEnable: controller.fa.value , enEnable: controller.en.value);
+                                      }));
+                                }),
+                              ],
+                            ),
+                          ),
                         ),
-
                         Expanded(
                           flex: 1,
                           child: Container(
@@ -141,39 +131,32 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                 Container(
                                   margin: EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 4),
-                                  child: GetBuilder<VideoController>(
-                                    init: controller,
-                                    builder: (_ctrler) {
-                                      return SingleChildScrollView(
-                                        controller: _ctrler.scrollController,
-                                        child: Obx(()=>_ctrler.isSubtitleLoaded.isTrue ? Column(
-                                            children: List.generate(
-                                                _ctrler
-                                                    .getParAsLang(null)
-                                                    .length, (index) {
-                                              Widget returnWidget = Obx(()=>SubtitleTile(faVisible: _ctrler.fa.value, enVisible: _ctrler.en.value, faTile: _ctrler.getCurrentText(index, true),enTile: _ctrler.getCurrentText(index, false)));
-                                              if (index ==
-                                                  controller
-                                                      .getParAsLang(null)
-                                                      .length -
-                                                      1) {
-                                                return Column(
-                                                  children: [
-                                                    returnWidget,
-                                                    Obx(() => SizedBox(
-                                                      height:
-                                                      _ctrler.isHide.value
-                                                          ? hiddenHeight
-                                                          : normalHeight,
-                                                    )),
-                                                  ],
-                                                );
-                                              }
-                                              return returnWidget;
-                                            })) : Container()),
-                                      );
-                                    },
-                                  ),
+                                  child: Obx(() => controller
+                                          .isSubtitleLoaded.value
+                                      ? Obx(() {
+                                          if (controller.fa.value ||
+                                              controller.en.value) {}
+                                          return Expanded(
+                                            flex: 1,
+                                            child: controller.christianLyrics
+                                                .getLyric(context,
+                                                    isPlaying: controller
+                                                        .isPlaying.value,
+                                                    faE: controller.fa.value,
+                                                    enE: controller.en.value,
+                                                    autoScroll: controller
+                                                        .autoScroll.value,
+                                                    tStyle: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyText1!
+                                                        .copyWith(
+                                                            height: 1.5,
+                                                            fontSize: 20,
+                                                            color:
+                                                                Colors.black)),
+                                          );
+                                        })
+                                      : subtitleLoading(hasFirstItem: false)),
                                 ),
                                 Align(
                                     alignment: Alignment.bottomCenter,
@@ -187,25 +170,34 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                 : normalHeight,
                                             child: BottomPlayer(
                                                 isVideo: true,
+                                                autoScroll:
+                                                    controller.autoScroll,
+                                                faTitle: controller.fa,
+                                                enTitle: controller.en,
+                                                settingsId:
+                                                    "${widget.itemType}/${widget.id}",
                                                 forward: () {
-                                                  // var data = getPlayerIndex(
-                                                  //     controller
-                                                  //         .getParAsLang(
-                                                  //         null),
-                                                  //     controller
-                                                  //         .playIndexList,
-                                                  //     controller
-                                                  //         .playIndexInList,
-                                                  //     true);
-                                                  // controller.currentSavedTime.value = data[2];
-                                                  // controller.playerPosition.value = Duration(milliseconds: data[2]);
-                                                  // controller.playIndexList = data[0];
-                                                  // controller.playIndexInList = data[1];
-                                                  var newPos = controller.currentSavedTime.value+5100;
-                                                  if(newPos > controller.duration.value.inMilliseconds) newPos = controller.duration.value.inMilliseconds -100;
-                                                  controller.currentSavedTime.value = newPos;
-                                                  controller.playerPosition.value = Duration(milliseconds: newPos);
-                                                  customVideoPlayerController!.seekTo(newPos.toDouble());
+                                                  var newPos = controller
+                                                          .currentSavedTime
+                                                          .value +
+                                                      5100;
+                                                  if (newPos >
+                                                      controller.duration.value
+                                                          .inMilliseconds)
+                                                    newPos = controller
+                                                            .duration
+                                                            .value
+                                                            .inMilliseconds -
+                                                        100;
+                                                  controller.currentSavedTime
+                                                      .value = newPos;
+                                                  controller.playerPosition
+                                                          .value =
+                                                      Duration(
+                                                          milliseconds: newPos);
+                                                  customVideoPlayerController!
+                                                      .seekTo(
+                                                          newPos.toDouble());
                                                 },
                                                 backward: () {
                                                   // var data = getPlayerIndex(
@@ -221,11 +213,20 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                   // controller.playerPosition.value = Duration(milliseconds: data[2]);
                                                   // controller.playIndexList = data[0];
                                                   // controller.playIndexInList = data[1];
-                                                  var newPos = controller.currentSavedTime.value-5100;
-                                                  if(newPos < 0) newPos = 0;
-                                                  controller.currentSavedTime.value = newPos;
-                                                  controller.playerPosition.value = Duration(milliseconds: newPos);
-                                                  customVideoPlayerController!.seekTo(newPos.toDouble());
+                                                  var newPos = controller
+                                                          .currentSavedTime
+                                                          .value -
+                                                      5100;
+                                                  if (newPos < 0) newPos = 0;
+                                                  controller.currentSavedTime
+                                                      .value = newPos;
+                                                  controller.playerPosition
+                                                          .value =
+                                                      Duration(
+                                                          milliseconds: newPos);
+                                                  customVideoPlayerController!
+                                                      .seekTo(
+                                                          newPos.toDouble());
                                                 },
                                                 isFileExists:
                                                     controller.isVideoExists,
@@ -305,7 +306,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                 playSpeed: controller.playSpeed,
                                                 player: controller
                                                         .videoInitialized.value
-                                                    ? customVideoPlayerController!.videoPlayerController
+                                                    ? customVideoPlayerController!
+                                                        .videoPlayerController
                                                     : null,
                                                 isHide: controller.isHide,
                                                 repeat: controller.repeat,

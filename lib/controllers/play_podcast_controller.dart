@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' as io;
+import 'package:zabaner/widgets/custom_lyric/christian_lyrics.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -33,11 +34,13 @@ class PlayPodcastController extends GetxController {
   var isPlaying = false.obs;
   var isSubtitleLoaded = false.obs;
   var isDataLoaded = false.obs;
+  var errorData = false.obs;
   var ind = 0;
   var faParagraph = <SentenceModel>[].obs;
   var enParagraph = <SentenceModel>[].obs;
   RxBool autoScroll = true.obs;
   var en = true.obs, fa = true.obs;
+  var enDisable = false.obs, faDisable = false.obs;
   var playingText = "".obs;
   var playingTextFa = "".obs;
   var isHide = false.obs;
@@ -52,7 +55,9 @@ class PlayPodcastController extends GetxController {
   var playerPosition = const Duration().obs;
   var repeat = false.obs;
   var downloadingState = "".obs;
-
+  var faRawSub = "" , enRawSub = "";
+  var lsFaRawSub = "" , lsEnRawSub = "";
+  final christianLyrics = ChristianLyrics();
   @override
   void onInit() async {
     super.onInit();
@@ -80,12 +85,73 @@ class PlayPodcastController extends GetxController {
     playSpeed.value = 1;
   }
 
+  void changeSubAsLang(){
+    String cFa = "" , cEn = "";
+    if(fa.value){
+      cFa = faRawSub;
+    }
+    if(en.value){
+      cEn = enRawSub;
+    }
+    if(cFa == lsFaRawSub && cEn == lsEnRawSub){
+      return;
+    }
+    lsEnRawSub = cEn;
+    lsFaRawSub = cFa;
+    christianLyrics.setLyricContent(cEn,faLyrics: cFa);
+    christianLyrics.resetLyric();
+  }
+
   void initSubtitle(id) async {
+    dynamic itemSettings = getItemSettings("podcasts/$id");
+    if(itemSettings['autoScrollItem'] == "null"){
+      if(itemSettings['autoScroll'] == "on"){
+        autoScroll.value = true;
+      }else{
+        autoScroll.value = false;
+      }
+    }else{
+      if(itemSettings['autoScrollItem'] == "on"){
+        autoScroll.value = true;
+      }else{
+        autoScroll.value = false;
+      }
+    }
+    if(itemSettings['faTitle'] == "on"){
+      fa.value = true;
+    }else{
+      fa.value = false;
+    }
+    if(itemSettings['enTitle'] == "on"){
+      en.value = true;
+    }else{
+      en.value = false;
+    }
+    if(itemSettings['repeat'] == "on"){
+      repeat.value = true;
+    }else{
+      repeat.value = false;
+    }
     var shouldR = false;
     var faLink = podcastItem.subtitleFa.toString();
     var enLink = podcastItem.subtitle.toString();
     var resEn = await getSrtSubTitle("en", id, enLink);
     var resFa = await getSrtSubTitle("fa", id, faLink);
+    var rawEn = await getRawSrtSubTitle("en", id, enLink);
+    var rawFa = await getRawSrtSubTitle("fa", id, faLink);
+    faRawSub = rawFa.replaceAll("/l", "");
+    enRawSub = rawEn.replaceAll("/l", "");
+    lsFaRawSub = faRawSub;
+    lsEnRawSub = enRawSub;
+    if(enLink.trim().isEmpty){
+      en.value = false;
+      enDisable.value = true;
+    }
+    if(faLink.trim().isEmpty){
+      fa.value = false;
+      faDisable.value = true;
+    }
+    christianLyrics.setLyricContent(enRawSub,faLyrics: faRawSub);
     if (resEn != null) {
       enParagraph.value = resEn;
       shouldR = true;
@@ -379,7 +445,9 @@ class PlayPodcastController extends GetxController {
 
           percentPlayed.value =
               event.position.inMilliseconds / event.duration.inMilliseconds;
-          checkForTime(event);
+          christianLyrics.resetLyric();
+          christianLyrics.setPositionWithOffset(position: event.position.inMilliseconds, duration: event.duration.inMilliseconds);
+          // checkForTime(event);
         });
       } else {
         ColoredSnack(

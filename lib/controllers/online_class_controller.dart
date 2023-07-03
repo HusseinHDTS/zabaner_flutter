@@ -24,6 +24,11 @@ class OnlineClassController extends GetxController {
   RxBool isSubmitDone = false.obs;
   RxBool isAllowToCompleteSubmit = false.obs;
   RxBool errorData = false.obs;
+  RxBool isTeacherFilterOn = false.obs;
+  RxBool isHighPriceEnable = false.obs;
+  RxBool isLowPriceEnable = false.obs;
+  RxBool isMenEnable = false.obs;
+  RxBool isWomenEnable = false.obs;
   var videosList = [];
 
   @override
@@ -42,18 +47,40 @@ class OnlineClassController extends GetxController {
     await ftpConnect.disconnect();
   }
 
-  getData() async {
+  void resetFilters() {
+    isWomenEnable.value = false;
+    isMenEnable.value = false;
+    isLowPriceEnable.value = false;
+    isHighPriceEnable.value = false;
+    getData();
+  }
+
+  void applyFilters() {
+    getData(bodyReq: {
+      "isWomenEnable": isWomenEnable.value.toString(),
+      "isMenEnable": isMenEnable.value.toString(),
+      "isLowPriceEnable": isLowPriceEnable.value.toString(),
+      "isHighPriceEnable": isHighPriceEnable.value.toString(),
+    });
+  }
+
+  getData({bodyReq,bool resetFilters = false}) async {
     errorData.value = false;
     isDataLoaded.value = false;
+    if(resetFilters){
+      isWomenEnable.value = false;
+      isMenEnable.value = false;
+      isLowPriceEnable.value = false;
+      isHighPriceEnable.value = false;
+    }
     var bodyRequest = {
       "userId": userSavedId,
     };
     final _request = await _getConnect.post(getCurrentTeacherUser, bodyRequest);
-    final _request1 = await _getConnect.get(getAllUserTeachers);
+    final _request1 = await _getConnect.post(getAllUserTeachers,bodyReq);
     isDataLoaded.value = true;
-    data = jsonDecode(_request.bodyString ?? "");
+    data = jsonDecode(_request.bodyString ?? "[]");
     teachersData = userTeachersListModelFromJson(_request1.bodyString ?? "");
-    debugPrint("askdjkjxzkjkwjaekjksjdksajdkj : " + _request.bodyString.toString());
     if (data.length == 0) {
       isNewUser.value = true;
       isSubmitDone.value = false;
@@ -80,14 +107,15 @@ class OnlineClassController extends GetxController {
         isAllowToCompleteSubmit.value = false;
       }
     }
-    if(videosList.isNotEmpty){
+    if (videosList.isNotEmpty) {
       videosList.clear();
     }
     for (var element in teachersData) {
-      videosList.add(CustomVideoPlayerController(CachedVideoPlayerController.network(
-          getUrl(element.videoPath),
-          httpHeaders: {"Keep-Alive":"timeout=1000 , max=100000"},
-          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true,allowBackgroundPlayback: false))));
+      videosList.add(CustomVideoPlayerController(
+          CachedVideoPlayerController.network(getUrl(element.videoPath),
+              httpHeaders: {"Keep-Alive": "timeout=1000 , max=100000"},
+              videoPlayerOptions: VideoPlayerOptions(
+                  mixWithOthers: true, allowBackgroundPlayback: false))));
     }
     refreshController.refreshCompleted();
   }

@@ -8,7 +8,7 @@ import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/login_screen.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 
-class SplashScreen extends StatefulWidget{
+class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
@@ -16,11 +16,9 @@ class SplashScreen extends StatefulWidget{
     // exitFullScreenMode();
     return _SplashScreen();
   }
-
 }
 
 class _SplashScreen extends State<SplashScreen> {
-
   @override
   Widget build(BuildContext context) {
     var controller = Get.put(SplashScreenTimer(context));
@@ -46,20 +44,35 @@ class _SplashScreen extends State<SplashScreen> {
                   children: [
                     SizedBox(
                       width: Get.width / 1.8,
-                      child: Stack(children: [
-                         Center(
-                          child: Obx(()=>ProgressBar(
-                            value: controller.currentLoadPercent.value,
-                            height: 35,
-                            backgroundColor: Colors.black12,
-                            gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [Colors.orangeAccent,Colors.orange, Colors.deepOrange]),
-                          )),
-                        ),
-                        Obx(() => SizedBox(height:35,child: Center(child: ColoredText(controller.currentStatus.value,textDirection: TextDirection.rtl,textColor: Colors.white,)))),
-                      ],),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Obx(() => ProgressBar(
+                                  value: controller.currentLoadPercent.value,
+                                  height: 35,
+                                  backgroundColor: Colors.black12,
+                                  gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.lightBlueAccent,
+                                        Colors.blueAccent,
+                                        Colors.deepPurpleAccent
+                                      ]),
+                                )),
+                          ),
+                          Obx(() => SizedBox(
+                              height: 35,
+                              child: Directionality(
+                                  textDirection: TextDirection.rtl,
+                                  child: Center(
+                                      child: ColoredText(
+                                    controller.currentStatus.value,
+                                    textDirection: TextDirection.rtl,
+                                    textColor: Colors.white,
+                                  ))))),
+                        ],
+                      ),
                     ),
                     Obx(() => Text(
                           "Version ${controller.currentAppVersion.value}",

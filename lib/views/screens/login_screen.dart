@@ -300,7 +300,7 @@ class LoginScreen extends StatelessWidget {
                                                         () =>
                                                             const SignupScreen(),
                                                       ),
-                                                      child: const Text(
+                                                      child: Text(
                                                         " ایجاد کنید",
                                                         style: TextStyle(
                                                             fontSize: 12,
@@ -318,7 +318,7 @@ class LoginScreen extends StatelessWidget {
                                                     Get.to(() =>
                                                         const RecoveryPasswordScreen());
                                                   },
-                                                  child: const Text(
+                                                  child: Text(
                                                     "\nرمز عبور خود را فرموش کرده ام",
                                                     style: TextStyle(
                                                         fontSize: 9,

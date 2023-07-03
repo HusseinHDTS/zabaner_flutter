@@ -343,11 +343,11 @@ class CreateClassTimingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // List<CustomDate>? customDates;
+    // debugPrint("dsakjdkasjkcjxzds : " + freeTimes);
     try {
       dateController.getSelectedDates().clear();
-      List<CustomDate> customDates =
-          customDateListModelFromJson(freeTimes);
-      dateController.getSelectedDates().addAll(customDates);
+      dateController.getSelectedDates().addAll( customDateListModelFromJson(freeTimes));
     } catch (e) {
       e.printError();
     }
@@ -359,6 +359,7 @@ class CreateClassTimingScreen extends StatelessWidget {
             flex: 1,
             child: CustomDatePicker(
               controller: dateController,
+              // activeDates: ,
               weeks: 14,
               headerPadding: EdgeInsets.symmetric(horizontal: 4),
               autoSelectNext: false,
@@ -372,14 +373,11 @@ class CreateClassTimingScreen extends StatelessWidget {
               child: ColoredButton(
                 "ثبت زمان های انتخاب شده",
                 onTap: () {
-                  debugPrint("qwekxjckjaskdjas : " +
-                      dateController
-                          .getSelectedDates()
-                          .toList()
-                          .length
-                          .toString());
                   timingController.sendData(
                       jsonEncode(dateController.getSelectedDates().toList()));
+                  dateController
+                      .getSelectedDates().clear();
+
                 },
               ),
             ),
@@ -410,15 +408,14 @@ class _ShowTeacherTimesState extends State<ShowTeacherTimes> {
 
   @override
   Widget build(BuildContext context) {
+    List<CustomDate>? customDates;
     try {
       dateController.getSelectedDates().clear();
-      List<CustomDate> customDates =
-          customDateListModelFromJson(widget.freeTimes);
-      dateController.getSelectedDates().addAll(customDates);
+      dateController.getSelectedDates().addAll(customDateListModelFromJson(widget.freeTimes));
+      // dateController.getSelectedDates().addAll(customDates);
     } catch (e) {
       e.printError();
     }
-
     return Scaffold(
       appBar: ColoredAppBar(),
       body: Column(
@@ -428,6 +425,7 @@ class _ShowTeacherTimesState extends State<ShowTeacherTimes> {
             child: CustomDatePicker(
               controller: dateController,
               weeks: 14,
+              activeDates: customDates,
               headerPadding: EdgeInsets.symmetric(horizontal: 4),
               viewMode: true,
               autoSelectNext: false,

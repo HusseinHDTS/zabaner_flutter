@@ -26,7 +26,7 @@ class ResetPasswordCode extends StatelessWidget {
           }
           onChanged!(value);
         },
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
             contentPadding: EdgeInsets.zero,
             fillColor: Color(0xffffffff),
             filled: true,

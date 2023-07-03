@@ -14,31 +14,49 @@ const createOnlineClass = "$baseUrl/api/v1/online-class/create";
 const updateUserTeacher = "$baseUrl/api/v1/user-teachers/updateInfo";
 const updateTeacherProfileImage = "$baseUrl/api/v1/user-teachers/image";
 const createBankUserTeacher = "$baseUrl/api/v1/user-teachers/bank";
+const updateUserTeacherRating = "$baseUrl/api/v1/user-teachers/addRate";
 const updateTeacherFreeTimes = "$baseUrl/api/v1/user-teachers/freeTimes";
-const getCurrentTeacherUser = "$baseUrl/api/v1/user-teachers";
+const getCurrentTeacherUser = "$baseUrl/api/v1/user-teachers/current";
+const getUserProfile = "$baseUrl/api/v1/user/fullInfo";
+const addRemoveWallet = "$baseUrl/api/v1/user/addRemoveWallet";
+const addMoneyRequest = "$baseUrl/api/v1/user-wallet-request";
 const getAllUserTeachers = "$baseUrl/api/v1/user-teachers";
 const getAllTeacherClass = "$baseUrl/api/v1/online-class";
+const updateRateForClass = "$baseUrl/api/v1/online-class/updateRate";
+const getThumbnail = "$baseUrl/api/v1/online-class/thumbnail";
+const updatePaymentForClass = "$baseUrl/api/v1/online-class/updatePayment";
+const getAllUserClass = "$baseUrl/api/v1/online-class/listForUser";
 const signupUrl = "$baseUrl/api/v1/auth/signup";
 const newsCategoryUrl = "$baseUrl/api/v1/news-categories";
 const subCategoryUrl = "$baseUrl/api/v1/sub-categories";
 const videoCategoryUrl = "$baseUrl/api/v1/video-categories";
 const podcastCategoryUrl = "$baseUrl/api/v1/podcast-categories";
+const getMagooshCategory = "$baseUrl/api/v1/ielts-category";
+const getGeneralMagooshCategory = "$baseUrl/api/v1/ielts-general-category";
 const getTabbarCategory = "$baseUrl/api/v1/tabbar-categories";
 const getChildTabbarCategory = "$baseUrl/api/v1/child-tabbar-categories";
 const getChildTabbarSubCategory = "$baseUrl/api/v1/child-tabbar-sub-categories";
 const getChildTabbarItems = "$baseUrl/api/v1/child-tabbar";
 const getAdultTabbarItems = "$baseUrl/api/v1/adult-tabbar";
+const getAdultTabbarCategoryItems = "$baseUrl/api/v1/adult-mcm-categories";
+const getNationalTabbarCategoryItems = "$baseUrl/api/v1/national-mcm-categories";
 const getUpdateVersions = "$baseUrl/api/v1/versions";
 const getNationalTabbarItems = "$baseUrl/api/v1/national-tabbar";
+const getAvailableSubs = "$baseUrl/api/v1/user/availble-subs";
 const getAllChildTabCategories = "$baseUrl/api/v1/child-mc-categories";
 const getAllAdultTabCategories = "$baseUrl/api/v1/adult-mc-categories";
 const getAllNationalTabCategories = "$baseUrl/api/v1/national-mc-categories";
+const getAllAdultMC1TabCategories = "$baseUrl/api/v1/adult-mc-1-categories";
+const getAllNationalMC1TabCategories = "$baseUrl/api/v1/national-mc-1-categories";
+const getAllAdultMC2TabCategories = "$baseUrl/api/v1/adult-mc-2-categories";
+const getAllNationalMC2TabCategories = "$baseUrl/api/v1/national-mc-2-categories";
 const newsCategoryContentUrl = "$baseUrl/api/v1/news";
 const getPodcastSubCategories = "$baseUrl/api/v1/podcast-sub-categories";
 const getPodcastSub1Categories = "$baseUrl/api/v1/podcast-sub-1-categories";
 const resourcesUrl = "$baseUrl/api/v1/resources/home";
 const profileInformationUrl = "$baseUrl/api/v1/user";
 const paymentCheck = "$baseUrl/api/v1/user/payment";
+const getPaysHistory = "$baseUrl/api/v1/user/paysHistory";
 const updateSubscribeProfile = "$baseUrl/api/v1/user/insert-new-sub";
 const getUserId = "$baseUrl/api/v1/user/userId";
 const paymentResultSubmit = "$baseUrl/api/v1/payment/result";
@@ -64,6 +82,8 @@ const validateCodeUrl = "$baseUrl/api/v1/auth/validate-auth-code";
 const forgotPasswordUrl = "$baseUrl/api/v1/auth/forgot-password";
 const setNewPasswordUrl = "$baseUrl/api/v1/auth/reset-password";
 const getVideoDataUrl = "$baseUrl/api/v1/videos/";
+const getIeltsData = "$baseUrl/api/v1/ielts/";
+const getIeltsGeneralData = "$baseUrl/api/v1/ielts-general/";
 const supportMessageUrl = "$baseUrl/api/v1/support";
 const tokenConst =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWFiMjdmOGY4OGEwYjEyZjUwMzBiMTUiLCJpYXQiOjE2Mzk5Nzg0NDYsImV4cCI6MTY0MDAxNDQ0Nn0.WKftB3SDzdutTLkgnqUbhs03WegnzAkmZ3JjYtk3BdQ";
@@ -72,6 +92,11 @@ const tokenConst =
 //https://pub.dev/packages/flutter_poolakey/install
 //https://github.com/cafebazaar/flutter_poolakey
 //https://virgool.io/flutter-community/%D9%BE%DA%A9%DB%8C%D8%AC-%D9%BE%D8%B1%D8%AF%D8%A7%D8%AE%D8%AA-%D9%88-%D8%A7%D8%B1%D8%AA%D8%A8%D8%A7%D8%B7-%D8%A8%D8%A7-%DA%A9%D8%A7%D9%81%D9%87-%D8%A8%D8%A7%D8%B2%D8%A7%D8%B1-%D8%A8%D8%B1%D8%A7%DB%8C-%D9%81%D9%84%D8%A7%D8%AA%D8%B1-ngxpnjck9q7n
+
+String getThumbnailUrl({String url="",String size="150x100"}){
+  url = url.replaceAll(" ", "%20");
+  return "$getThumbnail?link=https://app.zabaner.ir/images/avatars/1675757212414-884e2a3ed4.mp4&size=$size";
+}
 
 String getTime(time) {
   String result = "";
@@ -89,7 +114,6 @@ String getTime(time) {
       result += ":";
     }
   }
-  debugPrint("sakdjakjdwkjkjdscjkjsa : "+result);
   return result;
 }
 

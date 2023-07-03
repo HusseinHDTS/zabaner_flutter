@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_intro/flutter_intro.dart';
@@ -11,6 +12,7 @@ import 'package:zabaner/controllers/online_class_controller.dart';
 import 'package:zabaner/models/profile_information_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
+import 'package:zabaner/models/wallet_info.dart';
 
 class MainScreenController extends GetxController {
   late PageController pageController;
@@ -29,8 +31,7 @@ class MainScreenController extends GetxController {
   GlobalKey keyFive = GlobalKey();
   GlobalKey keySix = GlobalKey();
   GlobalKey keySeven = GlobalKey();
-  late ProfileInformation profileInformation;
-
+  NotchBottomBarController bottomBarController = NotchBottomBarController(index: 3);
 
   List<GlobalKey<NavigatorState>> navigationKey = [
     GlobalKey<NavigatorState>(),
@@ -68,31 +69,13 @@ class MainScreenController extends GetxController {
 
   @override
   void onInit() async {
-    // TODO: implement onInit
     super.onInit();
-
     pageController = PageController();
     await GetStorage.init();
-    final _request = await _getConnect.get(profileInformationUrl, headers: {
-      'accept': 'application/json',
-      'Authorization': 'Bearer ${getStorage.read('token')}'
-    });
-    if (_request.statusCode == 200) {
-      profileInformation = profileInformationFromJson(_request.bodyString ?? "");
-      userPhoneNumber = profileInformation.mobile;
-      userSavedId = profileInformation.userId;
-      debugPrint("dkjkjkjckxjckxjckxjqwejkwq : " + _request.bodyString.toString());
-      userSavedFirstName = profileInformation.firstName;
-      userSavedLastName = profileInformation.lastName;
-      userSavedName = "$userSavedFirstName $userSavedLastName";
-      Get.put(OnlineClassController());
-      Get.put(CustomVideoController());
-    }
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     // pageController.dispose();
   }

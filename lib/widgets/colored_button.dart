@@ -10,6 +10,7 @@ class ColoredButton extends StatelessWidget {
   Color? textColor;
   Color? color;
   String? text;
+  Widget? content;
   double? borderRadius;
   double? borderWidth;
   double? width;
@@ -17,7 +18,6 @@ class ColoredButton extends StatelessWidget {
   double? textSize;
   EdgeInsets? padding;
   Gradient? gradient;
-
   ColoredButton(this.text,
       {this.rippleAnimation,
       this.fill,
@@ -27,6 +27,7 @@ class ColoredButton extends StatelessWidget {
       this.borderRadius,
       this.gradient,
       this.width,
+      this.content,
       this.height,
       this.borderWidth,
       this.textSize,
@@ -56,7 +57,7 @@ class ColoredButton extends StatelessWidget {
         InkWell(
           onTap: onTap,
           child: gradientBorder! ? gradientBorderButton() : normalButton(),
-        )
+        ),
       ],
     );
   }
@@ -74,7 +75,7 @@ class ColoredButton extends StatelessWidget {
         height: height,
         margin: EdgeInsets.all(borderWidth!),
         decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular((borderRadius!-2) > 0 ? (borderRadius!-2) : 0)),
-        child: Center(child: ColoredText(text.toString(),textSize:textSize,textColor: textColor,),),
+        child: Center(child: content ?? ColoredText(text.toString(),textSize:textSize,textColor: textColor,),),
       ),
     );
   }
@@ -99,7 +100,7 @@ class ColoredButton extends StatelessWidget {
                   color: textColor!,
                 )),
       child: Center(
-        child: ColoredText(text.toString(),
+        child: content ?? ColoredText(text.toString(),
             textSize: textSize, textColor: textColor),
       ),
     );

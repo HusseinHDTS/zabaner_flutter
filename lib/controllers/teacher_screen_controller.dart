@@ -21,6 +21,7 @@ class TeacherScreenController extends GetxController{
   XFile? imageFile;
   XFile? videoFile;
   Rx<XFile?>? videoFileRx;
+  RxBool isFemale = false.obs , isMale = false.obs;
   TextEditingController nameController = TextEditingController();
   TextEditingController familyController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -34,6 +35,7 @@ class TeacherScreenController extends GetxController{
 
   RxBool nameError = false.obs;
   RxBool familyError = false.obs;
+  RxBool genderError = false.obs;
   RxBool emailError = false.obs;
   RxBool cityError = false.obs;
   RxBool descriptionError = false.obs;
@@ -116,6 +118,12 @@ class TeacherScreenController extends GetxController{
     if(english05.isTrue){
       abilities.add(english05Content);
     }
+    String gender = "male";
+    if(isMale.value){
+      gender = "male";
+    }else{
+      gender = "female";
+    }
     var bodyRequest = {
       "userId": userSavedId,
       "title": userSavedId,
@@ -127,6 +135,7 @@ class TeacherScreenController extends GetxController{
       "phone": userPhoneNumber,
       "email": emailController.text,
       "city": cityController.text,
+      "gender": gender,
       "description": descriptionController.text,
       "video": "",
       "educationLevel": selectedEducationLevel.value,
@@ -195,6 +204,7 @@ class TeacherScreenController extends GetxController{
     errorPageTwo = false;
     nameError.value = false;
     familyError.value = false;
+    genderError.value = false;
     emailError.value = false;
     cityError.value = false;
     abilitiesError.value = false;
@@ -216,6 +226,11 @@ class TeacherScreenController extends GetxController{
     }
     if(familyController.text.toString().trim().isEmpty){
       familyError.value = true;
+      isValid = false;
+      errorPageOne = true;
+    }
+    if(!isFemale.value && !isMale.value){
+      genderError.value = true;
       isValid = false;
       errorPageOne = true;
     }

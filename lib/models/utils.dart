@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,21 +10,35 @@ import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fullscreen/fullscreen.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:lottie/lottie.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:showcaseview/showcaseview.dart';
+import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
 import 'package:srt_parser/srt_parser.dart';
+import 'package:switcher_button/switcher_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:zabaner/controllers/custom_video_controller.dart';
 import 'package:zabaner/controllers/custom_video_player_controller.dart';
+import 'package:zabaner/controllers/online_class_controller.dart';
 import 'package:zabaner/models/html.dart';
+import 'package:zabaner/models/profile_information_model.dart';
 import 'package:zabaner/models/sentence_model.dart';
 import 'package:zabaner/models/urls.dart';
+import 'package:zabaner/models/wallet_info.dart';
 import 'package:zabaner/views/colors.dart';
 import 'package:path_provider/path_provider.dart' as path;
+import 'package:zabaner/views/screens/login_screen.dart';
+import 'package:zabaner/views/screens/tabbar_sub_category_screen.dart';
+import 'package:zabaner/views/tabs/list_model.dart';
 import 'package:zabaner/views/widgets/custom_text_input.dart';
 import 'package:zabaner/widgets/colored_button.dart';
 import 'package:zabaner/widgets/colored_snack.dart';
@@ -31,8 +46,13 @@ import 'package:zabaner/widgets/colored_text.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:srt_parser/srt_parser.dart' as strP;
 import 'package:flutter/services.dart';
+import 'package:zabaner/widgets/cuostm_showcase.dart';
 import 'package:zabaner/widgets/custom_cached_video_preview.dart';
 import 'package:zabaner/widgets/custom_video_player.dart';
+import 'package:zabaner/widgets/my_app_bar.dart';
+import 'package:zabaner/widgets/wallet_info_widget.dart';
+
+import '../widgets/custom_switch.dart';
 
 // final BUILD_MODE = "BAZAAR";
 final BUILD_MODE = "OTHER";
@@ -48,7 +68,7 @@ final FTP_ACCESS_PASSWORD = "FRTetyroi73edfs";
 int lvl1 = 1680;
 int lvl2 = 3600;
 int lvl3 = 7200;
-int lvl4 = 4800;
+int lvl4 = 9700;
 int lvl5 = lvl4;
 int lvl6 = lvl4;
 double hiddenHeight = Get.height / 8 / 1.5, normalHeight = Get.height / 8;
@@ -58,15 +78,338 @@ String userSavedId = "";
 String userSavedName = "";
 String userSavedFirstName = "";
 String userSavedLastName = "";
+WalletInfo? savedWalletInfo;
 
 CustomVideoPlayerController? customVideoPlayerController;
 Rx<String?> customVideoPlayerTag = "null".obs;
+
+String _getSetting(String name, {bool replaceNull = true}) {
+  GetStorage _getStorage = GetStorage();
+  String result = (_getStorage.read(name)).toString();
+  if (replaceNull && result == "null") {
+    return "off";
+  }
+  return result;
+}
+
+void writeSetting(String name, String value) {
+  GetStorage _getStorage = GetStorage();
+  _getStorage.write(name, value);
+}
+
+Widget langChange(
+    {required bool fa,
+    required bool en,
+    bool enDisable = false,
+    bool faDisable = false,
+    onFaChange,
+    onEnChange}) {
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 4),
+    child: Row(
+      children: [
+        Row(
+          children: [
+            const Text("انگلیسی :",
+                style: TextStyle(fontFamily: "Yekan", fontSize: 16)),
+            SizedBox(
+              width: 4,
+            ),
+            customSwitch(
+              value: en,
+              onColor: primaryDark,
+              isDisable: enDisable,
+              onChange: (value) {
+                if (enDisable) {
+                  return;
+                }
+                onEnChange(value);
+              },
+              offColor: Color(0xffe6e6e9),
+              size: 40,
+              showText: false,
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 8,
+        ),
+        Row(
+          children: [
+            const Text("فارسی :",
+                style: TextStyle(fontFamily: "Yekan", fontSize: 16)),
+            SizedBox(
+              width: 4,
+            ),
+            customSwitch(
+              value: fa,
+              onColor: primaryDark,
+              isDisable: faDisable,
+              onChange: (value) {
+                if (faDisable) {
+                  return;
+                }
+                onFaChange(value);
+              },
+              offColor: Color(0xffe6e6e9),
+              size: 40,
+              showText: false,
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+dynamic getItemSettings(id) {
+  String autoScroll = _getSetting("auto_scroll");
+  String autoScrollItem = _getSetting("$id/autoScroll", replaceNull: false);
+  String faTitle = _getSetting("$id/faTitle", replaceNull: false);
+  String enTitle = _getSetting("$id/enTitle", replaceNull: false);
+  String repeat = _getSetting("$id/repeat");
+  if (faTitle == "null") {
+    faTitle = "on";
+  }
+  if (enTitle == "null") {
+    enTitle = "on";
+  }
+  return {
+    "autoScroll": autoScroll,
+    "autoScrollItem": autoScrollItem,
+    "faTitle": faTitle,
+    "enTitle": enTitle,
+    "repeat": repeat
+  };
+}
+
+Widget customSwitch(
+    {bool value = false,
+    bool showText = true,
+    bool isDisable = false,
+    Color onColor = Colors.green,
+    Color offColor = Colors.red,
+    double size = 60,
+    onChange}) {
+  RxBool cVal = value.obs;
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      CustomSwitcherButton(
+        value: value,
+        onColor: onColor,
+        isDisable: isDisable,
+        size: size,
+        offColor: offColor,
+        onChange: (cv) {
+          cVal.value = cv;
+          onChange(cv);
+        },
+      ),
+      if (showText)
+        SizedBox(
+          width: 4,
+        ),
+      if (showText)
+        Obx(() => Container(
+            width: 60,
+            child: Center(
+                child: ColoredText(cVal.value ? "(فعال)" : "(غیر فعال)")))),
+    ],
+  );
+}
+
+Widget toggleItem(String title, RxBool isChecked,
+    {Function(bool value)? onChange}) {
+  return Directionality(
+    textDirection: TextDirection.rtl,
+    child: Obx(() => Row(
+          children: [
+            SizedBox(
+              width: 18,
+            ),
+            Flexible(
+              flex: 2,
+              child: Container(
+                child: CustomSwitcherButton(
+                  value: isChecked.value,
+                  onColor: primary,
+                  offColor: Color(0xffe6e6e9),
+                  onChange: (value) {
+                    isChecked.value = value;
+                    if (onChange != null) {
+                      onChange(value);
+                    }
+                  },
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 8,
+            ),
+            ColoredText(title),
+            SizedBox(
+              width: 8,
+            ),
+            ColoredText(isChecked.value ? "(فعال)" : "(غیر فعال)"),
+          ],
+        )),
+  );
+}
 
 copyToClipboard(String text, {bool? showAlert, String? title}) async {
   showAlert ??= false;
   await Clipboard.setData(ClipboardData(text: text));
   if (showAlert) {
     ColoredSnack(title: title.toString(), type: SnackType.SUCCESS);
+  }
+}
+
+int randomNumber({int? min, int? max}) {
+  min ??= 1;
+  max ??= 999999;
+  Random rnd = Random();
+  return min + rnd.nextInt(max - min);
+}
+
+selectableItem(
+    {required String price,
+    required String description,
+    required bool selected,
+    bool? testClass,
+    onTap}) {
+  testClass ??= false;
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          color: selected ? selectedSettingsColor.withOpacity(0.14) : null),
+      child: Container(
+        height: 50,
+        width: double.infinity,
+        child: Row(
+          children: [
+            Flexible(
+              flex: 0,
+              child: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.blueAccent.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(8)),
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ColoredText(
+                      formatPrice(price, showUnit: true),
+                      textColor: selected
+                          ? Colors.green.shade600
+                          : Colors.deepPurpleAccent,
+                      textSize: 12.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ColoredText(
+                        description,
+                        textColor: selected ? Colors.green.shade600 : null,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ColoredText(
+                      testClass ? "30 دقیقه" : "60 دقیقه",
+                      textSize: 12,
+                      textColor: selected
+                          ? Colors.green.shade800.withOpacity(0.4)
+                          : Colors.black45,
+                      textDirection: TextDirection.rtl,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class ShakeWidget extends StatefulWidget {
+  ShakeWidget({
+    this.duration = const Duration(milliseconds: 500),
+    this.deltaX = 20,
+    this.curve = Curves.bounceOut,
+    required this.child,
+  });
+
+  final Duration duration;
+  final double deltaX;
+  final Widget child;
+  final Curve curve;
+
+  @override
+  State<ShakeWidget> createState() => _ShakeWidgetState();
+}
+
+class _ShakeWidgetState extends State<ShakeWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    )
+      ..forward()
+      ..addListener(() {
+        if (controller.isCompleted) {
+          controller.repeat();
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  /// convert 0-1 to 0-1-0
+  double shake(double value) =>
+      2 * (0.5 - (0.5 - widget.curve.transform(value)).abs());
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(
+            (randomNumber() % 2 == 0)
+                ? -(widget.deltaX * shake(controller.value))
+                : (widget.deltaX * shake(controller.value)),
+            (randomNumber() % 2 == 0)
+                ? -(widget.deltaX * shake(controller.value))
+                : (widget.deltaX * shake(controller.value))),
+        child: child,
+      ),
+      child: widget.child,
+    );
   }
 }
 
@@ -123,8 +466,24 @@ Widget topRoundedMiniBar(
   );
 }
 
+String getLongCountNumber(num) {
+  var number = int.tryParse(num.toString()) ?? 0;
+  String result = number.toString();
+  if (number >= 1000) {
+    result = "${number ~/ 1000}K";
+    if (number >= 1000000) {
+      result = "${number ~/ 1000000}M";
+      if (number >= 1000000000) {
+        result = "${number ~/ 1000000000}B";
+      }
+    }
+  }
+
+  return result;
+}
+
 customDialog({Color? headerColor, Widget? child, double? borderRadius}) {
-  borderRadius ??= 8;
+  borderRadius ??= 18;
   Get.dialog(AlertDialog(
     backgroundColor: Colors.transparent,
     content: Wrap(
@@ -154,54 +513,57 @@ downloadDialog(
   //     backgroundColor: Colors.white,
   //     content: ));
   customDialog(
-    borderRadius: 18,
-      child: Obx(() => WillPopScope(child: Container(
-        width: 250,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            topRoundedMiniBar(title: title,height: 40),
-            SizedBox(
-              height: 30,
-            ),
-            Stack(
+      borderRadius: 18,
+      child: Obx(() => WillPopScope(
+          child: Container(
+            width: 250,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
+                topRoundedMiniBar(title: title, height: 40),
                 SizedBox(
-                  width: 60,
-                  height: 60,
-                  child: CircularProgressIndicator(
-                    value: downloadingPercent.value,
+                  height: 30,
+                ),
+                Stack(
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(
+                        value: downloadingPercent.value,
+                      ),
+                    ),
+                    SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Center(
+                            child: ColoredText(
+                                "${parseDownloadPercent((downloadingPercent.value * 100).toDouble())} %",
+                                textAlign: TextAlign.center)))
+                  ],
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Container(
+                  width: double.infinity,
+                  child: Center(
+                    child: ColoredButton(
+                      "لغو دانلود",
+                      color: cancelDownloadColor,
+                      textColor: Colors.black,
+                      onTap: onDownloadCancel,
+                    ),
                   ),
                 ),
                 SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: Center(
-                        child: ColoredText(
-                            "${parseDownloadPercent((downloadingPercent.value * 100).toDouble())} %",
-                            textAlign: TextAlign.center)))
+                  height: 18,
+                ),
               ],
             ),
-            SizedBox(
-              height: 30,
-            ),
-            Container(
-              width: double.infinity,
-              child: Center(
-                child: ColoredButton(
-                  "لغو دانلود",
-                  color: cancelDownloadColor,
-                  textColor: Colors.black,
-                  onTap: onDownloadCancel,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 18,
-            ),
-          ],
-        ),
-      ), onWillPop: () async => downloadingPercent.value == 1 ? true : false)));
+          ),
+          onWillPop: () async =>
+              downloadingPercent.value == 1 ? true : false)));
 }
 
 infoBox(String content, {double? textSize}) {
@@ -252,15 +614,23 @@ String parseDownloadPercent(double download) {
   return res;
 }
 
-loadingDialog(title) {
-  Get.defaultDialog(
-      title: title,
-      barrierDismissible: false,
+loadingDialog(title, {bool? dismiss}) {
+  dismiss ??= false;
+  TextDirection direction = intl.Bidi.detectRtlDirectionality(title)
+      ? TextDirection.rtl
+      : TextDirection.ltr;
+  Get.dialog(
+    AlertDialog(
+      title: Directionality(
+          textDirection: TextDirection.rtl, child: ColoredText(title)),
       content: WillPopScope(
           onWillPop: () async {
-            return false;
+            return dismiss!;
           },
-          child: const CircularProgressIndicator()));
+          child: Container(height: 50, child: Loading())),
+    ),
+    barrierDismissible: dismiss,
+  );
 }
 
 TextStyle getSubtitleTextStyle(isNowCurrentText) {
@@ -273,7 +643,10 @@ TextStyle getSubtitleTextStyle(isNowCurrentText) {
 
 TextStyle getSubDefault(isFa) {
   return TextStyle(
-      fontSize: isFa ? 17 : 18, color: Colors.black, fontFamily: "Neue_MD");
+    fontSize: isFa ? 17 : 18,
+    color: Colors.black,
+    fontFamily: "Neue_MD",
+  );
 }
 
 List<int> getPlayerIndex(
@@ -313,8 +686,9 @@ List<int> getPlayerIndex(
   ];
 }
 
-MultiChildScrollView({child}) {
+MultiChildScrollView({child, controller}) {
   return CustomScrollView(
+    controller: controller,
     slivers: [
       SliverFillRemaining(
         hasScrollBody: false,
@@ -382,12 +756,102 @@ dropdownItems(List<String> items, RxString cItem, onChange,
       ));
 }
 
-checkBox(String title, RxBool value, onChange,{Color? boxColor,Color? textColor,Color? activeColor,Color? checkColor,bool? circular}) {
-  circular??=false;
-  textColor??= Colors.black;
-  boxColor??= Colors.black;
-  activeColor??= primaryDark;
-  checkColor??= Colors.white;
+Widget genderSelector(
+    {required RxBool isMale,
+    required RxBool isFemale,
+    required RxBool hasError,
+    onItemTap,
+    bool isEnable = true}) {
+  return Obx(() => Opacity(
+        opacity: isEnable ? 1 : 0.6,
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: hasError.value
+                  ? Border.all(
+                      color: Colors.red,
+                      width: 1,
+                    )
+                  : null),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                  flex: 1,
+                  child: GestureDetector(
+                    onTap: () {
+                      onItemTap("male");
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 45,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: isMale.value ? primary : null),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Lottie.asset('assets/animations/male-avatar.json',
+                              width: 60, height: 40),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          ColoredText(
+                            "آقا",
+                            textColor: isMale.value ? Colors.white : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )),
+              SizedBox(
+                width: 18,
+              ),
+              Flexible(
+                  flex: 1,
+                  child: GestureDetector(
+                    onTap: () {
+                      onItemTap("female");
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 45,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: isFemale.value ? primary : null),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Lottie.asset('assets/animations/female-avatar.json',
+                              width: 60, height: 40),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          ColoredText(
+                            "خانم",
+                            textColor: isFemale.value ? Colors.white : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      ));
+}
+
+checkBox(String title, RxBool value, onChange,
+    {Color? boxColor,
+    Color? textColor,
+    Color? activeColor,
+    Color? checkColor,
+    bool? circular}) {
+  circular ??= false;
+  textColor ??= Colors.black;
+  boxColor ??= primaryDark;
+  activeColor ??= primaryDark;
+  checkColor ??= Colors.white;
   return InkWell(
     onTap: () {
       onChange(!value.value);
@@ -400,9 +864,13 @@ checkBox(String title, RxBool value, onChange,{Color? boxColor,Color? textColor,
           fillColor: MaterialStateColor.resolveWith((states) => boxColor!),
           hoverColor: boxColor,
           splashRadius: 18,
-          shape: circular? CircleBorder(side: BorderSide(color: activeColor,width: 1.4,style: BorderStyle.solid)) : null,
+          shape: circular
+              ? CircleBorder(
+                  side: BorderSide(
+                      color: activeColor, width: 1.4, style: BorderStyle.solid))
+              : null,
           side: MaterialStateBorderSide.resolveWith(
-                (states) => BorderSide(width: 1.4, color: activeColor!),
+            (states) => BorderSide(width: 1.4, color: activeColor!),
           ),
           checkColor: checkColor,
           activeColor: activeColor,
@@ -412,6 +880,33 @@ checkBox(String title, RxBool value, onChange,{Color? boxColor,Color? textColor,
           textSize: 12,
           textColor: textColor,
         ),
+      ],
+    ),
+  );
+}
+
+roundCheckBox(
+    {String title = "",
+    RxBool? isChecked,
+    Color? color,
+    Color? borderColor,
+    Function(bool?)? onChange,
+    double size = 30}) {
+  color ??= primary;
+  borderColor ??= primary;
+  isChecked ??= false.obs;
+  return InkWell(
+    child: Row(
+      children: [
+        Obx(() => RoundCheckBox(
+              onTap: onChange,
+              size: size,
+              uncheckedColor: primary,
+              checkedColor: color,
+              borderColor: borderColor,
+              isChecked: isChecked!.value,
+              isRound: false,
+            )),
       ],
     ),
   );
@@ -443,27 +938,30 @@ inputText(hint, controller,
     useMaxAndMin}) {
   allowEnglish ??= true;
   error ??= false.obs;
-  return Obx(() => Container(
-      margin: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      child: CustomTextInput(
-        hintText: hint,
-        error: error!.value,
-        enabled: enabled,
-        useMaxAndMinLine: useMaxAndMin,
-        textDirection: textDirection,
-        inputFormatters: inputFormatters,
-        maxLines: maxLines,
-        maxLength: maxLength,
-        textAlign: textAlign,
-        readOnly: readOnly,
-        priceUnit: priceUnit,
-        allowEnglish: allowEnglish,
-        onChanged: onChange,
-        keyboardType: keyboardType,
-        textEditingController: controller,
-        hintSize: 14,
-        fontSize: 15,
-      )));
+  return Obx(() => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            child: CustomTextInput(
+              hintText: hint,
+              error: error!.value,
+              enabled: enabled,
+              useMaxAndMinLine: useMaxAndMin,
+              textDirection: textDirection,
+              inputFormatters: inputFormatters,
+              maxLines: maxLines,
+              maxLength: maxLength,
+              textAlign: textAlign,
+              readOnly: readOnly,
+              priceUnit: priceUnit,
+              allowEnglish: allowEnglish,
+              onChanged: onChange,
+              keyboardType: keyboardType,
+              textEditingController: controller,
+              hintSize: 14,
+              fontSize: 15,
+            )),
+      ));
 }
 
 Image ImageWithLoading(ImageProvider image) {
@@ -490,40 +988,273 @@ Widget OneStar(bool active, size) {
       padding: EdgeInsets.symmetric(horizontal: 1),
       child: Icon(
         active ? Icons.star : Icons.star_border,
-        color: primary,
+        color: active ? Colors.amber : Colors.grey,
         size: size,
       ));
 }
 
-Widget StarRating({int? current, int? count, bool? showText, startSize}) {
+CustomSliverAppBar({
+  body,
+}) {
+  return Directionality(
+    textDirection: TextDirection.rtl,
+    child: NestedScrollView(
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return <Widget>[
+          // SliverAppBar(
+          //   expandedHeight: 200.0,
+          //   floating: false,
+          //   pinned: true,
+          //   actions: [],
+          //   leading: null,
+          //   backgroundColor: Colors.transparent,
+          //   flexibleSpace: FlexibleSpaceBar(collapseMode: CollapseMode.pin,background: WalletInfoWidget(),),
+          // ),
+          SliverPersistentHeader(
+            delegate: _SliverAppBarDelegate(
+                WalletInfoWidget(),
+                Stack(
+                  children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                colors: [
+                              primaryLight,
+                              primaryLight,
+                              primary,
+                              primaryDark,
+                              primaryDark
+                            ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight)),
+                        child: ColoredAppBar(
+                          backgroundColor: Colors.transparent,
+                        )),
+                    SafeArea(
+                      child: Container(
+                          height: double.infinity,
+                          margin: EdgeInsets.only(left: 18),
+                          child: Center(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: ColoredText(
+                                    formatPrice(savedWalletInfo!.currentPrice),
+                                    textColor: Colors.white,
+                                    textDirection: TextDirection.rtl,
+                                  )))),
+                    )
+                  ],
+                )),
+            pinned: true,
+            floating: false,
+          )
+        ];
+      },
+      body: body,
+    ),
+  );
+}
+
+bool isTextEmpty(String text) {
+  return text.toString().trim().isEmpty || text.toString().trim() == "null";
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._body, this._title);
+
+  final Widget _body;
+  final Widget _title;
+
+  @override
+  double get minExtent => ColoredAppBar().preferredSize.height * 1.5;
+
+  @override
+  double get maxExtent => 250;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    RxDouble titleOp = 0.0.obs;
+    RxDouble bodyOp = 1.0.obs;
+    if (shrinkOffset.toInt() > 140) {
+      titleOp.value = 1.0;
+      bodyOp.value = 0.0;
+      return Obx(() => AnimatedOpacity(
+          opacity: titleOp.value,
+          duration: Duration(milliseconds: 300),
+          child: Container(
+            child: _title,
+          )));
+    } else {
+      titleOp.value = 0.0;
+      bodyOp.value = 1.0;
+      return Obx(() => AnimatedOpacity(
+          opacity: bodyOp.value,
+          duration: Duration(milliseconds: 300),
+          child: Container(
+            child: _body,
+          )));
+    }
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return true;
+  }
+}
+
+Widget customRating({
+  int? current,
+  int? count,
+  bool? showText,
+  bool? changeOnClick,
+  startSize,
+  bool preview = false,
+  onPreviewClick,
+  onStarChanged,
+  MainAxisAlignment mainAxisAlignment = MainAxisAlignment.center,
+  CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
+}) {
   current ??= 0;
   count ??= 0;
   startSize ??= 16.0;
+  changeOnClick ??= false;
   showText ??= false;
-  current = int.parse(current.toString());
-  count = int.parse(count.toString());
 
   int mainRate = 0;
   String rateString = "0.0";
   // current ~/ count
   // (current / count).toStringAsFixed(1);
   if (count != 0) {
-    mainRate = 0;
+    mainRate = (current / count).toInt();
+    rateString = (current / count).toStringAsFixed(1);
+  }
+  RxInt mainRxRate = mainRate.obs;
+  RxDouble cRating = (double.tryParse(rateString) ?? 0.0).obs;
+  if (preview) {
+    return InkWell(
+        onTap: onPreviewClick,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Row(
+            mainAxisAlignment: mainAxisAlignment,
+            crossAxisAlignment: crossAxisAlignment,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              OneStar(cRating.value >= 1, startSize - 6),
+              OneStar(cRating.value >= 2, startSize - 3),
+              OneStar(cRating.value >= 3, startSize),
+              OneStar(cRating.value >= 4, startSize - 3),
+              OneStar(cRating.value >= 5, startSize - 6),
+            ],
+          ),
+        ));
+  }
+
+  return Obx(() => SmoothStarRating(
+        rating: cRating.value,
+        size: startSize,
+        filledIconData: Icons.star,
+        halfFilledIconData: Icons.star_half,
+        defaultIconData: Icons.star_border,
+        starCount: 5,
+        color: Colors.amber,
+        borderColor: Colors.grey,
+        allowHalfRating: false,
+        spacing: 2.0,
+        onRatingChanged: (value) {
+          cRating.value = value;
+          onStarChanged(value);
+        },
+      ));
+}
+
+Widget StarRating(
+    {int? current,
+    int? count,
+    bool? showText,
+    bool? changeOnClick,
+    startSize,
+    onStarChanged}) {
+  current ??= 0;
+  count ??= 0;
+  startSize ??= 16.0;
+  changeOnClick ??= false;
+  showText ??= false;
+
+  int mainRate = 0;
+  String rateString = "0.0";
+  // current ~/ count
+  // (current / count).toStringAsFixed(1);
+  if (count != 0) {
+    mainRate = (current / count).toInt();
     rateString = (current / count).toStringAsFixed(1);
   }
   var splitRate = rateString.split(".");
   if (rateString == "0.0") {
     showText = false;
   }
+
+  RxInt mainRxRate = mainRate.obs;
   return Container(
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        OneStar(mainRate >= 1, startSize),
-        OneStar(mainRate >= 2, startSize),
-        OneStar(mainRate >= 3, startSize),
-        OneStar(mainRate >= 4, startSize),
-        OneStar(mainRate == 5, startSize),
+        InkWell(
+            onTap: changeOnClick
+                ? () {
+                    if (mainRxRate.value != 0) {
+                      return;
+                    }
+                    onStarChanged(1);
+                    mainRxRate.value = 1;
+                  }
+                : null,
+            child: Obx(() => OneStar(mainRxRate.value >= 1, startSize))),
+        InkWell(
+            onTap: changeOnClick
+                ? () {
+                    if (mainRxRate.value != 0) {
+                      return;
+                    }
+                    onStarChanged(2);
+                    mainRxRate.value = 2;
+                  }
+                : null,
+            child: Obx(() => OneStar(mainRxRate.value >= 2, startSize))),
+        InkWell(
+            onTap: changeOnClick
+                ? () {
+                    if (mainRxRate.value != 0) {
+                      return;
+                    }
+                    onStarChanged(3);
+                    mainRxRate.value = 3;
+                  }
+                : null,
+            child: Obx(() => OneStar(mainRxRate.value >= 3, startSize))),
+        InkWell(
+            onTap: changeOnClick
+                ? () {
+                    if (mainRxRate.value != 0) {
+                      return;
+                    }
+                    onStarChanged(4);
+                    mainRxRate.value = 4;
+                  }
+                : null,
+            child: Obx(() => OneStar(mainRxRate.value >= 4, startSize))),
+        InkWell(
+            onTap: changeOnClick
+                ? () {
+                    if (mainRxRate.value != 0) {
+                      return;
+                    }
+                    onStarChanged(5);
+                    mainRxRate.value = 5;
+                  }
+                : null,
+            child: Obx(() => OneStar(mainRxRate.value >= 5, startSize))),
         SizedBox(
           width: 4,
         ),
@@ -579,7 +1310,9 @@ Widget ErrorLoading({String? title}) {
 }
 
 Widget Loading() {
-  return Center(child: CircularProgressIndicator(),);
+  return Center(
+    child: CircularProgressIndicator(),
+  );
   return Center(
       child: Container(
     child: Lottie.asset('assets/animations/loading_main1.json', height: 350),
@@ -598,22 +1331,118 @@ Future<String> getUrlContent(String url) async {
   return result;
 }
 
+reloadApp() async {
+  loadingDialog("لطفا صبر کنید ...");
+  GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
+  GetStorage _getStorage = GetStorage();
+  await getPersonInfo(_getConnect, _getStorage);
+  await getWalletInfo(_getConnect, _getStorage);
+  Get.back();
+  Get.offAll(LoginScreen());
+}
+
+getPersonInfo(_getConnect, _getStorage) async {
+  ProfileInformation profileInformation;
+  if (_getStorage.read('token') == null) {
+    return;
+  }
+  final _request = await _getConnect.get(profileInformationUrl, headers: {
+    'accept': 'application/json',
+    'Authorization': 'Bearer ${_getStorage.read('token')}'
+  });
+  try {
+    profileInformation = profileInformationFromJson(_request.bodyString ?? "");
+    userPhoneNumber = profileInformation.mobile;
+    userSavedId = profileInformation.userId;
+    userSavedFirstName = profileInformation.firstName;
+    userSavedLastName = profileInformation.lastName;
+    userSavedName = "$userSavedFirstName $userSavedLastName";
+  } catch (e) {
+    e.printError();
+  }
+}
+
+void checkForValidSubsOrBuy(currentType, controller, {onContinue}) {
+  if (currentType == TabbarTypes.NATIONAL) {
+    if (controller.validatedSubs['isNationalSubValid'].toString() == "false") {
+      Get.defaultDialog(
+          title: "شما اشتراک بخش آزمون ها را ندارید",
+          titleStyle: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.red,
+          ),
+          content: SubscribeDialog(currentType));
+      return;
+    }
+  } else if (currentType == TabbarTypes.ADULT) {
+    if (controller.validatedSubs['isAdultSubValid'].toString() == "false") {
+      Get.defaultDialog(
+          title: "شما اشتراک بخش بزرگسالان را ندارید",
+          titleStyle: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.red,
+          ),
+          content: SubscribeDialog(currentType));
+      return;
+    }
+  } else if (currentType == TabbarTypes.CHILD) {
+    if (controller.validatedSubs['isChildSubValid'].toString() == "false") {
+      Get.defaultDialog(
+          title: "شما اشتراک بخش کودکان را ندارید",
+          titleStyle: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.red,
+          ),
+          content: SubscribeDialog(currentType));
+      return;
+    }
+  }
+  onContinue();
+}
+
+getWalletInfo(_getConnect, _getStorage) async {
+  final _request1 = await _getConnect.get(getUserProfile, headers: {
+    'accept': 'application/json',
+    'Authorization': 'Bearer ${_getStorage.read('token')}'
+  });
+  try {
+    savedWalletInfo = walletInfoModelFromJson(
+        (json.decode(_request1.bodyString ?? "")['walletInfo'] ?? ""));
+  } catch (e) {
+    savedWalletInfo = WalletInfo(
+        currentPrice: "0",
+        blockPrice: "0",
+        totalPrice: "0",
+        lastMonthPrice: "0",
+        pays: "");
+    e.printError();
+  }
+  Get.put(OnlineClassController());
+  Get.put(CustomVideoController());
+}
+
 Widget NoData({String? message}) {
   String mC = "";
   mC = message ?? "هیچ اطلاعاتی یافت نشد!";
-  return Center(
-      child: Container(
-    child: Column(
-      children: [
-        Lottie.asset('assets/animations/no_data.json', height: 350),
-        ColoredText(
-          mC,
-          textDirection: TextDirection.rtl,
-          textColor: Colors.deepOrange,
-        ),
-      ],
-    ),
-  ));
+  return Directionality(
+    textDirection: TextDirection.rtl,
+    child: Center(
+        child: Container(
+      child: Column(
+        children: [
+          Lottie.asset('assets/animations/no_data.json', height: 350),
+          ColoredText(
+            mC,
+            textDirection: TextDirection.rtl,
+            textColor: Colors.deepOrange,
+          ),
+        ],
+      ),
+    )),
+  );
 }
 
 String replaceQuote(value, List<String> char) {
@@ -664,6 +1493,7 @@ void enterFullScreenMode() {
 
 String whiteSpaceForSentence(String sentence) {
   String res = sentence
+          .replaceAll(RegExp(r"(?! )\s+| \s+"), " ")
           .replaceAll('!', "! ") // برای ایجاد فاصله بعد از علامت تعجب
           .replaceAll('?', "? ") // برای ایجاد فاصله بعد از علامت سوال
           .replaceAll('؟', "؟ ") // برای ایجاد فاصله بعد از علامت سوال (فارسی)
@@ -687,7 +1517,7 @@ String whiteSpaceForSentence(String sentence) {
     "7",
     "8",
     "9"
-  ]).replaceAll(RegExp(r"(?! )\s+| \s+"), " ");
+  ]);
 }
 
 String getText(String text, {int? length}) {
@@ -733,11 +1563,18 @@ Widget resourcesBackground({Widget? child, double? width, double? height}) {
 }
 
 Widget getVideoView(var path, CustomVideoType type,
-    {bool? withThumb, bool? retryImage, bool? showPreviewOverlay,bool? fullscreenOnStart}) {
+    {bool? withThumb,
+    bool? retryImage,
+    bool? showPreviewOverlay,
+    String? customPreviewLink,
+    bool? fullscreenOnStart}) {
   withThumb ??= false;
   retryImage ??= false;
   fullscreenOnStart ??= true;
   showPreviewOverlay ??= true;
+  if (customPreviewLink == "") {
+    customPreviewLink = null;
+  }
   File? file;
   if (type == CustomVideoType.STORAGE) {
     file = path;
@@ -760,105 +1597,123 @@ Widget getVideoView(var path, CustomVideoType type,
           return Stack(
             children: [
               type == CustomVideoType.NETWORK
-                  ? CustomCachedVideoPreviewWidget(
-                      path: path,
-                      placeHolder: Loading(),
-                      type: SourceType.remote,
-                      fileImageBuilder: (context, file) {
-                        return Stack(
-                          children: [
-                            Image.memory(
-                              file,
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.fill,
-                            ),
-                            showPreviewOverlay!
-                                ? Align(
-                                    alignment: Alignment.center,
-                                    child: InkWell(
-                                      onTap: () {},
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.black38,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  color: Colors.white30,
-                                                  width: 1)),
-                                          width:
-                                              constraints.maxWidth / (3.5 * 1),
-                                          height:
-                                              constraints.maxHeight / (3.5 * 1),
-                                          child: InkWell(
-                                            onTap: () async{
-                                              if (customVideoPlayerController !=
-                                                  null) {
-                                                customVideoPlayerController!
-                                                    .dispose();
-                                              }
-                                              isVideoInitializing.value = true;
-                                              var fileInfo = await checkCacheFor(path);
-                                              if(fileInfo == null){
-                                                customVideoPlayerController =
-                                                    CustomVideoPlayerController(
-                                                        CachedVideoPlayerController.network(
-                                                            path,
+                  ? Stack(
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: customPreviewLink ??
+                              getThumbnailUrl(url: path, size: "720x480"),
+                          width: double.infinity,
+                          height: double.infinity,
+                          progressIndicatorBuilder: (
+                            BuildContext context,
+                            String url,
+                            DownloadProgress progress,
+                          ) {
+                            double downloaded = progress.progress ?? 0;
+                            return LiquidLinearProgressIndicator(
+                              value: downloaded,
+                              // Defaults to 0.5.
+                              valueColor: AlwaysStoppedAnimation(primaryLight),
+                              // Defaults to the current Theme's accentColor.
+                              backgroundColor: Colors.white,
+                              // Defaults to the current Theme's backgroundColor.
+                              direction: Axis.vertical,
+                              // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.vertical.
+                              center: ColoredText(""),
+                            );
+                          },
+                          fit: BoxFit.cover,
+                        ),
+                        showPreviewOverlay!
+                            ? Align(
+                                alignment: Alignment.center,
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.black38,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                              color: Colors.white30, width: 1)),
+                                      width: constraints.maxWidth / (3.5 * 1),
+                                      height: constraints.maxHeight / (3.5 * 1),
+                                      child: InkWell(
+                                        onTap: () async {
+                                          if (customVideoPlayerController !=
+                                              null) {
+                                            customVideoPlayerController!
+                                                .dispose();
+                                          }
+                                          isVideoInitializing.value = true;
+                                          var fileInfo =
+                                              await checkCacheFor(path);
+                                          if (fileInfo == null) {
+                                            customVideoPlayerController =
+                                                CustomVideoPlayerController(
+                                                    CachedVideoPlayerController
+                                                        .network(path,
                                                             videoPlayerOptions:
+                                                                VideoPlayerOptions(
+                                                                    mixWithOthers:
+                                                                        true)),
+                                                    autoInit: false,
+                                                    fullscreenOnStart:
+                                                        fullscreenOnStart);
+                                          } else {
+                                            customVideoPlayerController =
+                                                CustomVideoPlayerController(
+                                                    CachedVideoPlayerController.file(
+                                                        fileInfo.file,
+                                                        videoPlayerOptions:
                                                             VideoPlayerOptions(
                                                                 mixWithOthers:
-                                                                true)),
-                                                        autoInit: false,
-                                                        fullscreenOnStart: fullscreenOnStart);
-                                              }else{
-                                                customVideoPlayerController =
-                                                    CustomVideoPlayerController(
-                                                        CachedVideoPlayerController.file(
-                                                            fileInfo.file,
-                                                            videoPlayerOptions:
-                                                            VideoPlayerOptions(
-                                                                mixWithOthers:
-                                                                true)),
-                                                        autoInit: false,
-                                                        fullscreenOnStart: true);
-                                              }
+                                                                    true)),
+                                                    autoInit: false,
+                                                    fullscreenOnStart: true);
+                                          }
 
-
-                                              customVideoPlayerController!
-                                                  .init(autoPlay: true)
-                                                  .then((value) {
-                                                    if(fileInfo == null){
-                                                      checkedForUrl(path);
-                                                    }
-                                                isImageReady.value = true;
-                                              });
-                                              customVideoPlayerTag.value = path;
-                                            },
-                                            child: Obx(() => SizedBox(
-                                                width: (constraints.maxWidth /
-                                                    (3.5 * 2)),
-                                                height: (constraints.maxHeight /
-                                                    (3.5 * 2)),
-                                                child: isVideoInitializing.value
-                                                    ? Loading()
-                                                    : Icon(
-                                                        Icons
-                                                            .play_arrow_rounded,
-                                                        color: Colors.white70,
-                                                        size: (constraints
-                                                                .maxWidth /
+                                          customVideoPlayerController!
+                                              .init(autoPlay: true)
+                                              .then((value) {
+                                            if (fileInfo == null) {
+                                              checkedForUrl(path);
+                                            }
+                                            isImageReady.value = true;
+                                          });
+                                          customVideoPlayerTag.value = path;
+                                        },
+                                        child: Obx(() => SizedBox(
+                                            width: (constraints.maxWidth /
+                                                (3.5 * 2)),
+                                            height: (constraints.maxHeight /
+                                                (3.5 * 2)),
+                                            child: isVideoInitializing.value
+                                                ? Loading()
+                                                : Icon(
+                                                    Icons.play_arrow_rounded,
+                                                    color: Colors.white70,
+                                                    size:
+                                                        (constraints.maxWidth /
                                                             (3.5 * 2)),
-                                                      ))),
-                                          )),
-                                    ))
-                                : Container(),
-                          ],
-                        );
-                      },
+                                                  ))),
+                                      )),
+                                ))
+                            : Container()
+                      ],
                     )
                   : file!.existsSync()
                       ? CustomCachedVideoPreviewWidget(
                           path: path.path,
-                          placeHolder: Loading(),
+                          placeHolder: Shimmer.fromColors(
+                            baseColor: Colors.grey.shade300,
+                            highlightColor: Colors.grey.shade100,
+                            enabled: true,
+                            child: Container(
+                              color: Colors.white,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          ),
                           type: SourceType.local,
                           fileImageBuilder: (context, file) {
                             return Stack(
@@ -908,7 +1763,7 @@ Widget getVideoView(var path, CustomVideoType type,
                                                                           true)),
                                                           autoInit: false,
                                                           fullscreenOnStart:
-                                                          fullscreenOnStart);
+                                                              fullscreenOnStart);
 
                                                   customVideoPlayerController!
                                                       .init(autoPlay: true)
@@ -955,15 +1810,317 @@ Widget getVideoView(var path, CustomVideoType type,
         }));
 }
 
-Future<FileInfo?> checkCacheFor(String url) async{
+Widget bottomBarItem({
+  required BuildContext context,
+  bool nextButton = true,
+  var introKey,
+  String introDesc = "",
+  bool previousButton = true,
+  bool active = false,
+  String iconPath = "",
+}) {
+  String _nextButtonText = "رد کردن";
+  String _previousButtonText = "بعدی";
+  return Opacity(
+    opacity: active ? 1 : 0.4,
+    child: CustomShowcase(
+        key: introKey,
+        description: introDesc,
+        previousButtonText: previousButton ? _previousButtonText : null,
+        nextButtonText: nextButton ? _nextButtonText : null,
+        onNextButtonTap: () {
+          if (!nextButton) {
+            return;
+          }
+          ShowCaseWidget.of(context).next();
+        },
+        onPreviousButtonTap: () {
+          if (!previousButton) {
+            return;
+          }
+          ShowCaseWidget.of(context).dismiss();
+        },
+        disableDefaultTargetGestures: true,
+        targetPadding:
+        const EdgeInsets.all(5),
+        child: Image.asset(
+          iconPath,
+          color: Colors.white,
+        )),
+  );
+  //Row(
+  //                                   children: [
+  //                                     Flexible(
+  //                                         flex: 1,
+  //                                         child: Container(
+  //                                           width: double.infinity,
+  //                                           height: double.infinity,
+  //                                           margin: EdgeInsets.symmetric(
+  //                                               horizontal: 12, vertical: 8),
+  //                                           decoration: BoxDecoration(),
+  //                                           child: CustomShowcase(
+  //                                             nextButtonText: "رد کردن",
+  //                                             previousButtonText: "بعدی",
+  //                                             onPreviousButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).next();
+  //                                             },
+  //                                             onNextButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).dismiss();
+  //                                             },
+  //                                             disableDefaultTargetGestures: true,
+  //                                             targetPadding:
+  //                                             const EdgeInsets.all(5),
+  //                                             key: _controller.keyOne,
+  //                                             description:
+  //                                             _controller.intros[0],
+  //                                             child: InkWell(
+  //                                               onTap: () {
+  //                                                 _controller
+  //                                                     .changeCurrentPage(0,_context);
+  //                                               },
+  //                                               child: Center(
+  //                                                   child: Column(
+  //                                                     children: [
+  //                                                       Expanded(
+  //                                                         flex:1,
+  //                                                         child: Opacity(
+  //                                                             opacity: _controller
+  //                                                                 .getCurrentPos() ==
+  //                                                                 0
+  //                                                                 ? 1
+  //                                                                 : 0.4,
+  //                                                             child: Image.asset(
+  //                                                               "assets/images/homeS.png",
+  //                                                               color: Colors.white,
+  //                                                             )),
+  //                                                       ),
+  //                                                       SizedBox(height: 2,),
+  //                                                       Expanded(
+  //                                                         flex:0,
+  //                                                         child: Center(
+  //                                                             child: ColoredText(
+  //                                                               "خانه",
+  //                                                               textColor: _controller
+  //                                                                   .getCurrentPos() ==
+  //                                                                   0
+  //                                                                   ? Colors.white
+  //                                                                   : Colors.white38,
+  //                                                               textSize: 12,
+  //                                                               fontWeight:
+  //                                                               FontWeight.bold,
+  //                                                             )),
+  //                                                       ),
+  //                                                     ],
+  //                                                   )),
+  //                                             ),
+  //                                           ),
+  //                                         )),
+  //                                     Flexible(
+  //                                         flex: 1,
+  //                                         child: Container(
+  //                                           width: double.infinity,
+  //                                           height: double.infinity,
+  //                                           margin: EdgeInsets.symmetric(
+  //                                               horizontal: 12, vertical: 8),
+  //                                           decoration: BoxDecoration(),
+  //                                           child: CustomShowcase(
+  //                                             nextButtonText: "رد کردن",
+  //                                             previousButtonText: "بعدی",
+  //                                             onPreviousButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).next();
+  //                                             },
+  //                                             onNextButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).dismiss();
+  //                                             },
+  //                                             disableDefaultTargetGestures: true,
+  //                                             targetPadding:
+  //                                             const EdgeInsets.all(5),
+  //                                             key: _controller.keyTwo,
+  //                                             description:
+  //                                             _controller.intros[1],
+  //                                             child: InkWell(
+  //                                               onTap: () {
+  //                                                 _controller
+  //                                                     .changeCurrentPage(1,_context);
+  //                                               },
+  //                                               child: Center(
+  //                                                   child: Column(
+  //                                                     children: [
+  //                                                       Expanded(
+  //                                                         flex:1,
+  //                                                         child: Opacity(
+  //                                                             opacity: _controller
+  //                                                                 .getCurrentPos() ==
+  //                                                                 1
+  //                                                                 ? 1
+  //                                                                 : 0.4,
+  //                                                             child: Image.asset(
+  //                                                               "assets/images/book_enable.png",
+  //                                                               color: Colors.white,
+  //                                                             )),
+  //                                                       ),
+  //                                                       SizedBox(height: 2,),
+  //                                                       Expanded(
+  //                                                         flex:0,
+  //                                                         child: Center(
+  //                                                             child: ColoredText(
+  //                                                               "منابع",
+  //                                                               textColor: _controller
+  //                                                                   .getCurrentPos() ==
+  //                                                                   1
+  //                                                                   ? Colors.white
+  //                                                                   : Colors.white38,
+  //                                                               textSize: 12,
+  //                                                               fontWeight:
+  //                                                               FontWeight.bold,
+  //                                                             )),
+  //                                                       ),
+  //                                                     ],
+  //                                                   )),
+  //                                             ),
+  //                                           ),
+  //                                         )),
+  //                                     Flexible(
+  //                                         flex: 1,
+  //                                         child: Container(
+  //                                           width: double.infinity,
+  //                                           height: double.infinity,
+  //                                           margin: EdgeInsets.symmetric(
+  //                                               horizontal: 12, vertical: 8),
+  //                                           decoration: BoxDecoration(),
+  //                                           child: CustomShowcase(
+  //                                             nextButtonText: "رد کردن",
+  //                                             previousButtonText: "بعدی",
+  //                                             onPreviousButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).next();
+  //                                             },
+  //                                             onNextButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).dismiss();
+  //                                             },
+  //                                             disableDefaultTargetGestures: true,
+  //                                             targetPadding:
+  //                                             const EdgeInsets.all(5),
+  //                                             key: _controller.keyThree,
+  //                                             description:
+  //                                             _controller.intros[2],
+  //                                             child: InkWell(
+  //                                               onTap: () {
+  //                                                 _controller
+  //                                                     .changeCurrentPage(2,_context);
+  //                                               },
+  //                                               child: Center(
+  //                                                   child: Column(
+  //                                                     children: [
+  //                                                       Expanded(
+  //                                                         flex:1,
+  //                                                         child: Opacity(
+  //                                                             opacity: _controller
+  //                                                                 .getCurrentPos() ==
+  //                                                                 2
+  //                                                                 ? 1
+  //                                                                 : 0.4,
+  //                                                             child: Image.asset(
+  //                                                               "assets/images/course.png",
+  //                                                               color: Colors.white,
+  //                                                             )),
+  //                                                       ),
+  //                                                       SizedBox(height: 2,),
+  //                                                       Expanded(
+  //                                                         flex:0,
+  //                                                         child: Center(
+  //                                                             child: ColoredText(
+  //                                                               "دوره ها",
+  //                                                               textColor: _controller
+  //                                                                   .getCurrentPos() ==
+  //                                                                   2
+  //                                                                   ? Colors.white
+  //                                                                   : Colors.white38,
+  //                                                               textSize: 12,
+  //                                                               fontWeight:
+  //                                                               FontWeight.bold,
+  //                                                             )),
+  //                                                       ),
+  //                                                     ],
+  //                                                   )),
+  //                                             ),
+  //                                           ),
+  //                                         )),
+  //                                     Flexible(
+  //                                         flex: 1,
+  //                                         child: Container(
+  //                                           width: double.infinity,
+  //                                           height: double.infinity,
+  //                                           margin: EdgeInsets.symmetric(
+  //                                               horizontal: 12, vertical: 8),
+  //                                           decoration: BoxDecoration(),
+  //                                           child: CustomShowcase(
+  //                                             nextButtonText: "رد کردن",
+  //                                             previousButtonText: "بعدی",
+  //                                             onPreviousButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).next();
+  //                                             },
+  //                                             onNextButtonTap: (){
+  //                                               ShowCaseWidget.of(_context).dismiss();
+  //                                             },
+  //                                             disableDefaultTargetGestures: true,
+  //                                             targetPadding:
+  //                                             const EdgeInsets.all(5),
+  //                                             key: _controller.keySeven,
+  //                                             description:
+  //                                             _controller.intros[6],
+  //                                             child: InkWell(
+  //                                               onTap: () {
+  //                                                 _controller
+  //                                                     .changeCurrentPage(3,_context);
+  //                                               },
+  //                                               child: Center(
+  //                                                   child: Column(
+  //                                                     children: [
+  //                                                       Expanded(
+  //                                                         flex:1,
+  //                                                         child: Opacity(
+  //                                                             opacity: _controller
+  //                                                                 .getCurrentPos() ==
+  //                                                                 3
+  //                                                                 ? 1
+  //                                                                 : 0.4,
+  //                                                             child: Image.asset(
+  //                                                               "assets/images/online_class.png",
+  //                                                               color: Colors.white,
+  //                                                             )),
+  //                                                       ),
+  //                                                       SizedBox(height: 2,),
+  //                                                       Expanded(
+  //                                                         flex:0,
+  //                                                         child: Center(
+  //                                                             child: ColoredText(
+  //                                                               "کلاس آنلاین",
+  //                                                               textColor: _controller
+  //                                                                   .getCurrentPos() ==
+  //                                                                   3
+  //                                                                   ? Colors.white
+  //                                                                   : Colors.white38,
+  //                                                               textSize: 12,
+  //                                                               fontWeight:
+  //                                                               FontWeight.bold,
+  //                                                             )),
+  //                                                       ),
+  //                                                     ],
+  //                                                   )),
+  //                                             ),
+  //                                           ),
+  //                                         )),
+  //                                   ],
+  //                                 )
+}
+
+Future<FileInfo?> checkCacheFor(String url) async {
   final FileInfo? value = await DefaultCacheManager().getFileFromCache(url);
   return value;
 }
 
-void checkedForUrl(String url) async{
-  await DefaultCacheManager().getSingleFile(url).then((value){
-
-  });
+void checkedForUrl(String url) async {
+  await DefaultCacheManager().getSingleFile(url).then((value) {});
 }
 
 String smallerPrice(val1, val2) {
@@ -976,15 +2133,20 @@ String smallerPrice(val1, val2) {
   }
 }
 
-String formatPrice(value, {bool? showUnit, int? count}) {
+String formatPrice(value,
+    {bool? showUnit, bool? showFreeText, int? count, String? unitText}) {
   showUnit ??= true;
+  showFreeText ??= true;
+  unitText ??= "تومان";
   count ??= 1;
   if (value.toString() == "null" || value.toString().trim().isEmpty) {
     value = "0";
   }
   String val = value.toString();
   if (val == "0") {
-    return "رایگان";
+    if (showFreeText) {
+      return "رایگان";
+    }
   }
   var formatter = intl.NumberFormat.currency(
     locale: null,
@@ -993,51 +2155,66 @@ String formatPrice(value, {bool? showUnit, int? count}) {
     decimalDigits: 0,
     customPattern: null,
   );
-  String unit = showUnit ? " تومان " : "";
+  String unit = showUnit ? " $unitText " : "";
   return "${formatter.format(int.parse(val.replaceAll(",", "")))}$unit";
 }
 
-String getCurrentDayDatePicker(int index,{bool? allText}) {
-  allText??=false;
+String getCurrentDayDatePicker(int index, {bool? allText}) {
+  allText ??= false;
   String day = "";
   if (index == 0) {
     day = "شنبه";
   } else if (index == 1) {
-    if(allText){
+    if (allText) {
       day = "یک‌شنبه";
-    }else {
+    } else {
       day = "1شنبه";
     }
   } else if (index == 2) {
-    if(allText){
+    if (allText) {
       day = "دو‌شنبه";
-    }else {
+    } else {
       day = "2شنبه";
     }
   } else if (index == 3) {
-    if(allText){
+    if (allText) {
       day = "سه‌شنبه";
-    }else {
+    } else {
       day = "3شنبه";
     }
   } else if (index == 4) {
-    if(allText){
+    if (allText) {
       day = "چهار‌شنبه";
-    }else {
+    } else {
       day = "4شنبه";
     }
   } else if (index == 5) {
-    if(allText){
+    if (allText) {
       day = "یک‌شنبه";
-    }else {
+    } else {
       day = "5شنبه";
     }
   } else if (index == 6) {
     day = "جمعه";
-  }else{
-    day = "??????";
+  } else {
+    if (index < 0) {
+      return getCurrentDayDatePicker(6, allText: allText);
+    } else if (index > 6) {
+      return getCurrentDayDatePicker(0, allText: allText);
+    } else {
+      day = "???????";
+    }
   }
   return day;
+}
+
+Future<String> getCurrentHourMinDatePickerAsync(int pos,
+    {int? startHour}) async {
+  return getCurrentHourMinDatePicker(pos, startHour: startHour);
+}
+
+extension Numeric on String {
+  bool get isNumeric => num.tryParse(this) != null ? true : false;
 }
 
 String getCurrentHourMinDatePicker(int pos, {int? startHour}) {
@@ -1080,25 +2257,97 @@ keepScreenNormal() {
   Wakelock.disable();
 }
 
-getSrtSubTitle(lang, id, link) async {
+Future<List<SentenceModel>> getSrtSubTitle(lang, id, link) async {
   var returnItem;
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   if (link.toString().trim().isNotEmpty) {
     bool exists = await readExists(getSrtFileName(lang, id, link.toString()));
     if (!exists) {
       var en = await _getConnect.get(link);
-      await writeString(
-          en.bodyString ?? "", getSrtFileName(lang, id, link.toString()));
-    } else {
-      _getConnect.get(link).then((en) async {
+      if (!en.hasError) {
         await writeString(
             en.bodyString ?? "", getSrtFileName(lang, id, link.toString()));
-      });
+      }
     }
     String data = await readString(getSrtFileName(lang, id, link.toString()));
-
-    var list = await getFullFromSrt(false, strP.parseSrt(data));
+    _getConnect.get(link).then((value) {
+      if (data.length != value.bodyString!.length) {
+        writeString(
+            value.bodyString ?? "", getSrtFileName(lang, id, link.toString()));
+      }
+    });
+    var list = await getFullFromSrt(lang == "fa", strP.parseSrt(data));
     returnItem = list.sentenceModel;
+  }
+  return returnItem;
+}
+
+Widget subtitleLoading({bool hasFirstItem = true}) {
+  return Shimmer.fromColors(
+    baseColor: Colors.grey.shade300,
+    highlightColor: Colors.grey.shade100,
+    enabled: true,
+    child: ListView.builder(
+        itemCount: 18,
+        shrinkWrap: true,
+        itemBuilder: (_, index) {
+          if (index == 0 && hasFirstItem) {
+            return Container(
+              width: double.infinity,
+              height: 250,
+              margin: EdgeInsets.symmetric(vertical: 12, horizontal: 60),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8), color: Colors.white),
+            );
+          }
+          return Container(
+            width: double.infinity,
+            height: 30,
+            margin: EdgeInsets.only(
+                bottom: 12,
+                top: 12,
+                right: (index % 2 == 0) ? 20 : 0,
+                left: (index % 2 == 0) ? 0 : 20),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8), color: Colors.white),
+          );
+        }),
+  );
+}
+
+Future<String> getFormattedFaEnSubTitle(String fa, String en) async {
+  String result = "";
+  var faList = await getFullFromSrt(true, strP.parseSrt(fa));
+  var enList = await getFullFromSrt(false, strP.parseSrt(en));
+  List<SentenceModel> faReturnItem = faList.sentenceModel;
+  List<SentenceModel> enReturnItem = enList.sentenceModel;
+  for (int i = 0; i < enReturnItem.length; i++) {
+    SentenceModel faSubItem = faReturnItem[i];
+    SentenceModel enSubItem = enReturnItem[i];
+    String rs = "";
+    for (int o = 0; o < enSubItem.sentencesList.length; o++) {
+      SentenceIndex enMainIndex = enSubItem.sentencesList[o];
+      SentenceIndex faMainIndex = faSubItem.sentencesList[o];
+      rs += enMainIndex.text ?? "";
+    }
+  }
+  return result;
+}
+
+Future<String> getRawSrtSubTitle(lang, id, link) async {
+  var returnItem = "";
+  final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
+  if (link.toString().trim().isNotEmpty) {
+    bool exists = await readExists(getSrtFileName(lang, id, link.toString()));
+    if (!exists) {
+      var en = await _getConnect.get(link);
+      if (!en.hasError) {
+        await writeString(
+            en.bodyString ?? "", getSrtFileName(lang, id, link.toString()));
+      }
+    }
+    String data = await readString(getSrtFileName(lang, id, link.toString()));
+    returnItem = data;
   }
   return returnItem;
 }
@@ -1127,6 +2376,19 @@ Future<String> readString(String itemId) async {
   return text;
 }
 
+String forceRTL(String text, bool rtl) {
+  if (rtl) {
+    if (intl.Bidi.detectRtlDirectionality(text)) {
+      text = intl.Bidi.enforceLtrInText(text);
+    } else {
+      text = intl.Bidi.enforceRtlInText(text);
+    }
+  } else {
+    text = intl.Bidi.enforceLtrInText(text);
+  }
+  return text;
+}
+
 Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async {
   List<SentenceModel> listItems = [];
   List<List<InlineSpan>> textsSpans = [];
@@ -1148,7 +2410,6 @@ Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async {
       eTimeResult += "/l";
     }
   }
-
   List<String> b = result.split("/l");
   List<String> tb = timeResult.split("/l");
   List<String> etb = eTimeResult.split("/l");
@@ -1185,6 +2446,7 @@ Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async {
             diffrence;
       }
       String txt = sentens.replaceAll(RegExp(r"(?! )\s+| \s+"), " ");
+      // txt = forceRTL(txt,fa);
       inlineSpan.add(parseHtmlToTextSpan(
           whiteSpaceForSentence(txt.toString()), getSubtitleTextStyle(false)));
       sentencesList.add(SentenceIndex(
@@ -1192,6 +2454,81 @@ Future<SrtResult> getFullFromSrt(bool fa, List<Subtitle> paragraphs) async {
           sentenceIndex: o,
           time: currentTime,
           endTime: currentETime,
+          key: GlobalKey(),
+          text: txt));
+    }
+    listItems.add(SentenceModel(sentencesList: sentencesList));
+    textsSpans.add(inlineSpan);
+  }
+  return SrtResult(sentenceModel: listItems, subtitleTimes: textsSpans);
+}
+
+SrtResult noAsyncGetFullFromSrt(bool fa, List<Subtitle> paragraphs) {
+  List<SentenceModel> listItems = [];
+  List<List<InlineSpan>> textsSpans = [];
+  List<Subtitle> currentP = paragraphs;
+  String result = "";
+  String timeResult = "";
+  String eTimeResult = "";
+  for (var res in currentP) {
+    var a = res.lines.join(" ");
+    if (a.contains("/l")) {
+      result += a.replaceAll("/l", "") + "__NEWSENTENCE__" + "/l";
+    } else {
+      result += a + "__NEWSENTENCE__";
+    }
+    timeResult += res.range.begin.toString() + "__NEWSENTENCE__";
+    eTimeResult += res.range.end.toString() + "__NEWSENTENCE__";
+    if (a.contains("/l")) {
+      timeResult += "/l";
+      eTimeResult += "/l";
+    }
+  }
+  List<String> b = result.split("/l");
+  List<String> tb = timeResult.split("/l");
+  List<String> etb = eTimeResult.split("/l");
+  for (int i = 0; i < b.length; i++) {
+    String parag = b[i];
+    List<SentenceIndex> sentencesList = [];
+    List<InlineSpan> inlineSpan = [];
+    List<String> a = parag.split("__NEWSENTENCE__");
+    List<String> ta = tb[i].toString().split("__NEWSENTENCE__");
+    List<String> eta = etb[i].toString().split("__NEWSENTENCE__");
+
+    for (int o = 0; o < a.length; o++) {
+      String sentens =
+          a[o].replaceAll("__NEWSENTENCE__", " ").replaceAll("/l", " ");
+      String forCheck =
+          ta[o].replaceAll("__NEWSENTENCE__", " ").replaceAll("/l", " ");
+      String eForCheck =
+          eta[o].replaceAll("__NEWSENTENCE__", " ").replaceAll("/l", " ");
+      int currentTime = 0;
+      int currentETime = 0;
+      int diffrence = 350;
+      if (StringHelper()
+          .filterString(forCheck.toString().trim())
+          .isNumericOnly) {
+        currentTime =
+            int.parse(StringHelper().filterString(forCheck.toString().trim())) -
+                diffrence;
+      }
+      if (StringHelper()
+          .filterString(eForCheck.toString().trim())
+          .isNumericOnly) {
+        currentETime = int.parse(
+                StringHelper().filterString(eForCheck.toString().trim())) -
+            diffrence;
+      }
+      String txt = sentens.replaceAll(RegExp(r"(?! )\s+| \s+"), " ");
+      // txt = forceRTL(txt,fa);
+      inlineSpan.add(parseHtmlToTextSpan(
+          whiteSpaceForSentence(txt.toString()), getSubtitleTextStyle(false)));
+      sentencesList.add(SentenceIndex(
+          listIndex: i,
+          sentenceIndex: o,
+          time: currentTime,
+          endTime: currentETime,
+          key: GlobalKey(),
           text: txt));
     }
     listItems.add(SentenceModel(sentencesList: sentencesList));

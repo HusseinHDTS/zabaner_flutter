@@ -21,6 +21,7 @@ import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/create_class_screen.dart';
 import 'package:zabaner/views/screens/submit_class.dart';
 import 'package:zabaner/widgets/colored_button.dart';
+import 'package:zabaner/widgets/colored_snack.dart';
 import 'package:zabaner/widgets/colored_text.dart';
 import 'package:zabaner/widgets/custom_video_player.dart';
 
@@ -63,7 +64,6 @@ class UserTeachersTile extends StatelessWidget {
 
   String getPersianPart(String text) {
     String result = text.substring(0, text.toString().indexOf("(") + 1);
-    // debugPrint("sakldjkjwakjkjcxkjzcsa : " + result.length.toString());
     if (result.length - 1 > 0) {
       result = result.substring(0, result.length - 1);
     }
@@ -137,14 +137,17 @@ class UserTeachersTile extends StatelessWidget {
                             height: 8,
                           ),
                           Center(
-                            child: StarRating(
-                              showText: true,
-                              current: item.rating.isEmpty
-                                  ? 0
-                                  : int.parse(item.rating.toString()),
-                              count: item.ratingCount.isEmpty
-                                  ? 0
-                                  : int.parse(item.ratingCount.toString()),
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: customRating(
+                                preview: true,
+                                current: item.rating.isEmpty
+                                    ? 0
+                                    : int.parse(item.rating.toString()),
+                                count: item.ratingCount.isEmpty
+                                    ? 0
+                                    : int.parse(item.ratingCount.toString()),
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -152,8 +155,8 @@ class UserTeachersTile extends StatelessWidget {
                           ),
                           Center(
                             child: ColoredText(
-                              "بدون زبان‌آموز",
-                              textSize: 12.5,
+                              "${item.ratingCount.toString()} نفر " +" / "+ "${item.rating.toString()} امتیاز ",
+                              textSize: 10.5,
                               textColor: Colors.black54,
                             ),
                           ),
@@ -296,12 +299,16 @@ class UserTeachersTile extends StatelessWidget {
                                               color: Colors.white),
                                           child: Directionality(
                                             textDirection: TextDirection.ltr,
+                                            // child: VideoPlayer(VideoPlayerController.network(getUrl(item.videoPath))..initialize()),
                                             // child: CustomVideoPlayer(getUrl(item.videoPath),CustomVideoType.NETWORK,initializedVideoPlayerController: videoPlayerWidgetController,isInitialized: true,fullscreenOnStart: true,),
                                             child: Obx(() => getVideoView(
                                                 getUrl(item.videoPath),
                                                 CustomVideoType.NETWORK,
                                                 withThumb: true,
-                                                retryImage: customVideoPlayerTag.value == getUrl(item.videoPath))),
+                                                customPreviewLink: getUrl(item.videoImagePath),
+                                                retryImage: customVideoPlayerTag
+                                                        .value ==
+                                                    getUrl(item.videoPath))),
                                           ),
                                         ),
                                       ),
@@ -367,9 +374,14 @@ class UserTeachersTile extends StatelessWidget {
                           child: Center(
                             child: ColoredButton(
                               "رزرو کلاس",
-                              color: primary.withOpacity(0.3),
+                              color: item.teacherId == userSavedId
+                                  ? Colors.grey.withOpacity(0.4)
+                                  : primary.withOpacity(0.3),
                               textColor: Colors.black,
                               onTap: () {
+                                if (item.teacherId == userSavedId) {
+                                  return;
+                                }
                                 submitInfo(item);
                               },
                             ),
@@ -386,8 +398,8 @@ class UserTeachersTile extends StatelessWidget {
                               color: primary.withOpacity(0.3),
                               textColor: Colors.black,
                               textSize: 12,
-                              onTap: (){
-                                Get.to(()=>ShowTeacherTimes(item.freeTimes));
+                              onTap: () {
+                                Get.to(() => ShowTeacherTimes(item.freeTimes));
                               },
                             ),
                           ),
@@ -401,17 +413,52 @@ class UserTeachersTile extends StatelessWidget {
                 SizedBox(
                   height: 8,
                 ),
-                Container(
-                    margin: EdgeInsets.symmetric(horizontal: 18),
-                    child: ColoredText(
-                        "جلسه آزمایشی : ${item.testClassPrice} تومان ")),
-                SizedBox(
-                  height: 8,
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 2,
+                      child: Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(right: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ColoredText(
+                                "جلسه آزمایشی : ${item.testClassPrice} تومان "),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            ColoredText(
+                                "جلسه 1 ساعتی : ${item.normal1ClassPrice} تومان ")
+                          ],
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(left: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ColoredText(
+                              "تعداد زبان آموز : ${getLongCountNumber(item.ratingCount)}",
+                              textSize: 11,
+                              textColor: Colors.grey,
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 8,),
+                            ColoredText("ساعات کلاسی : ${item.totalCTime}",
+                                textSize: 11,
+                                textColor: Colors.grey,
+                                textAlign: TextAlign.right)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                    margin: EdgeInsets.symmetric(horizontal: 18),
-                    child: ColoredText(
-                        "جلسه 1 ساعتی : ${item.normal1ClassPrice} تومان ")),
               ],
             ),
           ),
@@ -539,14 +586,18 @@ class UserTeachersTile extends StatelessWidget {
                   height: 18,
                 ),
                 Center(
-                  child: StarRating(
-                    showText: true,
-                    current: item.rating.isEmpty
-                        ? 0
-                        : int.parse(item.rating.toString()),
-                    count: item.ratingCount.isEmpty
-                        ? 0
-                        : int.parse(item.ratingCount.toString()),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: customRating(
+                      preview: true,
+                      showText: true,
+                      current: item.rating.isEmpty
+                          ? 0
+                          : int.parse(item.rating.toString()),
+                      count: item.ratingCount.isEmpty
+                          ? 0
+                          : int.parse(item.ratingCount.toString()),
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -577,7 +628,7 @@ class UserTeachersTile extends StatelessWidget {
                                     "زمانبندی کلاس ها",
                                     height: 40,
                                     fill: false,
-                                    textColor: orangeDarkTransparent,
+                                    textColor: primaryDarkTransparent,
                                     textSize: 12,
                                   ),
                                 ),
@@ -689,136 +740,6 @@ class UserTeachersTile extends StatelessWidget {
           ),
         ));
     return;
-    // Get.dialog(Dialog(child: Container(
-    //   decoration: BoxDecoration(
-    //       color: Colors.white,
-    //       borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
-    //   child: Column(
-    //     mainAxisSize: MainAxisSize.min,
-    //     children: [
-    //       Obx(() => selectableItem(
-    //         testClass: true,
-    //           onTap: () {
-    //             selectedPos.value = 0;
-    //           },
-    //           price: (int.parse(item.testClassPrice.replaceAll(",", "")) * 1)
-    //               .toString(),
-    //           description: "کلاس آزمایشی",
-    //           selected: selectedPos.value == 0)),
-    //
-    //       Obx(() => selectableItem(
-    //           onTap: () {
-    //             selectedPos.value = 1;
-    //           },
-    //           price: (int.parse(item.normalClassPrice.replaceAll(",", "")) * 1)
-    //               .toString(),
-    //           description: "1 جلسه یک ساعتی",
-    //           selected: selectedPos.value == 1)),
-    //       Obx(() => selectableItem(
-    //           onTap: () {
-    //             selectedPos.value = 3;
-    //           },
-    //           price: (int.parse(item.normalClassPrice.replaceAll(",", "")) * 3)
-    //               .toString(),
-    //           description: "3 جلسه یک ساعتی",
-    //           selected: selectedPos.value == 3)),
-    //       Obx(() => selectableItem(
-    //           onTap: () {
-    //             selectedPos.value = 5;
-    //           },
-    //           price: (int.parse(item.normalClassPrice.replaceAll(",", "")) * 5)
-    //               .toString(),
-    //           description: "5 جلسه یک ساعتی",
-    //           selected: selectedPos.value == 5)),
-    //       Obx(() => selectableItem(
-    //           onTap: () {
-    //             selectedPos.value = 10;
-    //           },
-    //           price: (int.parse(item.normalClassPrice.replaceAll(",", "")) * 10)
-    //               .toString(),
-    //           description: "10 جلسه یک ساعتی",
-    //           selected: selectedPos.value == 10)),
-    //       SizedBox(height: 8,),
-    //       Center(child: ColoredButton("رزرو کلاس",fill: false,textColor: Colors.blueAccent,onTap: (){
-    //         Get.back();
-    //         Get.to(()=>SubmitClass(item,selectedPos.value));
-    //       },),),
-    //       SizedBox(height: 18,),
-    //     ],
-    //   ),
-    // ),));
-  }
-
-  selectableItem(
-      {required String price,
-      required String description,
-      required bool selected,
-      bool? testClass,
-      onTap}) {
-    testClass ??= false;
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color: selected ? selectedSettingsColor.withOpacity(0.14) : null),
-        child: Container(
-          height: 50,
-          width: double.infinity,
-          child: Row(
-            children: [
-              Flexible(
-                flex: 0,
-                child: Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.blueAccent.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(8)),
-                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                    child: ColoredText(
-                      formatPrice(price, showUnit: true),
-                      textColor: selected
-                          ? Colors.green.shade600
-                          : Colors.deepPurpleAccent,
-                      textSize: 12.5,
-                      textDirection: TextDirection.rtl,
-                    ),
-                  ),
-                ),
-              ),
-              Flexible(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ColoredText(
-                        description,
-                        textDirection: TextDirection.rtl,
-                        textColor: selected ? Colors.green.shade600 : null,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ColoredText(
-                        testClass ? "30 دقیقه" : "60 دقیقه",
-                        textSize: 12,
-                        textColor: selected
-                            ? Colors.green.shade800.withOpacity(0.4)
-                            : Colors.black45,
-                        textDirection: TextDirection.rtl,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   videoInformation(videoController) {

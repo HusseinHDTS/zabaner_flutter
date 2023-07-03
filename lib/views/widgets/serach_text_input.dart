@@ -92,13 +92,15 @@ class MessageTextInput extends StatelessWidget {
         style: const TextStyle(fontFamily: "Yekan", fontSize: 14),
         textAlignVertical: TextAlignVertical.center,
         textAlign: TextAlign.right,
-        textInputAction: TextInputAction.send,
+        textInputAction: TextInputAction.newline,
         focusNode: focus,
+        maxLines: 3,
+        minLines: 1,
         decoration: const InputDecoration(
             hintText: "لطفا پیام خود را بنویسید",
             contentPadding: EdgeInsets.zero,
             hintStyle: TextStyle(
-                fontFamily: "Yekan", fontSize: 12, color: Color(0xff919090)),
+                fontFamily: "Yekan", fontSize: 12, color: Color(0xff8c8b8b)),
             hintTextDirection: TextDirection.rtl,
             fillColor: Color(0xff000000),
             focusedBorder: OutlineInputBorder(
