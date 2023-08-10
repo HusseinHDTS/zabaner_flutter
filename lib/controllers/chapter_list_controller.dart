@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:zabaner/models/book_chapter_model.dart';
+import 'package:zabaner/models/urls.dart';
+
+class ChapterController extends GetxController {
+  ChapterController({required this.id, required this.type});
+  final String id, type;
+  late final BookChapterModel bookModel;
+  final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
+  RefreshController refreshController = RefreshController();
+  var errorData = false.obs;
+  var isDataLoaded = false.obs;
+  @override
+  void onInit() async{
+    // TODO: implement onInit
+    super.onInit();
+    if(type=="book"){
+      await getBookData();
+    }
+  }
+
+  String getFullTime(){
+    int size = bookModel.items.length;
+    int fullTime = 0;
+    for(int i = 0 ; i < size ; i ++){
+      var item = bookModel.items[i];
+      fullTime+=item.podcastTime;
+    }
+    return fullTime.toString();
+  }
+  String getFullWordsCount(){
+    int size = bookModel.items.length;
+    int fullTime = 0;
+    for(int i = 0 ; i < size ; i ++){
+      var item = bookModel.items[i];
+      fullTime+=item.wordsCount;
+    }
+    return fullTime.toString();
+  }
+
+  Future<void> getBookData() async {
+    errorData.value = false;
+    isDataLoaded.value = false;
+    final _request = await _getConnect.get(getBookDetailUrl + id);
+    if (_request.statusCode == 200) {
+      refreshController.refreshCompleted();
+      bookModel = bookChapterModelFromJson(_request.bodyString ?? "");
+      isDataLoaded.value = true;
+    } else {
+      errorData.value = true;
+    }
+  }
+}

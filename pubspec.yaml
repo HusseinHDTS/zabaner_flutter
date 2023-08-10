@@ -1,0 +1,208 @@
+name: zabaner
+description: A new Flutter project.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.8+10
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+  get: ^4.6.0
+  dio: ^4.0.1
+  url_launcher: ^6.1.7
+  timer_count_down: ^2.2.1
+  flutter_sound_lite: ^8.4.2
+  shimmer: ^3.0.0
+  image_picker: ^0.8.4+4
+  flutter_intro: ^3.0.2
+  pushpole: ^1.7.1
+  smooth_page_indicator: ^1.0.0+2
+#  open_file: ^3.2.1
+  anim_search_bar: ^2.0.3
+  roundcheckbox: ^2.0.5
+  liquid_progress_indicator: ^0.4.0
+  animated_notch_bottom_bar: ^1.0.0
+  get_storage: ^2.0.3
+  auto_size_text: ^3.0.0
+  simple_progress_indicators: ^0.2.0
+  expandable: ^5.0.1
+  srt_parser: ^1.0.1
+  keyboard_attachable: ^2.1.0
+  cropperx: ^1.1.1
+  buttons_tabbar: ^1.3.6
+  audioplayers: 1.0.1
+  animated_text_kit: ^4.2.1
+  subtitle_wrapper_package: ^2.1.0
+  html: ^0.15.0
+  switcher_button: ^0.0.4
+  bottom_sheet: 1.0.5
+  another_xlider: ^3.0.1
+  flutter_lyric: ^2.0.4+6
+  flutter_masked_text: ^0.7.0
+  rolling_switch: ^0.0.2
+  lite_rolling_switch: 1.0.0
+#  christian_lyrics: ^0.0.4
+  time_planner: ^0.1.1
+#  syncfusion_flutter_datepicker: ^19.2.44
+  circular_profile_avatar: ^2.0.5
+  persian_datetime_picker: ^2.5.0
+  calendar_date_picker2: ^0.3.8
+  ftpconnect: ^1.0.1
+  chart_sparkline: ^1.0.13
+  animated_toggle_switch: ^0.7.0
+  flutter_rating_bar: ^4.0.1
+  smooth_star_rating_nsafe: ^1.0.0+1
+  awesome_snackbar_content: ^0.1.0
+  catcher: ^0.6.9
+  flip_card: ^0.7.0
+  animated_button_bar: ^0.0.2
+  flutter_chat_bubble: ^2.0.0
+  flutter_cache_manager: ^3.3.0
+  pull_to_refresh: ^2.0.0
+  better_player: ^0.0.62
+  subtitle: ^0.1.0-beta.3
+  flutter_poolakey: ^2.0.1
+  chewie: ^1.3.6
+  screen: ^0.0.5
+  video_player: ^2.2.10
+  fullscreen: ^1.0.3
+  cached_video_player: ^2.0.4
+  scroll_to_index: ^3.0.1
+  intl: ^0.17.0
+  flutter_inappwebview: ^5.4.4+3
+  flutter_file_downloader: ^1.1.0+1
+  wakelock: ^0.6.2
+  package_info_plus: ^1.0.6
+  pinch_zoom: ^1.0.0
+  lottie: ^1.4.1
+  percent_indicator: ^4.0.0
+  firebase_messaging: ^14.1.4
+  wave: ^0.2.2
+  syncfusion_flutter_gauges: ^18.2.44
+  flutter_staggered_grid_view: ^0.6.2
+  video_thumbnail_imageview: ^0.0.5
+  video_thumbnail: ^0.5.3
+  cached_video_preview: ^1.0.6
+  tutorial_coach_mark: ^1.2.9
+  firebase_core: ^2.4.0
+  flutter_local_notifications: ^12.0.4
+  showcaseview: ^2.0.0+1
+  cached_network_image: ^3.2.1
+  flutter_launcher_icons: 0.11.0
+
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/icon.png"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.1
+
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/animations/
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: Yekan
+      fonts:
+        - asset: assets/fonts/Yekan.ttf
+    - family: Comic
+      fonts:
+        - asset: assets/fonts/comicbd.ttf
+    - family: Negaar
+      fonts:
+          - asset: assets/fonts/ANegaar.ttf
+    - family: Vazir
+      fonts:
+          - asset: assets/fonts/Vazir.ttf
+    - family: Lalezar
+      fonts:
+          - asset: assets/fonts/Lalezar.ttf
+    - family: BNazanin
+      fonts:
+          - asset: assets/fonts/BNazanin.ttf
+    - family: BYekan
+      fonts:
+          - asset: assets/fonts/BYekan.ttf
+    - family: Baguede-Regular
+      fonts:
+          - asset: assets/fonts/Baguede-Regular.otf
+    - family: Sahel
+      fonts:
+          - asset: assets/fonts/Sahel.ttf
+    - family: Nazanin
+      fonts:
+        - asset: assets/fonts/nazanin.ttf
+    - family: Calibri
+      fonts:
+        - asset: assets/fonts/calibri.ttf
+    - family: Neue_MD
+      fonts:
+        - asset: assets/fonts/helvetica_neue_medium.ttf
+    - family: Iransans_Fa_Bold
+      fonts:
+        - asset: assets/fonts/iransans_fa_number_bold.ttf
+    - family: Iransans_Fa_MD
+      fonts:
+        - asset: assets/fonts/iransans_fa_number_medium.ttf
+    #       - asset: fonts/Schyler-Italic.ttf
+    #         style: italic
+    - family: Arial
+      fonts:
+        - asset: assets/fonts/arial.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
