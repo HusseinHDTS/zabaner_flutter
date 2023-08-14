@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/models/book_list_model.dart';
 import 'package:zabaner/models/podcast_list_model.dart';
 import 'package:zabaner/models/urls.dart';
@@ -10,6 +11,8 @@ class PodcastListController extends GetxController {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   String? filter;
   String? from;
+  RxBool errorData = false.obs;
+  RefreshController refreshController = RefreshController();
   var isDataLoaded = false.obs;
   PodcastListController({this.filter,this.from});
 
@@ -63,8 +66,9 @@ class PodcastListController extends GetxController {
         return element.category.trim().toString() != filter!.trim().toString();
       }));
       isDataLoaded.value = true;
+      errorData.value = false;
     } else {
-      getData();
+      errorData.value = true;
     }
   }
 }

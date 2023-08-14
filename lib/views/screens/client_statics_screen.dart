@@ -50,7 +50,7 @@ class StaticsScreen extends StatelessWidget {
                         children: const [
                           Text(
                             "آمار",
-                            style: TextStyle(fontFamily: "Yekan", fontSize: 18),
+                            style: TextStyle(fontFamily: "IRANSansPro", fontSize: 18),
                           ),
                           SizedBox(
                             height: 3,
@@ -58,7 +58,7 @@ class StaticsScreen extends StatelessWidget {
                           Text(
                             "آمار مطالعه منابع توسط شما",
                             style: TextStyle(
-                                fontFamily: "Yekan",
+                                fontFamily: "IRANSansPro",
                                 fontSize: 10,
                                 color: Color(0xff919191)),
                           )
@@ -92,7 +92,7 @@ class StaticsScreen extends StatelessWidget {
                       const Text("آمارها  ",
                           style: TextStyle(
                               color: Colors.white,
-                              fontFamily: "Yekan",
+                              fontFamily: "IRANSansPro",
                               fontSize: 17)),
                       SizedBox(
                           width: Get.width / 19,
@@ -112,7 +112,7 @@ class StaticsScreen extends StatelessWidget {
                     child: const Text(
                       "خلاصه زمان استفاده",
                       style: TextStyle(
-                          fontFamily: "Yekan",
+                          fontFamily: "IRANSansPro",
                           fontSize: 11,
                           color: Color(0xff686868)),
                     )),
@@ -140,28 +140,28 @@ class StaticsScreen extends StatelessWidget {
                                 "کمترین مدت استفاده در 30 روز گذشته",
                                 style: TextStyle(
                                     color: Color(0xff919191),
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     fontSize: 11),
                               ),
                               Text(
                                 "بیشترین مدت استفاده در 30 روز گذشته",
                                 style: TextStyle(
                                     color: Color(0xff919191),
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     fontSize: 11),
                               ),
                               Text(
                                 "میانگین مدت استفاده در 30 روز گذشته",
                                 style: TextStyle(
                                     color: Color(0xff919191),
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     fontSize: 11),
                               ),
                               Text(
                                 "مجموع مدت استفاده در 30 روز گذشته",
                                 style: TextStyle(
                                     color: Color(0xff919191),
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     fontSize: 11),
                               ),
                             ],
@@ -217,7 +217,7 @@ class StaticsScreen extends StatelessWidget {
                     child: const Text(
                       "مدت زمان مطالعه منابع",
                       style: TextStyle(
-                          fontFamily: "Yekan",
+                          fontFamily: "IRANSansPro",
                           fontSize: 11,
                           color: Color(0xff686868)),
                     )),

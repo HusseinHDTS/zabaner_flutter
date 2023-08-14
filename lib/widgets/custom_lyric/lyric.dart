@@ -131,6 +131,8 @@ class LyricState extends State<Lyric> with TickerProviderStateMixin {
 
     int line = widget.lyric
         .findLineByTimeStamp(milliseconds, lyricPainter!.currentLine);
+    lyricPainter!.cMilliseconds = milliseconds;
+
     if (lyricPainter!.currentLine != line &&
         !dragging &&
         widget.autoScroll &&
@@ -393,7 +395,7 @@ class LyricPainter extends ChangeNotifier implements CustomPainter {
   }
 
   int currentLine = -1;
-
+  int cMilliseconds = -1;
   TextAlign textAlign;
 
   late TextStyle _styleHighlight;
@@ -507,8 +509,13 @@ class LyricPainter extends ChangeNotifier implements CustomPainter {
       } else {
         bool shouldPaint = faEnable || enEnable;
         if (line == currentLine) {
-          _paintCurrentLine(canvas, painter, dy, size,
-              en: lyric![line].line, fa: lyric![line].faLine);
+          if(cMilliseconds < lyric![line].end && lyric![line].begin < cMilliseconds) {
+            _paintCurrentLine(canvas, painter, dy, size,
+                en: lyric![line].line, fa: lyric![line].faLine);
+          }else{
+            drawLine(canvas, painter, dy, size,
+                en: lyric![line].line, fa: lyric![line].faLine);
+          }
         } else {
           drawLine(canvas, painter, dy, size,
               en: lyric![line].line, fa: lyric![line].faLine);
@@ -800,7 +807,7 @@ class LyricContent {
       _durations.add({"begin": item.range!.begin, "end": item.range!.end});
 
       _lyricEntries.add(LyricEntry(enLine, item.range!.begin, item.range!.end,
-          faLine: faLine));
+          faLine: faLine,begin: item.range!.begin,end: item.range!.end ));
     }
   }
 
@@ -830,9 +837,12 @@ class LyricContent {
     if (position < 0 || position > size - 1) {
       position = 0;
     }
+    // if(_getTimeStamp(position)['begin'] > timeStamp && _getTimeStamp(position)['end'] < timeStamp){
+    //   return 0;
+    // }
     if (_getTimeStamp(position)['begin'] > timeStamp) {
       //look forward
-      while (_getTimeStamp(position)['begin'] > timeStamp) {
+      while (_getTimeStamp(position)['begin'] > timeStamp ) {
         position--;
         if (position <= 0) {
           position = 0;
@@ -840,10 +850,10 @@ class LyricContent {
         }
       }
     } else {
-      while (_getTimeStamp(position)['begin'] < timeStamp) {
+      while (_getTimeStamp(position)['begin'] < timeStamp ) {
         position++;
         if (position <= size - 1 &&
-            _getTimeStamp(position)['begin'] > timeStamp) {
+            _getTimeStamp(position)['begin'] > timeStamp ) {
           position--;
           break;
         }
@@ -911,13 +921,14 @@ class LyricEntry {
     }
   }
 
-  LyricEntry(this.line, this.position, this.duration, {this.faLine})
+  LyricEntry(this.line, this.position, this.duration, {this.faLine,required this.begin,required this.end})
       : this.timeStamp = getTimeStamp(position);
 
   final String timeStamp;
   final String line;
   final String? faLine;
 
+  final int begin , end;
   final int position;
 
   ///the duration of this line

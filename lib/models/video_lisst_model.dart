@@ -17,6 +17,7 @@ class VideoListModel {
       required  this.id,
       required  this.title,
       required  this.faTitle,
+      required  this.level,
       required  this.category,
       required  this.imagePath,
       required  this.podcastTime,
@@ -24,6 +25,7 @@ class VideoListModel {
 
     final String videoPath;
     final String description;
+    final String level;
     final String id;
     final String title;
     final String faTitle;
@@ -39,6 +41,7 @@ class VideoListModel {
         description: json["description"],
         id: json["_id"],
         title: json["title"],
+        level: json["itemLevel"] ?? "",
         category: json["category"],
         faTitle: json["faTitle"],
         imagePath: imagePath,
@@ -49,6 +52,7 @@ class VideoListModel {
     Map<String, dynamic> toJson() => {
         "videoPath": videoPath,
         "description": description,
+        "itemLevel": level,
         "_id": id,
         "title": title,
         "faTitle": faTitle,

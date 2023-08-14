@@ -47,7 +47,7 @@ class ResourcesScreen extends StatelessWidget {
                         _searchController.searchContent.clear();
                       },
                       closeSearchOnSuffixTap: true,
-                      style: TextStyle(fontFamily: "Yekan", fontSize: 14),
+                      style: TextStyle(fontFamily: "IRANSansPro", fontSize: 14),
                       onSubmitted: (value) {
                         _searchController.search(value);
                       }),

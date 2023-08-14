@@ -181,7 +181,7 @@ class HomeScreen extends StatelessWidget {
                                                       _controller.totallSecond
                                                           .level(),
                                                       style: const TextStyle(
-                                                          fontFamily: "Aria",
+                                                          fontFamily: "IRANSansPro",
                                                           fontSize: 18,
                                                           color: Color(
                                                               0xff707070)),
@@ -216,7 +216,7 @@ class HomeScreen extends StatelessWidget {
                                                             .showCurrent(),
                                                         style: const TextStyle(
                                                             fontFamily:
-                                                            "Arial",
+                                                            "IRANSansPro",
                                                             fontSize: 15,
                                                             color: Color(
                                                                 0xff707070)),
@@ -390,7 +390,7 @@ class HomeScreen extends StatelessWidget {
                                                                             "$_date :    $_duration",
                                                                             textColor: Color(0xff9F9F9F),
                                                                             textSize: 12,
-                                                                            fontFamily: "Arial",
+                                                                            fontFamily: "IRANSansPro",
                                                                           ),
                                                                         ),
                                                                       ),
@@ -419,7 +419,7 @@ class HomeScreen extends StatelessWidget {
                               child: const Text(
                                 "منابع اخیرا دیده شده توسط شما",
                                 style: TextStyle(
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     fontSize: 12,
                                     color: Color(0xff919191)),
                               )),

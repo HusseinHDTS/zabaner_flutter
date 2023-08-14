@@ -36,7 +36,7 @@ class ProfileTab extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-              fontFamily: "Yekan", fontSize: 10, color: textColor),
+              fontFamily: "IRANSansPro", fontSize: 10, color: textColor),
         )
       ],
     );

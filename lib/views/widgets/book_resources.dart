@@ -20,92 +20,16 @@ class BookResources extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  right: MediaQuery.of(context).size.width / 30,
-                  bottom: MediaQuery.of(context).size.height / 66,
-                ),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width / 12,
-                  height: MediaQuery.of(context).size.height / 30,
-                  child: Image.asset(
-                    "assets/images/bookr.png",
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-              const Text(
-                "   داستان های کوتاه",
-                style: TextStyle(
-                    fontFamily: "Yekan",
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
-              )
-            ],
-          ),
-        ),
-        resourcesBackground(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height / 5.4,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: ListView.separated(
-                    itemCount: categories.length,
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width / 25,
-                      right: MediaQuery.of(context).size.width / 25,
-                    ),
-                    separatorBuilder: (context, index) => SizedBox(
-                          width: MediaQuery.of(context).size.width / 15,
-                        ),
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          Get.to(() => BooksListScreen(
-                                filter: categories[index]['_id'],
-                                title: categories[index]['title'],
-                              ));
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width / 4.2,
-                              height: MediaQuery.of(context).size.height / 7.3,
-                              child: Center(child: ClipRRect(borderRadius:BorderRadius.circular(8),child: Container(child: CachedNetworkImage(imageUrl: getUrl(categories[index]['imagePath']),),)),),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width / 4.2,
-                              child: Center(
-                                child: ColoredText(
-                                  getText(categories[index]['title']),
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
-                                  textSize: 12,
-                                ),
-                              ),
-                            )
-
-                          ],
-                        ),
-                      );
-                    }),
-              ),
-            )),
-        SizedBox(
-          height: 18,
-        )
-      ],
-    );
+    return resourcesHolder(
+        title: "داستان های کوتاه",
+        items: categories,
+        iconPath: "assets/images/bookr.png",
+        onClick: (index) {
+          Get.to(() => BooksListScreen(
+                filter: categories[index]['_id'],
+                title: categories[index]['title'],
+              ));
+        });
   }
 }
 
@@ -153,7 +77,7 @@ class BookListTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: Color(0xff000000), fontSize: 12, fontFamily: "Yekan"),
+                  color: Color(0xff000000), fontSize: 12, fontFamily: "IRANSansPro"),
             ),
           )
         ],

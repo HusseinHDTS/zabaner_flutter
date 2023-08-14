@@ -35,7 +35,7 @@ Widget customCheckBox(double width, double height, String text,
           child: Container(width: double.infinity,child: content ?? Text(
             text,
             style: const TextStyle(
-                fontSize: 10, color: Color(0xff9F9F9F), fontFamily: "Yekan"),
+                fontSize: 10, color: Color(0xff9F9F9F), fontFamily: "IRANSansPro"),
           ),),
         )
       ],

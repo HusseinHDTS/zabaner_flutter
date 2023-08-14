@@ -16,8 +16,9 @@ class SubTabbarItemScreen extends StatefulWidget {
   String? submitTitle;
   List<TabbarItem> items;
   List<TabbarItem> cItems = [];
+  String firstTitle , secondTitle;
 
-  SubTabbarItemScreen({this.filter, required this.items,this.submitTitle});
+  SubTabbarItemScreen({this.filter, required this.items,this.submitTitle,this.firstTitle = "",this.secondTitle = ""});
 
   @override
   State<StatefulWidget> createState() {
@@ -34,12 +35,43 @@ class SubTabbarItemScreen extends StatefulWidget {
 class _SubTabbarItemScreen extends State<SubTabbarItemScreen> {
   List<TabbarItem> items;
   String? filter;
-
   _SubTabbarItemScreen(this.items, this.filter);
 
   @override
   Widget build(BuildContext context) {
-
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: const Color(0xffffffff),
+          appBar: ColoredAppBar(),
+          body:  Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                  margin: EdgeInsets.symmetric(
+                      horizontal: 18, vertical: 18),
+                  child: ColoredText(
+                    "${widget.firstTitle} > ${widget.secondTitle}",)),
+              Expanded(
+                  child: items.length == 0
+                      ? NoData()
+                      : ListView.builder(
+                      itemCount:
+                      items.length,
+                      itemBuilder: (_, index) {
+                        return resourceItemHolder(
+                            title: items[index].title,
+                            hasMore: false,
+                            itemType: "podcast",
+                            imagePath: items[index].image,
+                            onClick: () {
+                              Get.to(()=>TabbarItemScreen(items[index]));
+                            },
+                            index: index);
+                      })),
+            ],
+          ),
+        ));
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(

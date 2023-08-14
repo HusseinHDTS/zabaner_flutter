@@ -54,7 +54,7 @@ class NewsWidget extends StatelessWidget {
                           title,
                           textAlign: TextAlign.left,
                           style: const TextStyle(
-                            fontFamily: "Arial",
+                            fontFamily: "IRANSansPro",
                             fontSize: 15,
                           ),
                         ),

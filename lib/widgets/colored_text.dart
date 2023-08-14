@@ -9,7 +9,8 @@ enum _ColoredTextMode{
 }
 
 class ColoredText extends StatelessWidget {
-  String? text,fontFamily;
+  String? text;
+  String fontFamily;
   double? textSize;
   double? minFontSize;
   double? maxFontSize;
@@ -29,7 +30,7 @@ class ColoredText extends StatelessWidget {
       this.maxFontSize,
       this.minFontSize,
       this.textAlign,
-      this.fontFamily,
+      this.fontFamily = "IRANSansPro",
       this.overflow,
       this.fontWeight,
       this.defaultFont,

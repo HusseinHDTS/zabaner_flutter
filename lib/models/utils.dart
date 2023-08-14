@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:cached_video_preview/cached_video_preview.dart';
@@ -177,7 +178,7 @@ Widget customLangSwitch(
     String text = "",
     double size = 60,
     onChange}) {
-  RxBool cv =isDisable ? false.obs :  value.obs;
+  RxBool cv = isDisable ? false.obs : value.obs;
   return Opacity(
     opacity: isDisable ? 0.4 : 1,
     child: Transform.scale(
@@ -186,7 +187,7 @@ Widget customLangSwitch(
           current: cv.value,
           first: true,
           second: false,
-          indicatorSize: Size(30,30),
+          indicatorSize: Size(30, 30),
           dif: 10.0,
           borderColor: Colors.transparent,
           height: 35,
@@ -206,12 +207,16 @@ Widget customLangSwitch(
           //   // }
           // },
           onChanged: (b) {
-            if(isDisable) return;
+            if (isDisable) return;
             cv.value = b;
             onChange(b);
           },
           colorBuilder: (b) => b ? Colors.green : Colors.red,
-          iconBuilder: (value) => value ? Icon(Icons.done,) : Icon(Icons.close),
+          iconBuilder: (value) => value
+              ? Icon(
+                  Icons.done,
+                )
+              : Icon(Icons.close),
           textBuilder: (value) => value
               ? Center(
                   child: ColoredText(
@@ -678,16 +683,20 @@ loadingDialog(title, {bool? dismiss}) {
     barrierDismissible: dismiss,
   );
 }
-double getSubtitleFontSize(){
+
+double getSubtitleFontSize() {
   return 20;
 }
-FontWeight getSubtitleFontWeight(){
+
+FontWeight getSubtitleFontWeight() {
   return FontWeight.normal;
 }
+
 TextStyle getSubtitleTextStyle(isNowCurrentText) {
   return TextStyle(
       // fontSize: isNowCurrentText ? 17.0 : 18,
-      fontWeight: isNowCurrentText ? getSubtitleFontWeight() : getSubtitleFontWeight(),
+      fontWeight:
+          isNowCurrentText ? getSubtitleFontWeight() : getSubtitleFontWeight(),
       fontFamily: isNowCurrentText ? "Iransans_Fa_MD" : "Iransans_Fa_MD",
       color: isNowCurrentText ? Colors.black : Colors.grey);
 }
@@ -1343,13 +1352,13 @@ Widget ProfileImage(image, {borderColor, borderWith}) {
   // return Container(decoration: BoxDecoration(shape: BoxShape.circle,image: DecorationImage(fit: BoxFit.fitWidth,image: image)),);
 }
 
-Widget ErrorLoading({String? title,Function? retry}) {
+Widget ErrorLoading({String? title, Function? retry}) {
   title = title ?? "خطا هنگام دریافت اطلاعات از سرور! لطفا مجددا تلاش کنید.";
   RefreshController c = RefreshController();
   return SmartRefresher(
     controller: c,
-    onRefresh: (){
-      if(retry != null){
+    onRefresh: () {
+      if (retry != null) {
         retry();
       }
     },
@@ -1595,6 +1604,276 @@ String getText(String text, {int? length}) {
   return result;
 }
 
+Widget resourceIconDetail(
+    {String iconPath = "", String title = "", double iconSize = 18}) {
+  Color mainColor = Colors.black.withOpacity(0.5);
+  return Row(
+    children: [
+      Flexible(
+        flex: 0,
+        child: ImageIcon(
+          AssetImage(iconPath),
+          size: iconSize,
+          color: primaryDarkMore,
+        ),
+      ),
+      SizedBox(
+        width: 8,
+      ),
+      Flexible(
+          flex: 1,
+          child: Container(
+              width: double.infinity,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: AutoSizeText(title,
+                    maxFontSize: 12,
+                    minFontSize: 7,
+                    maxLines: 1,
+                    style:
+                        TextStyle(color: mainColor, fontFamily: "IRANSansPro")),
+              ))),
+    ],
+  );
+}
+
+Widget resourceItemHolder({
+  String imagePath = "",
+  String title = "",
+  bool hasMore = false,
+  String itemType = "podcast",
+  VoidCallback? onClick,
+  List<Widget>? extraContent,
+  int index = 0,
+}) {
+  extraContent ??= [];
+  String iconPath = "";
+  if (itemType == "podcast") {
+    iconPath = "assets/images/mic_1.png";
+  } else if (itemType == "video") {
+    iconPath = "assets/images/video_1.png";
+  }
+  return InkWell(
+    onTap: onClick,
+    child: Container(
+      width: double.infinity,
+      height: 110,
+      margin: EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: (index % 2 == 0)
+            ? Colors.black.withOpacity(0.03)
+            : Colors.transparent,
+      ),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Row(
+          children: [
+            Flexible(
+                flex: 3,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: BoxDecoration(color:primaryDarkMore.withOpacity(0.2),borderRadius: BorderRadius.circular(8)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                            imageUrl: imagePath, fit: BoxFit.fill),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black.withOpacity(0.23)),
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 2, vertical: 3),
+                            child: ImageIcon(
+                              AssetImage(iconPath),
+                              color: Colors.white.withOpacity(0.8),
+                              size: 15,
+                            )),
+                      ),
+                    ),
+                  ],
+                )),
+            SizedBox(
+              width: 12,
+            ),
+            Flexible(
+                flex: 4,
+                child: Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(vertical: 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ColoredText(
+                        title,
+                        maxLines: 1,
+                        textSize: 13,
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Column(
+                        children: extraContent,
+                      ),
+                    ],
+                  ),
+                )),
+            SizedBox(
+              width: 4,
+            ),
+            Flexible(
+                flex: 0,
+                child: hasMore
+                    ? Center(
+                    child: Container(
+                      child: Icon(
+                        Icons.format_list_bulleted_outlined,
+                        color: Colors.black.withOpacity(0.23),
+                        size: 30,
+                      ),
+                    ))
+                    : Center(
+                        child: Container(
+                        child: Icon(
+                          Icons.play_circle_outline,
+                          color: Colors.black.withOpacity(0.23),
+                          size: 30,
+                        ),
+                      ))),
+            SizedBox(
+              width: 4,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget resourcesHolder(
+    {String title = "",
+    String iconPath = "",
+    EdgeInsets? margin,
+    Widget? iconWidget,
+    bool normalType = true,
+    String? titleName = "title",
+    String? imagePathName = "imagePath",
+    onClick,
+    items}) {
+  margin ??= EdgeInsets.symmetric(horizontal: 18, vertical: 8);
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black26,
+          spreadRadius: 1,
+          blurRadius: 2,
+          offset: Offset(0, 1.5),
+        ),
+      ],
+    ),
+    margin: margin,
+    padding: EdgeInsets.symmetric(vertical: 8),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          flex: 0,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: Get.width / 30,
+                  ),
+                  child: SizedBox(
+                    // width: Get.width / 30,
+                    height: Get.height / 40,
+                    child: iconWidget ??
+                        Image.asset(
+                          iconPath,
+                          fit: BoxFit.fill,
+                        ),
+                  ),
+                ),
+                ColoredText(
+                  title,
+                  textSize: 14,
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Container(
+          width: double.infinity,
+          height: 180,
+          child: ListView.builder(
+              itemCount: items.length,
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemBuilder: (_, index) {
+                return InkWell(
+                  onTap: () {
+                    onClick(index);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 4),
+                    // decoration: BoxDecoration(border: Border.all(color: Colors.black12,width: 1),borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          margin:
+                              EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              imageUrl: normalType
+                                  ? getUrl(items[index][imagePathName])
+                                  : items[index].image,
+                              width: 90,
+                              height: 140,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        ColoredText(
+                          getText(normalType
+                              ? items[index][titleName]
+                              : items[index].title),
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                          textSize: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+        )
+      ],
+    ),
+  );
+}
+
 Widget resourcesBackground({Widget? child, double? width, double? height}) {
   return Container(
     width: width,
@@ -1631,6 +1910,7 @@ Widget resourcesBackground({Widget? child, double? width, double? height}) {
 Widget getVideoView(var path, CustomVideoType type,
     {bool? withThumb,
     bool? retryImage,
+    bool isLoop = false,
     bool? showPreviewOverlay,
     String? customPreviewLink,
     bool? fullscreenOnStart}) {
@@ -1652,6 +1932,7 @@ Widget getVideoView(var path, CustomVideoType type,
     null,
     null,
     isInitialized: true,
+    isLoop: isLoop,
     initializedVideoPlayerController: customVideoPlayerController,
   );
   isImageReady = retryImage.obs;

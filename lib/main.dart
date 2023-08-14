@@ -107,6 +107,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
         navigatorKey: Catcher.navigatorKey,
+        theme: ThemeData(fontFamily: "IRANSansPro"),
         debugShowCheckedModeBanner: false,
         home: CatcherScreenshot(
          catcher: Catcher.getInstance(),

@@ -170,14 +170,14 @@ class LoginScreen extends StatelessWidget {
                                               "وارد شوید",
                                               style: TextStyle(
                                                   fontSize: 13,
-                                                  fontFamily: "Yekan"),
+                                                  fontFamily: "IRANSansPro"),
                                             ),
                                           ),
                                           Text(
                                             "جهت دسترسی به پورتال خود نیاز به اطلاعات ورود است",
                                             style: TextStyle(
                                                 fontSize: 8,
-                                                fontFamily: "Yekan",
+                                                fontFamily: "IRANSansPro",
                                                 color:
                                                 Color(0xff9F9F9F)),
                                           ),
@@ -240,7 +240,7 @@ class LoginScreen extends StatelessWidget {
                                                 TextAlign.right,
                                                 style: const TextStyle(
                                                     fontSize: 10,
-                                                    fontFamily: "Yekan",
+                                                    fontFamily: "IRANSansPro",
                                                     color: Color(
                                                         0xffff0000)),
                                               ),
@@ -270,7 +270,7 @@ class LoginScreen extends StatelessWidget {
                                         "ورود",
                                         style: TextStyle(
                                             fontSize: 12,
-                                            fontFamily: "Yekan"),
+                                            fontFamily: "IRANSansPro"),
                                       ),
                                       style: ButtonStyle(
                                           backgroundColor:
@@ -300,7 +300,7 @@ class LoginScreen extends StatelessWidget {
                                                   fontSize: 12,
                                                   color:
                                                   Color(0xff9F9F9F),
-                                                  fontFamily: "Yekan"),
+                                                  fontFamily: "IRANSansPro"),
                                             ),
                                             GestureDetector(
                                               behavior: HitTestBehavior
@@ -316,7 +316,7 @@ class LoginScreen extends StatelessWidget {
                                                     fontSize: 12,
                                                     color: primary,
                                                     fontFamily:
-                                                    "Yekan"),
+                                                    "IRANSansPro"),
                                               ),
                                             ),
                                           ],
@@ -333,7 +333,7 @@ class LoginScreen extends StatelessWidget {
                                             style: TextStyle(
                                                 fontSize: 9,
                                                 color: primary,
-                                                fontFamily: "Yekan"),
+                                                fontFamily: "IRANSansPro"),
                                           ),
                                         ),
                                       ],
@@ -362,7 +362,7 @@ class LoginScreen extends StatelessWidget {
                                 //         //         style: TextStyle(
                                 //         //             color:
                                 //         //                 Color(0xff616161),
-                                //         //             fontFamily: "Yekan",
+                                //         //             fontFamily: "IRANSansPro",
                                 //         //             fontSize: 9)),
                                 //         //     Image.asset(
                                 //         //       "assets/images/gmail.png",
@@ -399,7 +399,7 @@ class LoginScreen extends StatelessWidget {
                             const Text(
                                 "مشکل در ورود به حساب خود دارید؟",
                                 style: TextStyle(
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     fontSize: 13,
                                     color: Color(0xff858585))),
 
@@ -437,7 +437,7 @@ class LoginScreen extends StatelessWidget {
                                     children: [
                                       const Text("ارتباط با پشتیبانی",
                                           style: TextStyle(
-                                              fontFamily: "Yekan",
+                                              fontFamily: "IRANSansPro",
                                               fontSize: 12)),
                                       Container(
                                         margin: EdgeInsets.symmetric(
@@ -462,7 +462,7 @@ class LoginScreen extends StatelessWidget {
                             //         style: TextStyle(
                             //             fontSize: 10,
                             //             color: orange,
-                            //             fontFamily: "Yekan"),
+                            //             fontFamily: "IRANSansPro"),
                             //       ),
                             //       Image.asset(
                             //         "assets/images/support.png",

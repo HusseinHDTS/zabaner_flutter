@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/views/screens/tabbar_sub_category_screen.dart';
 import 'package:zabaner/views/tabs/list_model.dart';
 
@@ -9,6 +10,8 @@ import '../models/urls.dart';
 
 class TabbarSubMC1CategoryController extends GetxController {
   RxBool isDataLoaded = false.obs;
+  RxBool errorData = false.obs;
+  RefreshController refreshController = RefreshController();
   var categories;
 
   TabbarSubMC1CategoryController();
@@ -62,6 +65,8 @@ class TabbarSubMC1CategoryController extends GetxController {
 
 class TabbarSubMC2CategoryController extends GetxController {
   RxBool isDataLoaded = false.obs;
+  RxBool errorData = false.obs;
+  RefreshController refreshController = RefreshController();
   var categories;
 
   TabbarSubMC2CategoryController();
@@ -116,6 +121,8 @@ class TabbarSubMC2CategoryController extends GetxController {
 class TabbarSubMCMController extends GetxController {
   final GetConnect _getConnect = GetConnect(allowAutoSignedCert: true);
   var items;
+  RefreshController refreshController = RefreshController();
+  RxBool errorData = false.obs;
   RxBool isDataLoaded = false.obs;
 
   void getData(tabbarType,filter,bool categoryLm) async {

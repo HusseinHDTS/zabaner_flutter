@@ -80,7 +80,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                         children: [
                           const Text("   انگلیسی:",
                               style: TextStyle(
-                                  fontFamily: "Yekan", fontSize: 16)),
+                                  fontFamily: "IRANSansPro", fontSize: 16)),
                           Obx(() => Switch(
                             value: controller.en.value,
                             onChanged: (value) =>
@@ -92,7 +92,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                         children: [
                           const Text(" فارسی:",
                               style: TextStyle(
-                                  fontFamily: "Yekan", fontSize: 16)),
+                                  fontFamily: "IRANSansPro", fontSize: 16)),
                           Obx(() => Switch(
                             value: controller.fa.value,
                             onChanged: (value) =>
@@ -120,7 +120,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                                   child: Text(
                                     "\n" + controller.newsDetail.title,
                                     style: const TextStyle(
-                                        fontFamily: "Yekan", fontSize: 22),
+                                        fontFamily: "IRANSansPro", fontSize: 22),
                                     textAlign: TextAlign.center,
                                   ))
                                   : Obx(() => AutoScrollTag(

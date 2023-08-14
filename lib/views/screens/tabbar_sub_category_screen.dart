@@ -12,14 +12,15 @@ import 'package:zabaner/models/utils.dart';
 import 'package:zabaner/views/screens/SubTabbarItemScreen.dart';
 import 'package:zabaner/views/screens/tabbar_item_screen.dart';
 import 'package:zabaner/views/tabs/list_model.dart';
+import 'package:zabaner/widgets/colored_text.dart';
 import 'package:zabaner/widgets/my_app_bar.dart';
 
 class TabbarSubCategoryScreen extends StatefulWidget {
   var filter, items;
   var submitTitle;
-
+  String firstTitle,secondTitle;
   TabbarSubCategoryScreen(
-      {required this.filter, required this.items, required this.submitTitle});
+      {required this.filter, required this.items, required this.submitTitle,this.firstTitle = "",this.secondTitle = ""});
 
   @override
   State<StatefulWidget> createState() {
@@ -32,6 +33,61 @@ class _TabbarSubCategoryScreen extends State<TabbarSubCategoryScreen> {
   Widget build(BuildContext context) {
     SubTabbarItemController controller =
         Get.put(SubTabbarItemController(filter: widget.filter.id));
+
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: ColoredAppBar(),
+          body: Obx(() => controller.isDataLoaded.value
+              ? SmartRefresher(
+            controller: controller.refreshController,
+            onRefresh: () {
+              controller.getData();
+            },
+            header: const MaterialClassicHeader(),
+            child: controller.errorData.isTrue
+                ? ErrorLoading(retry: () {
+              controller.getData();
+            })
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 18),
+                    child: ColoredText(
+                      "${widget.firstTitle} > ${widget.secondTitle}",)),
+                Expanded(
+                    child: controller.data.length == 0
+                        ? NoData()
+                        : ListView.builder(
+                        itemCount:
+                        controller.data.length,
+                        itemBuilder: (_, index) {
+                          return resourceItemHolder(
+                              title: (controller.data[index]['mTitle'] ?? "") == ""
+                                  ? controller.data[index]['title']
+                                  : controller.data[index]['mTitle'],
+                              hasMore: true,
+                              itemType: "podcast",
+                              imagePath: getUrl(controller.data[index]['imagePath']),
+                              onClick: () {
+                                Get.to(() => SubTabbarItemScreen(
+                                    filter: controller.data[index]["id"],
+                                    items: widget.items,
+                                    firstTitle: "${widget.firstTitle} > ${widget.secondTitle}",
+                                    secondTitle: controller.data[index]["title"],
+                                    submitTitle: widget.submitTitle
+                                ));
+                              },
+                              index: index);
+                        })),
+              ],
+            ),
+          )
+              : Loading()),
+        ));
 
     return Directionality(
         textDirection: TextDirection.rtl,
@@ -96,7 +152,7 @@ class _TabbarSubCategoryScreen extends State<TabbarSubCategoryScreen> {
                                       ? controller.data[index]['title']
                                       : controller.data[index]['mTitle'],
                                   style: TextStyle(
-                                      fontFamily: "Yekan",
+                                      fontFamily: "IRANSansPro",
                                       fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -118,9 +174,9 @@ class TabbarSubMC1CategoryScreen extends StatefulWidget {
   TabbarTypes tabbarType;
   dynamic item;
   String filter, startFrom;
-
+  String firstTitle,secondTitle;
   TabbarSubMC1CategoryScreen(
-      this.tabbarType, this.item, this.filter, this.startFrom);
+      this.tabbarType, this.item, this.filter, this.startFrom,{this.firstTitle = "",this.secondTitle = ""});
 
   @override
   State<StatefulWidget> createState() {
@@ -134,7 +190,6 @@ class _TabbarSubMC1CategoryScreen extends State<TabbarSubMC1CategoryScreen> {
   void initState() {
     super.initState();
     controller.getData("l1",widget.filter,widget.tabbarType);
-    debugPrint("dksajdkasjdkjsakdjsakjdsak : L1");
   }
 
   @override
@@ -145,6 +200,53 @@ class _TabbarSubMC1CategoryScreen extends State<TabbarSubMC1CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: ColoredAppBar(),
+          body: Obx(() => controller.isDataLoaded.value
+              ? SmartRefresher(
+            controller: controller.refreshController,
+            onRefresh: () {
+              controller.getData("l1",widget.filter,widget.tabbarType);
+            },
+            header: const MaterialClassicHeader(),
+            child: controller.errorData.isTrue
+                ? ErrorLoading(retry: () {
+              controller.getData("l1",widget.filter,widget.tabbarType);
+            })
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 18),
+                    child: ColoredText(
+                      "${widget.firstTitle} > ${widget.secondTitle}",)),
+                Expanded(
+                    child: controller.categories.length == 0
+                        ? NoData()
+                        : ListView.builder(
+                        itemCount:
+                        controller.categories.length,
+                        itemBuilder: (_, index) {
+                          return resourceItemHolder(
+                              title: controller.categories[index]['title'],
+                              hasMore: true,
+                              itemType: "podcast",
+                              imagePath:getUrl(controller.categories[index]['imagePath']),
+                              onClick: () {
+                                controller.onItemClick(widget.tabbarType,controller.categories[index],widget.startFrom);
+                              },
+                              index: index);
+                        })),
+              ],
+            ),
+          )
+              : Loading()),
+        ));
+
     return Scaffold(
       appBar: ColoredAppBar(),
       body: Directionality(
@@ -197,7 +299,7 @@ class _TabbarSubMC1CategoryScreen extends State<TabbarSubMC1CategoryScreen> {
                                     Text(
                                       item['title'],
                                       style: TextStyle(
-                                          fontFamily: "Yekan",
+                                          fontFamily: "IRANSansPro",
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ],
@@ -220,9 +322,10 @@ class TabbarSubMC2CategoryScreen extends StatefulWidget {
   TabbarTypes tabbarType;
   dynamic item;
   String filter, startFrom;
+  String firstTitle, secondTitle;
 
   TabbarSubMC2CategoryScreen(
-      this.tabbarType, this.item, this.filter, this.startFrom);
+      this.tabbarType, this.item, this.filter, this.startFrom,{this.firstTitle = "",this.secondTitle = ""});
 
   @override
   State<StatefulWidget> createState() {
@@ -236,8 +339,6 @@ class _TabbarSubMC2CategoryScreen extends State<TabbarSubMC2CategoryScreen> {
   void initState() {
     super.initState();
     controller.getData("l2",widget.filter,widget.tabbarType);
-    debugPrint("dksajdkasjdkjsakdjsakjdsak : L2");
-
   }
 
   @override
@@ -248,6 +349,53 @@ class _TabbarSubMC2CategoryScreen extends State<TabbarSubMC2CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: ColoredAppBar(),
+          body: Obx(() => controller.isDataLoaded.value
+              ? SmartRefresher(
+            controller: controller.refreshController,
+            onRefresh: () {
+              controller.getData("l2",widget.filter,widget.tabbarType);
+            },
+            header: const MaterialClassicHeader(),
+            child: controller.errorData.isTrue
+                ? ErrorLoading(retry: () {
+              controller.getData("l2",widget.filter,widget.tabbarType);
+            })
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 18),
+                    child: ColoredText(
+                      "${widget.firstTitle} > ${widget.secondTitle}",)),
+                Expanded(
+                    child: controller.categories.length == 0
+                        ? NoData()
+                        : ListView.builder(
+                        itemCount:
+                        controller.categories.length,
+                        itemBuilder: (_, index) {
+                          return resourceItemHolder(
+                              title: controller.categories[index]['title'],
+                              hasMore: true,
+                              itemType: "podcast",
+                              imagePath:getUrl(controller.categories[index]['imagePath']),
+                              onClick: () {
+                                controller.onItemClick(widget.tabbarType,controller.categories[index],widget.startFrom);
+                              },
+                              index: index);
+                        })),
+              ],
+            ),
+          )
+              : Loading()),
+        ));
+
     return Scaffold(
       appBar: ColoredAppBar(),
       body: Directionality(
@@ -300,7 +448,7 @@ class _TabbarSubMC2CategoryScreen extends State<TabbarSubMC2CategoryScreen> {
                                     Text(
                                       item['title'],
                                       style: TextStyle(
-                                          fontFamily: "Yekan",
+                                          fontFamily: "IRANSansPro",
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ],
@@ -324,7 +472,8 @@ class TabbarSubMCMScreen extends StatefulWidget {
   var item;
   var tabbarType;
   bool categoryLm;
-  TabbarSubMCMScreen(this.tabbarType,this.item,{this.categoryLm = false});
+  String firstTitle,secondTitle;
+  TabbarSubMCMScreen(this.tabbarType,this.item,{this.categoryLm = false,this.firstTitle = "",this.secondTitle = ""});
   @override
   State<StatefulWidget> createState() {
     return _TabbarSubMCMScreen();
@@ -342,6 +491,52 @@ class _TabbarSubMCMScreen extends State<TabbarSubMCMScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: ColoredAppBar(),
+          body: Obx(() => controller.isDataLoaded.value
+              ? SmartRefresher(
+            controller: controller.refreshController,
+            onRefresh: () {
+              controller.getData(widget.tabbarType,widget.item['id'],widget.categoryLm);
+            },
+            header: const MaterialClassicHeader(),
+            child: controller.errorData.isTrue
+                ? ErrorLoading(retry: () {
+              controller.getData(widget.tabbarType,widget.item['id'],widget.categoryLm);
+            })
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 18),
+                    child: ColoredText(
+                      "${widget.firstTitle} > ${widget.secondTitle}",)),
+                Expanded(
+                    child: controller.items.length == 0
+                        ? NoData()
+                        : ListView.builder(
+                        itemCount:
+                        controller.items.length,
+                        itemBuilder: (_, index) {
+                          return resourceItemHolder(
+                              title: controller.items[index]['title'],
+                              hasMore: false,
+                              itemType: "podcast",
+                              imagePath:getUrl(controller.items[index]['imagePath']),
+                              onClick: () {
+                                Get.to(() => TabbarItemScreen(TabbarItem.fromJson(controller.items[index])));
+                              },
+                              index: index);
+                        })),
+              ],
+            ),
+          )
+              : Loading()),
+        ));
     return Scaffold(
       appBar: ColoredAppBar(),
       body: Directionality(
@@ -394,7 +589,7 @@ class _TabbarSubMCMScreen extends State<TabbarSubMCMScreen> {
                                   Text(
                                     item['title'],
                                     style: TextStyle(
-                                        fontFamily: "Yekan",
+                                        fontFamily: "IRANSansPro",
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ],

@@ -16,7 +16,7 @@ class CustomTextInputProfile extends StatelessWidget {
     return TextFormField(
         enabled: isEnabled,
         onChanged: onChanged,
-        style: const TextStyle(fontFamily: "Yekan", fontSize: 14),
+        style: const TextStyle(fontFamily: "IRANSansPro", fontSize: 14),
         textAlignVertical: TextAlignVertical.top,
         decoration: isEnabled
             ? InputDecoration(
@@ -24,7 +24,7 @@ class CustomTextInputProfile extends StatelessWidget {
                 hintText: hintText,
                 contentPadding: EdgeInsets.zero,
                 hintStyle: const TextStyle(
-                    fontFamily: "Yekan", color: Color(0xffb0b0b0)),
+                    fontFamily: "IRANSansPro", color: Color(0xffb0b0b0)),
                 hintTextDirection: TextDirection.rtl,
                 fillColor: const Color(0xffffffff),
                 prefixIconConstraints: BoxConstraints(
@@ -53,7 +53,7 @@ class CustomTextInputProfile extends StatelessWidget {
                 hintText: hintText,
                 contentPadding: EdgeInsets.zero,
                 hintStyle: const TextStyle(
-                    fontFamily: "Yekan", color: Color(0xffb0b0b0)),
+                    fontFamily: "IRANSansPro", color: Color(0xffb0b0b0)),
                 hintTextDirection: TextDirection.rtl,
                 fillColor: const Color(0xffE8E8E8),
                 prefixIconConstraints: BoxConstraints(

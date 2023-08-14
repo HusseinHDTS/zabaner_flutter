@@ -38,7 +38,7 @@ class SetNewPasswordScreen extends StatelessWidget {
                       size: 18,
                     ),
                     Text("بازگشت",
-                        style: TextStyle(fontFamily: "Yekan", fontSize: 12)),
+                        style: TextStyle(fontFamily: "IRANSansPro", fontSize: 12)),
                   ],
                 ),
               ),
@@ -68,14 +68,14 @@ class SetNewPasswordScreen extends StatelessWidget {
                               child: Text(
                                 "تغییر رمز عبور",
                                 style: TextStyle(
-                                    fontSize: 13, fontFamily: "Yekan"),
+                                    fontSize: 13, fontFamily: "IRANSansPro"),
                               ),
                             ),
                             Text(
                               "لطفا رمز عبور جدید را وارد نمایید",
                               style: TextStyle(
                                   fontSize: 8,
-                                  fontFamily: "Yekan",
+                                  fontFamily: "IRANSansPro",
                                   color: Color(0xff9F9F9F)),
                             ),
                           ],
@@ -121,7 +121,7 @@ class SetNewPasswordScreen extends StatelessWidget {
                               "رمز انتخابی  شما باید حداقل 8 کاراکتر شامل حروف، اعداد و حداقل یک کاراکتر  ویژه باشد.",
                               style: TextStyle(
                                   color: Color(0xff9F9F9F),
-                                  fontFamily: "Yekan",
+                                  fontFamily: "IRANSansPro",
                                   fontSize: 9),
                             ),
                           )),
@@ -141,7 +141,7 @@ class SetNewPasswordScreen extends StatelessWidget {
                             child: const Text(
                               "تغییر رمز عبور",
                               style:
-                                  TextStyle(fontSize: 12, fontFamily: "Yekan"),
+                                  TextStyle(fontSize: 12, fontFamily: "IRANSansPro"),
                             ),
                             style: ButtonStyle(
                                 backgroundColor:

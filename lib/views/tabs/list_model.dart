@@ -32,7 +32,8 @@ class ListModel extends StatelessWidget {
       required this.controller}) {
     mainModel = [];
     hasSubCategory ??= false;
-    differentType = (currentType == TabbarTypes.ADULT || currentType == TabbarTypes.NATIONAL);
+    differentType = (currentType == TabbarTypes.ADULT ||
+        currentType == TabbarTypes.NATIONAL);
     if (hasSubCategory!) {
       currentTitle =
           controller.allChildTabCategories[index]["title"].toString();
@@ -76,121 +77,78 @@ class ListModel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 20,
-        ),
-        Align(
-            alignment: Alignment.centerRight,
-            child: ColoredText(currentTitle.toString())),
-        SizedBox(
-          height: 5,
-        ),
-        resourcesBackground(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height / 5.4,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  separatorBuilder: (context, index) => SizedBox(
-                        width: MediaQuery.of(context).size.width / 15,
-                      ),
-                  padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width / 25,
-                    right: MediaQuery.of(context).size.width / 25,
-                  ),
-                  itemCount: mainModel.length,
-                  itemBuilder: (_context, index) {
-                    return InkWell(
-                      onTap: ()async {
-                        checkForValidSubsOrBuy(currentType,controller,onContinue: (){
-                          if(differentType){
-                            if(mainModel[index]['startFrom'] == "l1"){
-                              Get.to(()=>TabbarSubMC1CategoryScreen(currentType,mainModel[index],mainModel[index]['id'],"l1") ,preventDuplicates: false);
-                            }else if(mainModel[index]['startFrom'] == "l2"){
-                              Get.to(()=>TabbarSubMC2CategoryScreen(currentType,mainModel[index],mainModel[index]['id'],"l2"),preventDuplicates: false);
-                            }else if(mainModel[index]['startFrom'] == "l3"){
-                              Get.to(()=>TabbarSubMCMScreen(currentType,mainModel[index],categoryLm: true), preventDuplicates: false);
-                            }
-                            return;
-                          }
-                          if (hasSubCategory!) {
-                            var items = controller.childTabbarItemModel;
-                            // Get.to(() => SubTabbarItemScreen(
-                            //     filter: mainModel[index].id, items: items));
-                            Get.to(() => TabbarSubCategoryScreen(
-                              filter: mainModel[index],
-                              items: items,
-                              submitTitle: differentType ? mainModel[index]['title'] : mainModel[index].title ,
-                            ));
-                          } else {
-                            if (mainModel[index].video.substring(
-                                mainModel[index].video.lastIndexOf("/") +
-                                    1) ==
-                                "undefined") {
-                              ColoredSnack(
-                                  title: "خطا هنگام پیدا کردن ویدیو",
-                                  type: SnackType.ERROR);
-                              return;
-                            }
-                            Get.to(() => TabbarItemScreen(mainModel[index]));
-                          }
-                        });
-                      },
-                      child: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                              height: 12,
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Container(
-                                child: Center(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Container(
-                                      width:
-                                          MediaQuery.of(context).size.width / 4,
-                                      child: CachedNetworkImage(
-                                        imageUrl: differentType ? getUrl(mainModel[index]['imagePath']) : mainModel[index].image,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Expanded(
-                              flex: 0,
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 3.8,
-                                child: Text(differentType ? mainModel[index]['title'] : mainModel[index].title,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Color(0xff000000),
-                                      fontSize: 10,
-                                      fontFamily: "Yekan"),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                          ],
+    return resourcesHolder(
+        iconWidget: Container(),
+        title: currentTitle.toString(),
+        items: mainModel,
+        normalType: differentType,
+        onClick: (index) async {
+          checkForValidSubsOrBuy(currentType, controller, onContinue: () {
+            if (differentType) {
+              if (mainModel[index]['startFrom'] == "l1") {
+                Get.to(
+                    () => TabbarSubMC1CategoryScreen(
+                          currentType,
+                          mainModel[index],
+                          mainModel[index]['id'],
+                          "l1",
+                          firstTitle: currentTitle,
+                          secondTitle: differentType
+                              ? mainModel[index]['title']
+                              : mainModel[index].title,
                         ),
-                      ),
-                    );
-                  }),
-            ))
-      ],
-    );
+                    preventDuplicates: false);
+              } else if (mainModel[index]['startFrom'] == "l2") {
+                Get.to(
+                    () => TabbarSubMC2CategoryScreen(
+                          currentType,
+                          mainModel[index],
+                          mainModel[index]['id'],
+                          "l2",
+                          firstTitle: currentTitle,
+                          secondTitle: differentType
+                              ? mainModel[index]['title']
+                              : mainModel[index].title,
+                        ),
+                    preventDuplicates: false);
+              } else if (mainModel[index]['startFrom'] == "l3") {
+                Get.to(
+                    () => TabbarSubMCMScreen(currentType, mainModel[index],
+                        firstTitle: currentTitle,
+                        secondTitle: differentType
+                            ? mainModel[index]['title']
+                            : mainModel[index].title,
+                        categoryLm: true),
+                    preventDuplicates: false);
+              }
+              return;
+            }
+            if (hasSubCategory!) {
+              var items = controller.childTabbarItemModel;
+              Get.to(() => TabbarSubCategoryScreen(
+                    filter: mainModel[index],
+                    items: items,
+                    submitTitle: differentType
+                        ? mainModel[index]['title']
+                        : mainModel[index].title,
+                    firstTitle: currentTitle,
+                    secondTitle: differentType
+                        ? mainModel[index]['title']
+                        : mainModel[index].title,
+                  ));
+            } else {
+              if (mainModel[index]
+                      .video
+                      .substring(mainModel[index].video.lastIndexOf("/") + 1) ==
+                  "undefined") {
+                ColoredSnack(
+                    title: "خطا هنگام پیدا کردن ویدیو", type: SnackType.ERROR);
+                return;
+              }
+              Get.to(() => TabbarItemScreen(mainModel[index]));
+            }
+          });
+        });
   }
 }
 

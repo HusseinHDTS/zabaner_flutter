@@ -58,7 +58,7 @@ class _FullScreenImage extends State<FullScreenImage> {
                         Text(
                           "بازگشت",
                           style: TextStyle(
-                              fontFamily: "Yekan", color: Colors.white),
+                              fontFamily: "IRANSansPro", color: Colors.white),
                         ),
                       ],
                     ),

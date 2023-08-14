@@ -284,7 +284,7 @@ class _AnimSearchBarState extends State<CustomAnimSearch>
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.only(bottom: 5),
                       hintStyle: TextStyle(
-                        fontFamily: "Yekan", fontSize: 12, color: Color(0xffffffff)),
+                        fontFamily: "IRANSansPro", fontSize: 12, color: Color(0xffffffff)),
                       isDense: true,
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                       labelText: widget.helpText,

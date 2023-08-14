@@ -33,7 +33,7 @@ class SettingCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontFamily: "Yekan", fontSize: 12),
+                  style: const TextStyle(fontFamily: "IRANSansPro", fontSize: 12),
                 ),
                 customSwitch(
                   value: enable,

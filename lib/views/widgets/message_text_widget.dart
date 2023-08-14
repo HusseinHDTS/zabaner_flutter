@@ -39,7 +39,7 @@ class MessageWidget extends StatelessWidget {
                   text,
                   textAlign: TextAlign.right,
                   style: const TextStyle(
-                      fontFamily: "Yekan",
+                      fontFamily: "IRANSansPro",
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                       color: Color(0xff000000)),

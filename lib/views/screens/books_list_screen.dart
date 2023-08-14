@@ -6,6 +6,7 @@ import 'package:zabaner/controllers/book_ist_controller.dart';
 import 'package:zabaner/models/resources_model.dart';
 import 'package:zabaner/models/urls.dart';
 import 'package:zabaner/models/utils.dart';
+import 'package:zabaner/views/colors.dart';
 import 'package:zabaner/views/screens/chapter_list_screen.dart';
 import 'package:zabaner/views/screens/profile_screen.dart';
 import 'package:zabaner/widgets/colored_text.dart';
@@ -24,6 +25,116 @@ class BooksListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final BookListController _controller =
         Get.put(BookListController(filter: filter));
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: ColoredAppBar(),
+          body: Obx(() => _controller.isDataLoaded.value
+              ? SmartRefresher(
+                  controller: _controller.refreshController,
+                  onRefresh: () {
+                    _controller.getData();
+                  },
+                  header: const MaterialClassicHeader(),
+                  child: _controller.errorData.isTrue
+                      ? ErrorLoading(retry: () {
+                          _controller.getData();
+                        })
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 18),
+                                child: ColoredText("داستان های کوتاه"+" > "+(title ?? ""))),
+                            Expanded(
+                                child: _controller.model!.length == 0
+                                    ? NoData()
+                                    : ListView.builder(
+                                        itemCount: _controller.model!.length,
+                                        itemBuilder: (_, index) {
+                                          return resourceItemHolder(
+                                              title: _controller
+                                                  .model![index].faTitle,
+                                              hasMore: true,
+                                              imagePath: _controller
+                                                  .model![index].imagePath,
+                                              onClick: (){
+                                                Get.to(() => ChapterListScreen(
+                                                  id: _controller
+                                                      .model![index].id,
+                                                  type: "book",
+                                                  imageLink: _controller
+                                                      .model![index]
+                                                      .imagePath,
+                                                ));
+                                              },
+                                              extraContent: [
+                                                Row(
+                                                  children: [
+                                                    Flexible(
+                                                        flex: 1,
+                                                        child: resourceIconDetail(
+                                                            title:
+                                                                "لهجه: ${_controller.model![index].accent}",
+                                                            iconPath:
+                                                                "assets/images/audio_book.png")),
+                                                    SizedBox(
+                                                      width: 4,
+                                                    ),
+                                                    Flexible(
+                                                        flex: 1,
+                                                        child: Obx(() => _controller
+                                                                    .modelTimes
+                                                                    .length >=
+                                                                (index + 1)
+                                                            ? resourceIconDetail(
+                                                                title:
+                                                                    "${_controller.modelTimes[index]} دقیقه ",
+                                                                iconPath:
+                                                                    "assets/images/time_length.png")
+                                                            : resourceIconDetail(
+                                                                title:
+                                                                    "صبر کنید...",
+                                                                iconPath:
+                                                                    "assets/images/time_length.png"))),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 4,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Flexible(
+                                                        flex: 1,
+                                                        child: resourceIconDetail(
+                                                            title:
+                                                                "سطح: ${_controller.model![index].level}",
+                                                            iconSize: 12,
+                                                            iconPath:
+                                                                "assets/images/level-ltr.png")),
+                                                    SizedBox(
+                                                      width: 4,
+                                                    ),
+                                                    Flexible(
+                                                        flex: 1,
+                                                        child: resourceIconDetail(
+                                                            title:
+                                                                "ژانر: ${_controller.model![index].genre}",
+                                                            iconSize: 12,
+                                                            iconPath:
+                                                                "assets/images/genre.png")),
+                                                  ],
+                                                ),
+                                              ],
+                                              index: index);
+                                        })),
+                          ],
+                        ),
+                )
+              : Loading()),
+        ));
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -66,7 +177,8 @@ class BooksListScreen extends StatelessWidget {
                                   Text(
                                     title ?? "داستان های کوتاه",
                                     style: TextStyle(
-                                        fontFamily: "Yekan", fontSize: 18),
+                                        fontFamily: "IRANSansPro",
+                                        fontSize: 18),
                                   ),
 
                                   // Logo in top left
@@ -145,7 +257,8 @@ class BooksListScreen extends StatelessWidget {
                                                       _controller
                                                           .model![index].title,
                                                       style: TextStyle(
-                                                          fontFamily: "Yekan",
+                                                          fontFamily:
+                                                              "IRANSansPro",
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
@@ -174,9 +287,9 @@ class BooksListScreen extends StatelessWidget {
                                                                     .length >=
                                                                 (index + 1)
                                                             ? ColoredText(
-                                                                "\t\t ${_controller.modelTimes[index]} دقیقه ")
+                                                                "     ${_controller.modelTimes[index]} دقیقه ")
                                                             : ColoredText(
-                                                                "\t\t  صبر کنید "))
+                                                                "      صبر کنید "))
                                                       ],
                                                     ),
                                                     Row(
@@ -188,7 +301,7 @@ class BooksListScreen extends StatelessWidget {
                                                                   "assets/images/audio_book.png"),
                                                               size: 22),
                                                         ),
-                                                        Text("\t\t" "لهجه : " +
+                                                        Text("    " "لهجه: " +
                                                             _controller
                                                                 .model![index]
                                                                 .accent +

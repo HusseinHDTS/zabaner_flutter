@@ -107,7 +107,7 @@ class CustomTextInput extends StatelessWidget {
   }
 
   getTextStyle(){
-    return TextStyle(fontFamily: "Yekan", fontSize: fontSize,color: enabled! ? null :Color(0xffb0b0b0) );
+    return TextStyle(fontFamily: "IRANSansPro", fontSize: fontSize,color: enabled! ? null :Color(0xffb0b0b0) );
   }
 
   getInputDecoration(context){
@@ -117,11 +117,11 @@ class CustomTextInput extends StatelessWidget {
         contentPadding: EdgeInsets.only(right: 6,left: 6,top: 8,bottom: 4),
         labelStyle:TextStyle(
             fontSize: hintSize,
-            fontFamily: "Yekan",
+            fontFamily: "IRANSansPro",
             color: Color(0xffb0b0b0)) ,
         hintStyle: TextStyle(
             fontSize: hintSize,
-            fontFamily: "Yekan",
+            fontFamily: "IRANSansPro",
             color: Color(0xffb0b0b0)),
         hintTextDirection: TextDirection.rtl,
         fillColor: enabled! ? Color(0xffffffff) : Colors.white38,

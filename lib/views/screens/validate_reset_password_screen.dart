@@ -43,7 +43,7 @@ class ValidateResetPasswordCode extends StatelessWidget {
                         size: 18,
                       ),
                       Text("بازگشت",
-                          style: TextStyle(fontFamily: "Yekan", fontSize: 12)),
+                          style: TextStyle(fontFamily: "IRANSansPro", fontSize: 12)),
                     ],
                   ),
                 ),
@@ -74,14 +74,14 @@ class ValidateResetPasswordCode extends StatelessWidget {
                                 child: Text(
                                   recovery ? "بازیابی" : "اعتبار سنجی",
                                   style: const TextStyle(
-                                      fontSize: 13, fontFamily: "Yekan"),
+                                      fontSize: 13, fontFamily: "IRANSansPro"),
                                 ),
                               ),
                               Text(
                                 "کد ارسال شده برای شماره همراه $phoneNumber را وارد کنید",
                                 style: const TextStyle(
                                     fontSize: 9,
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     color: Color(0xff9F9F9F)),
                               ),
                             ],
@@ -196,7 +196,7 @@ class ValidateResetPasswordCode extends StatelessWidget {
                               child: const Text(
                                 "اعتبار سنجی",
                                 style:
-                                    TextStyle(fontSize: 12, fontFamily: "Yekan"),
+                                    TextStyle(fontSize: 12, fontFamily: "IRANSansPro"),
                               ),
                               style: ButtonStyle(
                                   backgroundColor:
@@ -218,7 +218,7 @@ class ValidateResetPasswordCode extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 9,
                                     color: Color(0xff9F9F9F),
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                   )),
                               Obx(() => _controller.isTimerEnded()
                                   ? GestureDetector(
@@ -234,7 +234,7 @@ class ValidateResetPasswordCode extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 9,
                                           color: primary,
-                                          fontFamily: "Yekan",
+                                          fontFamily: "IRANSansPro",
                                         ),
                                       ))
                                   : Container())

@@ -115,6 +115,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                         controller.videoItems.value.id,
                                         controller.videoItems.value.videoPath)),
                                     CustomVideoType.STORAGE,
+                                    isLoop: controller.repeat.value,
                                     withThumb: true,
                                     retryImage: customVideoPlayerTag.value ==
                                         getUrlFileName(
@@ -246,16 +247,20 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                   if (!controller
                                                       .videoInitialized
                                                       .value) return;
+                                                  if(customVideoPlayerController!.playerPosition.value == customVideoPlayerController!.playerDuration.value){
+                                                    customVideoPlayerController!.seekTo(0);
+                                                  }
                                                   customVideoPlayerController!
                                                       .togglePlay();
-                                                  // controller.chewieController
-                                                  //     .showControls;
-                                                  // controller.chewieController.notifyListeners();
+
                                                 },
                                                 pausePlayer: () {
                                                   if (!controller
                                                       .videoInitialized
                                                       .value) return;
+                                                  if(customVideoPlayerController!.playerPosition.value == customVideoPlayerController!.playerDuration.value){
+                                                    customVideoPlayerController!.seekTo(0);
+                                                  }
                                                   customVideoPlayerController!
                                                       .togglePlay();
                                                 },
@@ -268,6 +273,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                                         controller.videoItems
                                                             .value.title),
                                                 togglePlayer: () async {
+                                                  if(customVideoPlayerController!.playerPosition.value == customVideoPlayerController!.playerDuration.value){
+                                                    customVideoPlayerController!.seekTo(0);
+                                                  }
                                                   customVideoPlayerController!
                                                       .togglePlay();
                                                   return true;

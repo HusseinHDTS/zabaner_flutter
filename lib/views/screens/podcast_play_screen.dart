@@ -124,7 +124,7 @@ class _PodcastPlayState extends State<PodcastPlay> {
                                           controller.podcastItem.title +
                                           " \n",
                                       style: const TextStyle(
-                                        fontFamily: "Yekan",
+                                        fontFamily: "IRANSansPro",
                                         fontSize: 25,
                                       ),
                                       textAlign: TextAlign.center,

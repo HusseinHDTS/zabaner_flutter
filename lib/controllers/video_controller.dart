@@ -136,6 +136,7 @@ class VideoController extends GetxController {
       if (!value) {
         errorData.value = true;
       }
+      bool noVideo = false;
       if (videoItems.value.videoPath.isEmpty ||
           videoItems.value.videoPath.contains("/undefined") ||
           videoItems.value.videoPath.trim().toLowerCase() ==

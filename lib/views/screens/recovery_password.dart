@@ -37,7 +37,7 @@ class RecoveryPasswordScreen extends StatelessWidget {
                         size: 18,
                       ),
                       Text("بازگشت",
-                          style: TextStyle(fontFamily: "Yekan", fontSize: 12)),
+                          style: TextStyle(fontFamily: "IRANSansPro", fontSize: 12)),
                     ],
                   ),
                 ),
@@ -68,14 +68,14 @@ class RecoveryPasswordScreen extends StatelessWidget {
                                 child: Text(
                                   "فراموشی رمز عبور",
                                   style: TextStyle(
-                                      fontSize: 13, fontFamily: "Yekan"),
+                                      fontSize: 13, fontFamily: "IRANSansPro"),
                                 ),
                               ),
                               Text(
                                 "شماره همراه را وارد کنید",
                                 style: TextStyle(
                                     fontSize: 8,
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     color: Color(0xff9F9F9F)),
                               ),
                             ],
@@ -128,7 +128,7 @@ class RecoveryPasswordScreen extends StatelessWidget {
                               child: const Text(
                                 "بازیابی",
                                 style:
-                                    TextStyle(fontSize: 12, fontFamily: "Yekan"),
+                                    TextStyle(fontSize: 12, fontFamily: "IRANSansPro"),
                               ),
                               style: ButtonStyle(
                                   backgroundColor:
@@ -152,14 +152,14 @@ class RecoveryPasswordScreen extends StatelessWidget {
                         //             style: TextStyle(
                         //               fontSize: 9,
                         //               color: Color(0xff9F9F9F),
-                        //               fontFamily: "Yekan",
+                        //               fontFamily: "IRANSansPro",
                         //             )),
                         //         InkWell(
                         //           child: Text("ارتباط با پشتیبانی",
                         //               style: TextStyle(
                         //                 fontSize: 9,
                         //                 color: orange,
-                        //                 fontFamily: "Yekan",
+                        //                 fontFamily: "IRANSansPro",
                         //               )),
                         //         )
                         //       ],

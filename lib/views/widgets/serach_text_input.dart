@@ -23,7 +23,7 @@ class SearchTextInput extends StatelessWidget {
         controller: textController,
         onFieldSubmitted: onFieldSubmitted,
         textInputAction: TextInputAction.search,
-        style: const TextStyle(fontFamily: "Yekan", fontSize: 14),
+        style: const TextStyle(fontFamily: "IRANSansPro", fontSize: 14),
         textAlignVertical: TextAlignVertical.top,
         textAlign: TextAlign.center,
         focusNode: focus,
@@ -32,7 +32,7 @@ class SearchTextInput extends StatelessWidget {
             hintText: "نام کتاب، انیمیشن، پادکست...",
             contentPadding: EdgeInsets.zero,
             hintStyle: const TextStyle(
-                fontFamily: "Yekan", fontSize: 12, color: Color(0xffffffff)),
+                fontFamily: "IRANSansPro", fontSize: 12, color: Color(0xffffffff)),
             hintTextDirection: TextDirection.rtl,
             fillColor: const Color(0xffDBDBDB),
             prefixIconConstraints:
@@ -57,7 +57,7 @@ class TicketTextInput extends StatelessWidget{
   Widget build(BuildContext context) {
     return TextFormField(
         controller: textController,
-        style: const TextStyle(fontFamily: "Yekan", fontSize: 14),
+        style: const TextStyle(fontFamily: "IRANSansPro", fontSize: 14),
         textAlignVertical: TextAlignVertical.center,
         textAlign: TextAlign.right,
         focusNode: focus,
@@ -67,7 +67,7 @@ class TicketTextInput extends StatelessWidget{
             hintText: hint,
             contentPadding: EdgeInsets.zero,
             hintStyle: const TextStyle(
-                fontFamily: "Yekan", fontSize: 12, color: Color(0xff919090)),
+                fontFamily: "IRANSansPro", fontSize: 12, color: Color(0xff919090)),
             hintTextDirection: TextDirection.rtl,
             fillColor: Color(0xff000000),
             focusedBorder: OutlineInputBorder(
@@ -89,7 +89,7 @@ class MessageTextInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
         controller: textController,
-        style: const TextStyle(fontFamily: "Yekan", fontSize: 14),
+        style: const TextStyle(fontFamily: "IRANSansPro", fontSize: 14),
         textAlignVertical: TextAlignVertical.center,
         textAlign: TextAlign.right,
         textInputAction: TextInputAction.newline,
@@ -100,7 +100,7 @@ class MessageTextInput extends StatelessWidget {
             hintText: "لطفا پیام خود را بنویسید",
             contentPadding: EdgeInsets.zero,
             hintStyle: TextStyle(
-                fontFamily: "Yekan", fontSize: 12, color: Color(0xff8c8b8b)),
+                fontFamily: "IRANSansPro", fontSize: 12, color: Color(0xff8c8b8b)),
             hintTextDirection: TextDirection.rtl,
             fillColor: Color(0xff000000),
             focusedBorder: OutlineInputBorder(

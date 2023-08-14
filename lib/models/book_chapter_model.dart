@@ -19,6 +19,8 @@ class BookChapterModel {
     required this.wordsCount,
     required this.customText,
     required this.accent,
+    required this.level,
+    required this.genre,
     required this.faTitle,
     required this.title,
     required this.type,
@@ -32,6 +34,8 @@ class BookChapterModel {
   final String customText;
   final String faTitle;
   final String accent;
+  final String level;
+  final String genre;
   final String title;
   final String type;
   final List<Item> items;
@@ -44,6 +48,8 @@ class BookChapterModel {
       podcastTime: json["podcastTime"],
       customText: (json["customText"] ?? ""),
       accent: (json["accent"] ?? ""),
+      level: (json["itemLevel"] ?? ""),
+      genre: (json["itemGenre"] ?? ""),
       wordsCount: json["wordsCount"],
       faTitle: json["faTitle"],
       title: json["title"],
@@ -58,6 +64,8 @@ class BookChapterModel {
         "podcastTime": podcastTime,
         "wordsCount": wordsCount,
         "customText": customText,
+        "itemLevel": level,
+        "itemGenre": genre,
         "accent": accent,
         "faTitle": faTitle,
         "title": title,

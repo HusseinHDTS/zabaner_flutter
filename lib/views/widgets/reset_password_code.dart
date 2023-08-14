@@ -16,7 +16,7 @@ class ResetPasswordCode extends StatelessWidget {
       child: TextFormField(
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontFamily: "Yekan"),
+        style: const TextStyle(fontFamily: "IRANSansPro"),
         maxLength: 1,
         onChanged: (value) {
           if (value.isNotEmpty) {

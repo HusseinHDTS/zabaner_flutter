@@ -14,7 +14,7 @@ Widget barChart(
         Text(
           topText,
           style: const TextStyle(
-              fontFamily: "Yekan", fontSize: 10, color: Color(0xff686868)),
+              fontFamily: "IRANSansPro", fontSize: 10, color: Color(0xff686868)),
         ),
         Container(
             width: width,
@@ -24,7 +24,7 @@ Widget barChart(
         Text(
           bottomText,
           style: const TextStyle(
-              fontFamily: "Yekan", fontSize: 10, color: Colors.grey),
+              fontFamily: "IRANSansPro", fontSize: 10, color: Colors.grey),
         ),
       ],
     ),

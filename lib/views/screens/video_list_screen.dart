@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:zabaner/controllers/video_list_controller.dart';
 import 'package:zabaner/models/resources_model.dart';
 import 'package:zabaner/models/urls.dart';
@@ -18,6 +19,83 @@ class VideoListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final VideoListController _controller = Get.put(VideoListController(filter: filter));
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: ColoredAppBar(),
+          body: Obx(() => _controller.isDataLoaded.value
+              ? SmartRefresher(
+            controller: _controller.refreshController,
+            onRefresh: () {
+              _controller.getData();
+            },
+            header: const MaterialClassicHeader(),
+            child: _controller.errorData.isTrue
+                ? ErrorLoading(retry: () {
+              _controller.getData();
+            })
+                : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 18),
+                    child: ColoredText(
+                        "مصاحبه های Speakout" + " > " + (title ?? ""),)),
+                Expanded(
+                    child: _controller.model.length == 0
+                        ? NoData()
+                        : ListView.builder(
+                        itemCount:
+                        _controller.model.length,
+                        itemBuilder: (_, index) {
+                          return resourceItemHolder(
+                              title: _controller.model[index].title,
+                              hasMore: false,
+                              itemType: "video",
+                              extraContent: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        flex: 1,
+                                        child: resourceIconDetail(
+                                            title: _controller
+                                                .model[
+                                            index]
+                                                .podcastTime
+                                                .toString() +
+                                                " دقیقه ",
+                                            iconPath:
+                                            "assets/images/time.png")),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Flexible(
+                                        flex: 1,
+                                        child: resourceIconDetail(
+                                            title:
+                                            "سطح: ${_controller.model[index].level}",
+                                            iconSize: 12,
+                                            iconPath:
+                                            "assets/images/level-ltr.png")),
+                                  ],
+                                ),
+                              ],
+                              imagePath:_controller.model[index]
+                                  .imagePath,
+                              onClick: () {
+                                Get.to(() => VideoDetailScreen(
+                                  isGuest: false,
+                                  id: _controller.model[index].id,itemType: "video",));
+                              },
+                              index: index);
+                        })),
+              ],
+            ),
+          )
+              : Loading()),
+        ));
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -101,7 +179,7 @@ class VideoListScreen extends StatelessWidget {
                                         Text(
                                           _controller.model[index].title,
                                           style: TextStyle(
-                                              fontFamily: "Yekan",
+                                              fontFamily: "IRANSansPro",
                                               fontWeight: FontWeight.bold),
                                         ),
                                         Row(
@@ -110,7 +188,7 @@ class VideoListScreen extends StatelessWidget {
                                                 AssetImage(
                                                     "assets/images/time.png"),
                                                 size: 22),
-                                            Text("\t\t" + _controller.model[index].podcastTime.toString() + " دقیقه ")
+                                            Text("    " + _controller.model[index].podcastTime.toString() + " دقیقه ")
                                           ],
                                         ),
                                       ],

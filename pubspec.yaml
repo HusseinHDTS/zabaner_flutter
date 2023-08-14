@@ -163,6 +163,9 @@ flutter:
     - family: Negaar
       fonts:
           - asset: assets/fonts/ANegaar.ttf
+    - family: IRANSansPro
+      fonts:
+          - asset: assets/fonts/IRANSansPro.ttf
     - family: Vazir
       fonts:
           - asset: assets/fonts/Vazir.ttf

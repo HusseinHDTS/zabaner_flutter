@@ -64,7 +64,7 @@ class ProfileAccount extends StatelessWidget {
                             "اشتراک های حساب کاربری :",
                             style: TextStyle(
                                 color: Color(0xff686868),
-                                fontFamily: "Yekan",
+                                fontFamily: "IRANSansPro",
                                 fontSize: 12),
                           ),
                         ),
@@ -283,7 +283,7 @@ class ProfileAccount extends StatelessWidget {
                 "تنظیمات حساب کاربری",
                 style: TextStyle(
                     color: Color(0xff686868),
-                    fontFamily: "Yekan",
+                    fontFamily: "IRANSansPro",
                     fontSize: 12),
               ),
             ),
@@ -322,7 +322,7 @@ class ProfileAccount extends StatelessWidget {
                               const Text(
                                 "تصویر پروفایل",
                                 style: TextStyle(
-                                    fontFamily: "Yekan", fontSize: 10),
+                                    fontFamily: "IRANSansPro", fontSize: 10),
                               ),
 
                               // name text input
@@ -396,7 +396,7 @@ class ProfileAccount extends StatelessWidget {
                                     child: const Text(
                                       "ذخیره تغییرات",
                                       style: TextStyle(
-                                          fontFamily: "Yekan", fontSize: 12),
+                                          fontFamily: "IRANSansPro", fontSize: 12),
                                     ),
                                     onPressed: () {
                                       _controller.updateProfile(

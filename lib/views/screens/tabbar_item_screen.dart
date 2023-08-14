@@ -54,93 +54,173 @@ class _TabbarItemScreen extends State<TabbarItemScreen> {
             appBar: ColoredAppBar(),
             body: Directionality(
               textDirection: TextDirection.ltr,
-              child: Column(children: [
-                SizedBox(height: 8,),
-                ColoredText(item.mTitle,textColor: Colors.black,textSize: 18,),
-                SizedBox(height: 8,),
-                Expanded(flex:0,child: Container(margin:EdgeInsets.all(8),child: AspectRatio(aspectRatio: 16/9,child: Obx(() => controller.appDocInit.value ? getVideoView(io.File(getUrlFileName(controller.appDoc.path,  item.id,
-                    item.video)),
-                    CustomVideoType.STORAGE,
-                    withThumb: true,
-                    retryImage: customVideoPlayerTag.value == getUrlFileName(controller.appDoc.path, item.id,
-                        item.video),showPreviewOverlay: false) : Container()),),)),
-                Expanded(flex: 1,child: Container(height: double.infinity,),),
-                Expanded(flex:0,
-                  child: Align(alignment: Alignment.bottomCenter,child: Obx(()=>AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    height: controller.isHide.value
-                        ? hiddenHeight
-                        : normalHeight,
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: BottomPlayer(
-                          isVideo: true,
-                          isSingleSetting: true,
-                          forward: () {
-                            var newPos = controller.playerPosition.value.inMilliseconds+5100;
-                            if(newPos > controller.duration.value.inMilliseconds) newPos = controller.duration.value.inMilliseconds -100;
-                            controller.playerPosition.value = Duration(milliseconds: newPos);
-                            customVideoPlayerController!.seekTo(newPos.toDouble());
-                          },
-                          backward: () {
-                            var newPos = controller.playerPosition.value.inMilliseconds-5100;
-                            if(newPos < 0) newPos = 0;
-                            controller.playerPosition.value = Duration(milliseconds: newPos);
-                            customVideoPlayerController!.seekTo(newPos.toDouble());
-                          },
-                          isFileExists: controller.isVideoExists,
-                          isInitialized:controller.videoInitialized,
-                          isPlaying: controller.isPlaying,
-                          onInitialize: (){
-                            controller.initVideo(item.id,item.video);
-                          },
-                          resumePlayer: () =>
-                          controller.videoInitialized.value
-                              ? customVideoPlayerController!.togglePause()
-                              : {},
-                          pausePlayer: () => controller
-                              .videoInitialized.value
-                              ? customVideoPlayerController!.togglePause()
-                              : {},
-                          downloadRequest: (){
-                            if (item.video.substring(item.video.lastIndexOf(".") + 1) == "mp4") {
-                              controller.download(item.video, item.id, item.title);
-                            } else {
-                              Get.back();
-                              ColoredSnack(
-                                  title: "ویدیویی برای این بخش وجود ندارد", type: SnackType.ERROR);
-                            }
-                          },
-                          togglePlayer: () async{
-                            customVideoPlayerController!.togglePause();
-                            return true;
-                          },
-                          toggleHide: ()=>controller.isHide.toggle(),
-                          togglePlayerSpeed: (){
-                            if (controller.isPlaying.value) {
-                              if (controller.playSpeed.value ==
-                                  0.5) {
-                                controller.playSpeed.value = 1;
-                                customVideoPlayerController!.videoPlayerController.setPlaybackSpeed(1);
-                              } else if (controller.playSpeed.value ==1) {
-                                controller.playSpeed.value = 2;
-                                customVideoPlayerController!.videoPlayerController.setPlaybackSpeed(2);
-                              } else if (controller.playSpeed.value ==2) {
-                                controller.playSpeed.value = 0.5;
-                                customVideoPlayerController!.videoPlayerController.setPlaybackSpeed(0.5);
-                              }
-                            }
-                          },
-                          playSpeed: controller.playSpeed,
-                          player: controller.videoInitialized.value ? customVideoPlayerController!.videoPlayerController : null,
-                          isHide: controller.isHide,
-                          repeat: controller.repeat,
-                          duration: controller.duration.value,
-                          position: controller.playerPosition),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 8,
+                  ),
+                  ColoredText(
+                    item.mTitle,
+                    textColor: Colors.black,
+                    textSize: 18,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Expanded(
+                      flex: 0,
+                      child: Container(
+                        margin: EdgeInsets.all(8),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Obx(() => controller.appDocInit.value
+                              ? getVideoView(
+                                  io.File(getUrlFileName(controller.appDoc.path,
+                                      item.id, item.video)),
+                                  CustomVideoType.STORAGE,
+                                  isLoop: controller.repeat.value,
+                                  withThumb: true,
+                                  retryImage: customVideoPlayerTag.value ==
+                                      getUrlFileName(controller.appDoc.path,
+                                          item.id, item.video),
+                                  showPreviewOverlay: false)
+                              : Container()),
+                        ),
+                      )),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      height: double.infinity,
                     ),
-                  )),),
-                ),
-              ],),
+                  ),
+                  Expanded(
+                    flex: 0,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Obx(() => AnimatedContainer(
+                            duration: const Duration(milliseconds: 500),
+                            height: controller.isHide.value
+                                ? hiddenHeight
+                                : normalHeight,
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: BottomPlayer(
+                                  isVideo: true,
+                                  isSingleSetting: true,
+                                  forward: () {
+                                    var newPos = controller.playerPosition.value
+                                            .inMilliseconds +
+                                        5100;
+                                    if (newPos >
+                                        controller
+                                            .duration.value.inMilliseconds)
+                                      newPos = controller
+                                              .duration.value.inMilliseconds -
+                                          100;
+                                    controller.playerPosition.value =
+                                        Duration(milliseconds: newPos);
+                                    customVideoPlayerController!
+                                        .seekTo(newPos.toDouble());
+                                  },
+                                  backward: () {
+                                    var newPos = controller.playerPosition.value
+                                            .inMilliseconds -
+                                        5100;
+                                    if (newPos < 0) newPos = 0;
+                                    controller.playerPosition.value =
+                                        Duration(milliseconds: newPos);
+                                    customVideoPlayerController!
+                                        .seekTo(newPos.toDouble());
+                                  },
+                                  isFileExists: controller.isVideoExists,
+                                  isInitialized: controller.videoInitialized,
+                                  isPlaying: controller.isPlaying,
+                                  onInitialize: () {
+                                    controller.initVideo(item.id, item.video);
+                                  },
+                                  resumePlayer: () {
+                                    if (customVideoPlayerController!
+                                            .playerPosition.value ==
+                                        customVideoPlayerController!
+                                            .playerDuration.value) {
+                                      customVideoPlayerController!.seekTo(0);
+                                    }
+                                    controller.videoInitialized.value
+                                        ? customVideoPlayerController!
+                                            .togglePause()
+                                        : {};
+                                  },
+                                  pausePlayer: () {
+                                    if (customVideoPlayerController!
+                                            .playerPosition.value ==
+                                        customVideoPlayerController!
+                                            .playerDuration.value) {
+                                      customVideoPlayerController!.seekTo(0);
+                                    }
+                                    controller.videoInitialized.value
+                                        ? customVideoPlayerController!
+                                            .togglePause()
+                                        : {};
+                                  },
+                                  downloadRequest: () {
+                                    if (item.video.substring(
+                                            item.video.lastIndexOf(".") + 1) ==
+                                        "mp4") {
+                                      controller.download(
+                                          item.video, item.id, item.title);
+                                    } else {
+                                      Get.back();
+                                      ColoredSnack(
+                                          title:
+                                              "ویدیویی برای این بخش وجود ندارد",
+                                          type: SnackType.ERROR);
+                                    }
+                                  },
+                                  togglePlayer: () async {
+                                    if(customVideoPlayerController!.playerPosition.value == customVideoPlayerController!.playerDuration.value){
+                                      customVideoPlayerController!.seekTo(0);
+                                    }
+                                    customVideoPlayerController!.togglePause();
+                                    return true;
+                                  },
+                                  toggleHide: () => controller.isHide.toggle(),
+                                  togglePlayerSpeed: () {
+                                    if (controller.isPlaying.value) {
+                                      if (controller.playSpeed.value == 0.5) {
+                                        controller.playSpeed.value = 1;
+                                        customVideoPlayerController!
+                                            .videoPlayerController
+                                            .setPlaybackSpeed(1);
+                                      } else if (controller.playSpeed.value ==
+                                          1) {
+                                        controller.playSpeed.value = 2;
+                                        customVideoPlayerController!
+                                            .videoPlayerController
+                                            .setPlaybackSpeed(2);
+                                      } else if (controller.playSpeed.value ==
+                                          2) {
+                                        controller.playSpeed.value = 0.5;
+                                        customVideoPlayerController!
+                                            .videoPlayerController
+                                            .setPlaybackSpeed(0.5);
+                                      }
+                                    }
+                                  },
+                                  playSpeed: controller.playSpeed,
+                                  player: controller.videoInitialized.value
+                                      ? customVideoPlayerController!
+                                          .videoPlayerController
+                                      : null,
+                                  isHide: controller.isHide,
+                                  repeat: controller.repeat,
+                                  duration: controller.duration.value,
+                                  position: controller.playerPosition),
+                            ),
+                          )),
+                    ),
+                  ),
+                ],
+              ),
             ),
           )),
     );

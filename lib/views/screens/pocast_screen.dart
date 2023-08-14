@@ -49,7 +49,7 @@ class PodcastScreen extends StatelessWidget {
                             ),
                             Text(" بازگشت",
                                 style: TextStyle(
-                                    fontFamily: "Yekan", fontSize: 14)),
+                                    fontFamily: "IRANSansPro", fontSize: 14)),
                           ],
                         ),
                       ),
@@ -83,7 +83,7 @@ class PodcastScreen extends StatelessWidget {
                                 Text(
                                   "پادکست ها",
                                   style: TextStyle(
-                                      fontFamily: "Yekan", fontSize: 16),
+                                      fontFamily: "IRANSansPro", fontSize: 16),
                                 ),
                               ],
                             ),
@@ -140,7 +140,7 @@ class PodcastScreen extends StatelessWidget {
                                             "   ${controller.podcast.title}",
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
-                                                fontFamily: "Yekan",
+                                                fontFamily: "IRANSansPro",
                                                 fontSize: 16),
                                           ),
                                         ),
@@ -153,7 +153,7 @@ class PodcastScreen extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                         textDirection: TextDirection.rtl,
                                         style: const TextStyle(
-                                            fontFamily: "Yekan",
+                                            fontFamily: "IRANSansPro",
                                             fontWeight: FontWeight.w400),
                                       ),
                                     ),

@@ -25,6 +25,7 @@ enum CustomVideoType {
 class CustomVideoPlayer extends StatefulWidget {
   var videoPath;
   bool? showThumbnail;
+  bool isLoop;
   CustomVideoType? customVideoType;
   bool? isInitialized;
 
@@ -32,6 +33,7 @@ class CustomVideoPlayer extends StatefulWidget {
 
   CustomVideoPlayer(this.videoPath, this.customVideoType,
       {this.isInitialized,
+      this.isLoop = false,
       this.initializedVideoPlayerController,
       this.showThumbnail}) {
     showThumbnail ??= true;
@@ -81,6 +83,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
         controller = customVideoPlayerController!;
       }
     }
+    controller.videoPlayerController.setLooping(widget.isLoop);
   }
 
   RxBool videoReadyToShow = false.obs;
@@ -88,6 +91,7 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     videoReadyToShow = true.obs;
+    controller.videoPlayerController.setLooping(widget.isLoop);
     var screenSize = MediaQuery.of(context).size;
     return LayoutBuilder(builder: (context, BoxConstraints constraints) {
       return Container(
@@ -157,7 +161,12 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
                               return;
                             }
                             if (controller.isInitialize.value) {
-                              controller.togglePlay();
+                              if(controller.playerPosition.value == controller.playerDuration.value){
+                                  controller.seekTo(0);
+                                  controller.play();
+                              }else{
+                                controller.togglePlay();
+                              }
                             }
                           },
                           child: SizedBox(

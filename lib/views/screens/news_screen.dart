@@ -105,7 +105,7 @@ class NewsScreen extends StatelessWidget {
             body: Directionality(
               textDirection: TextDirection.ltr,
               child: Container(
-                margin: const EdgeInsets.only(top: 18, right: 12, left: 12),
+                margin: const EdgeInsets.only(top: 18,),
                 child: Obx(() => _searchController.dataError.isTrue
                     ? ErrorLoading()
                     : _searchController.isDataLoaded()

@@ -28,7 +28,7 @@ class ProfileSetting extends StatelessWidget {
                 "تنظیمات",
                 style: TextStyle(
                     color: Color(0xff686868),
-                    fontFamily: "Yekan",
+                    fontFamily: "IRANSansPro",
                     fontSize: 12),
               ),
             ),
@@ -90,7 +90,7 @@ class ProfileSetting extends StatelessWidget {
                     "مدیریت پشتیبان گیری",
                     style: TextStyle(
                         color: Color(0xff686868),
-                        fontFamily: "Yekan",
+                        fontFamily: "IRANSansPro",
                         fontSize: 12),
                   ),
                 ),
@@ -115,7 +115,7 @@ class ProfileSetting extends StatelessWidget {
                             const Text(
                               "پشتیبان گیری روی سرور برنامه",
                               style:
-                                  TextStyle(fontFamily: "Yekan", fontSize: 12),
+                                  TextStyle(fontFamily: "IRANSansPro", fontSize: 12),
                             ),
                             Obx(() => Checkbox(
                                   checkColor: const Color(0xff000000),
@@ -154,7 +154,7 @@ class ProfileSetting extends StatelessWidget {
                         child: ElevatedButton(
                           child: const Text(
                             "تهیه نسخه پشتیبان",
-                            style: TextStyle(fontFamily: "Yekan", fontSize: 10),
+                            style: TextStyle(fontFamily: "IRANSansPro", fontSize: 10),
                           ),
                           style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(primary),
@@ -174,7 +174,7 @@ class ProfileSetting extends StatelessWidget {
                         child: ElevatedButton(
                           child: const Text(
                             "بازیابی",
-                            style: TextStyle(fontFamily: "Yekan", fontSize: 10),
+                            style: TextStyle(fontFamily: "IRANSansPro", fontSize: 10),
                           ),
                           style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(
@@ -208,7 +208,7 @@ class ProfileSetting extends StatelessWidget {
                     "ارتباط با ما",
                     style: TextStyle(
                         color: Color(0xff686868),
-                        fontFamily: "Yekan",
+                        fontFamily: "IRANSansPro",
                         fontSize: 11),
                   ),
                 ),
@@ -233,14 +233,14 @@ class ProfileSetting extends StatelessWidget {
                             const Text(
                               "وبسایت",
                               style:
-                                  TextStyle(fontFamily: "Yekan", fontSize: 12),
+                                  TextStyle(fontFamily: "IRANSansPro", fontSize: 12),
                             ),
                             Row(
                               children: [
                                 const Text(
                                   "https://zabaner.ir  ",
                                   style: TextStyle(
-                                      fontFamily: "Yekan",
+                                      fontFamily: "IRANSansPro",
                                       fontSize: 12,
                                       color: Color(0xff5A5A5A)),
                                 ),
@@ -275,14 +275,14 @@ class ProfileSetting extends StatelessWidget {
                             const Text(
                               "اینستاگرام",
                               style:
-                                  TextStyle(fontFamily: "Yekan", fontSize: 12),
+                                  TextStyle(fontFamily: "IRANSansPro", fontSize: 12),
                             ),
                             Row(
                               children: [
                                 const Text(
                                   "Zabaner_Official  ",
                                   style: TextStyle(
-                                      fontFamily: "Yekan",
+                                      fontFamily: "IRANSansPro",
                                       fontSize: 12,
                                       color: Color(0xff5A5A5A)),
                                 ),
@@ -317,14 +317,14 @@ class ProfileSetting extends StatelessWidget {
                             const Text(
                               "تلگرام",
                               style:
-                                  TextStyle(fontFamily: "Yekan", fontSize: 12),
+                                  TextStyle(fontFamily: "IRANSansPro", fontSize: 12),
                             ),
                             Row(
                               children: [
                                 const Text(
                                   "Zabaner_Official   ",
                                   style: TextStyle(
-                                      fontFamily: "Yekan",
+                                      fontFamily: "IRANSansPro",
                                       fontSize: 12,
                                       color: Color(0xff5A5A5A)),
                                 ),
@@ -348,7 +348,7 @@ class ProfileSetting extends StatelessWidget {
             child: Obx(()=>Text(
               "Version ${_controller.version.value}",
               style: const TextStyle(
-                  fontFamily: "Arial", fontSize: 11, color: Color(0xffC2C2C2)),
+                  fontFamily: "IRANSansPro", fontSize: 11, color: Color(0xffC2C2C2)),
             )),
           ),
         ],

@@ -86,7 +86,7 @@ class _ImageCropperScreen extends State<ImageCropperScreen> {
                         Text(
                           "بازگشت",
                           style: TextStyle(
-                              fontFamily: "Yekan", color: Colors.white),
+                              fontFamily: "IRANSansPro", color: Colors.white),
                         ),
                       ],
                     ),

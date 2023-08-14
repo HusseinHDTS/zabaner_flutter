@@ -43,7 +43,7 @@ class SignupScreen extends StatelessWidget {
                         size: 18,
                       ),
                       Text("بازگشت",
-                          style: TextStyle(fontFamily: "Yekan", fontSize: 12)),
+                          style: TextStyle(fontFamily: "IRANSansPro", fontSize: 12)),
                     ],
                   ),
                 ),
@@ -74,14 +74,14 @@ class SignupScreen extends StatelessWidget {
                                 child: Text(
                                   "ثبت نام کنید",
                                   style: TextStyle(
-                                      fontSize: 13, fontFamily: "Yekan"),
+                                      fontSize: 13, fontFamily: "IRANSansPro"),
                                 ),
                               ),
                               Text(
                                 "جهت دسترسی به برنامه نیاز به  ورود اطلاعات است",
                                 style: TextStyle(
                                     fontSize: 8,
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     color: Color(0xff9F9F9F)),
                               ),
                             ],
@@ -107,7 +107,7 @@ class SignupScreen extends StatelessWidget {
                                             },
                                             false,
                                             content:  Text.rich(
-                                                TextSpan(style:TextStyle(fontSize: 10,color: Color(0xff9F9F9F), fontFamily: "Yekan"),children: <InlineSpan>[
+                                                TextSpan(style:TextStyle(fontSize: 10,color: Color(0xff9F9F9F), fontFamily: "IRANSansPro"),children: <InlineSpan>[
                                               TextSpan(
                                                   text:"استفاده از زبانر به معنی موافقت با"),
                                               TextSpan(
@@ -281,7 +281,7 @@ class SignupScreen extends StatelessWidget {
                                 "ثبت نام",
                                 style: TextStyle(
                                     fontSize: 12,
-                                    fontFamily: "Yekan",
+                                    fontFamily: "IRANSansPro",
                                     color: Color(0xffffffff)),
                               ),
                             ),
@@ -303,7 +303,7 @@ class SignupScreen extends StatelessWidget {
                         //       const Text("ثبت نام با حساب کاربری گوگل",
                         //           style: TextStyle(
                         //               color: Color(0xff616161),
-                        //               fontFamily: "Yekan",
+                        //               fontFamily: "IRANSansPro",
                         //               fontSize: 9)),
                         //       Image.asset(
                         //         "assets/images/gmail.png",
